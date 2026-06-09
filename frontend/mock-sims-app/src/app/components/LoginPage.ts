@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 @Component ({
   selector: `login-page`,
   templateUrl: `./template/LoginPageTemplate.html`,
-  styleUrl: `../app.css`,
   imports: [
     FormsModule
   ],
