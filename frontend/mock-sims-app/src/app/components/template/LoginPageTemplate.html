@@ -1,0 +1,35 @@
+<div class="login-page">
+  <h2>Login</h2>
+
+  <div class="form-field">
+    <label for="userId">User ID</label>
+    <input
+      type="text"
+      id="userId"
+      [(ngModel)]="euid"
+      placeholder="Enter your EUID"
+    />
+  </div>
+
+  <div class="form-field">
+    <label for="storeNumber">Store Number</label>
+    <input
+      type="text"
+      id="storeNumber"
+      [(ngModel)]="storeNumber"
+      placeholder="Enter your store number"
+    />
+  </div>
+
+  <div class="form-field">
+    <label for="division">Division</label>
+    <input
+      type="text"
+      id="division"
+      [(ngModel)]="divisionNumber"
+      placeholder="Enter your division number"
+    />
+  </div>
+
+  <button type="button" (click)="onLogin()">Login</button>
+</div>
