@@ -8,10 +8,9 @@ import {Dashboard} from './pages/Dashboard';
   standalone: true,
   imports: [RouterOutlet, RouterLink, RouterLink, LoginPage],
   template: `
-    @if(this.currentUserEuid !== '' && this.currentUserStoreNumber !== '' && this.currentUserDivisionNumber !== ''){
       <div class = "top-bar">
         <h2>Smart Inventory System</h2>
-
+        <button class = "login-btn" routerLink="/LoginPage">Login</button>
       </div>
 
       <nav class = "nav-bar">
@@ -24,9 +23,7 @@ import {Dashboard} from './pages/Dashboard';
       <div class = "content">
         <router-outlet></router-outlet>
       </div>
-    } @else {
-      <login-page/>
-    }
+
 
   `,
   //templateUrl: './app.html',

@@ -13,6 +13,11 @@ export const routes: Routes = [
     component: LoginPage,
   },
   {
+    path: 'LoginPage',
+    title: 'SIMS Login',
+    component: LoginPage,
+  },
+  {
     path: 'Dashboard',
     title: 'SIMS Dashboard',
     component: Dashboard
