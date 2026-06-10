@@ -1,7 +1,7 @@
-import {Component, inject} from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { output} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router} from '@angular/router';
 
 @Component ({
   selector: `login-page`,
