@@ -16,15 +16,12 @@ export class LoginPage {
   storeNumber = ''
   divisionNumber = ''
 
-  currentUserEuidOutput = output<string>();
-  currentUserStoreOutput = output<string>();
-  currentUserDivisionOutput = output<string>();
-
   onLogin(){
-    this.currentUserEuidOutput.emit(this.euid);
-    this.currentUserStoreOutput.emit(this.storeNumber);
-    this.currentUserDivisionOutput.emit(this.divisionNumber);
-
+    let credentials = {
+      euid: this.euid,
+      storeNumber: this.storeNumber,
+      divisionNumber: this.divisionNumber
+    }
   }
 }
 
