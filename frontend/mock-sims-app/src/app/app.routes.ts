@@ -8,5 +8,9 @@ export const routes: Routes = [
     title: 'login page',
     component: LoginPage,
   },
-  { path: '', component: Dashboard}
+  {
+    path: 'Dashboard',
+    title: 'dashboard',
+    component: Dashboard
+  }
 ];
