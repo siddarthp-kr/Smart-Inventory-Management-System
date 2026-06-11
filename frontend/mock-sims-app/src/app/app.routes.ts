@@ -8,12 +8,33 @@ import { AlertsPage } from './components/AlertsPage';
 
 export const routes: Routes = [
   {
-    path: 'LoginPage',
-    title: 'login page',
+    path: '',
+    title: 'SIMS Login',
     component: LoginPage,
   },
-  { path: '', component: Dashboard},
-  { path: 'ordering', component: OrderPage},
-  { path: 'BohPage', component: BohPage},
-  { path: 'AlertsPage', component: AlertsPage}
+  {
+    path: 'LoginPage',
+    title: 'SIMS Login',
+    component: LoginPage,
+  },
+  {
+    path: 'Dashboard',
+    title: 'SIMS Dashboard',
+    component: Dashboard
+  },
+  {
+    path: 'OrderPage',
+    title: "SIMS Ordering",
+    component: OrderPage
+  },
+  {
+    path: 'BohPage',
+    title: "Balance On Hand",
+    component: BohPage
+  },
+  {
+    path: 'AlertsPage',
+    title: "Product Expiration Alerts",
+    component: AlertsPage
+  }
 ];
