@@ -1,7 +1,7 @@
 <div class = "order-container">
   <h2>Ordering</h2>
   <!-- Implementing Search here -->
-  <div class = "search-box">
+  <div class = "search-bar">
     <input
       type = "text"
       [(ngModel)]="search"
@@ -9,6 +9,18 @@
     />
     <button (click)="searchFunction()">Search</button>
   </div>
+
+  @if (message !== '' && isSuccess) {
+    <div class="message-box success">
+      {{ message }}
+    </div>
+  }
+
+  @if (message !== '' && !isSuccess) {
+    <div class="message-box invalid">
+      {{ message }}
+    </div>
+  }
 
   @if (results.length === 0 && search !== ''){
     <p>No results found</p>
@@ -24,8 +36,58 @@
 
       <div class = "actions">
         <input type = "number" #qty placeholder="Qty" />
-        <button (click) = "orderAction(item, +qty.value)">Order</button>
+        <button (click) = "orderAction(item, +qty.value, qty)">Order</button>
       </div>
     </div>
   }
 </div>
+
+<style>
+  .order-container{
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .search-bar{
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .search-bar input{
+    flex: 1;
+    padding: 8px;
+  }
+  .search-bar button{
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+  .product-card{
+    border: 1px solid #ccc;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    background: #f9f9f9;
+  }
+  .actions{
+    margin-top: 8px;
+    display: flex;
+    gap: 10px;
+  }
+  .actions input{
+    width: 80px;
+    padding: 5px;
+  }
+  .message-box {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #e8f5e9;
+  }
+  .success {
+    background-color: #e8f5e9; /* green */
+    border-color: green;
+  }
+  .invalid {
+    background-color: #ffe5e5; /* red */
+    border-color: red;
+  }
+</style>

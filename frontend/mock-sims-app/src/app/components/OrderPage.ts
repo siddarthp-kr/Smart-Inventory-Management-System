@@ -8,8 +8,11 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './template/OrderPageTemplate.html'
 })
 export class OrderPage {
+  //Store what is typed in search
   search: string = '';
+  message: string = '';
   results: any[] = [];
+  isSuccess: boolean = false;
 
   //Hard-coded Products - (4-Departments)
   products = [
@@ -32,22 +35,47 @@ export class OrderPage {
     {upc: '3044', name: 'Honey Bunches Oats', subCommodity: '29465'}
   ];
 
-  // Creating the search function to be used
+  // Triggers the search when button clicked
   searchFunction(){
     const feature = this.search.toLowerCase();
+    //checking filter for each product
     this.results = this.products.filter(
+      // Checking to see if the name is contained within the search
       p => p.name.toLowerCase().includes(feature) ||
+        // Checking to see if the upc is contained within the search
         p.upc.includes(feature)
     );
   }
 
-  // Create order action (mock version)
-  orderAction(product: any, quantity: number){
-    if(!quantity || quantity <= 0){
-      alert("Enter a valid quantity");
-      return;
-    }
+  showMessage(text: string, success: boolean){
+    this.message = text;
+    this.isSuccess = success;
+
+    //How long the message should appear before disappearing
+    setTimeout(() => {
+      this.message = '';
+    }, 3000);
   }
 
+  // Create order action (mock version)
+  // Triggers order action when button clicked
+  orderAction(product: any, quantity: number, messageInput: any){
+    // Quantity must be valid to proceed
+    if(!quantity || quantity <= 0){
+      this.showMessage ('Enter a valid quantity', false);
+      return;
+    }
+
+    const successOrder = true;
+
+    // Displays message at top when placing an order including quantity and product name
+    if (successOrder){
+      this.showMessage(`Ordered ${quantity} ${product.name} successfully`, true);
+    } else{
+      this.showMessage(`Failed to place order for ${product.name}`, false);
+    }
+    // Allows for clearing any input when order is placed
+    messageInput.value = '';
+  }
 }
 
