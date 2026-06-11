@@ -1,1 +1,31 @@
-<p>Order Page!</p>
+<div class = "order-container">
+  <h2>Ordering</h2>
+  <!-- Implementing Search here -->
+  <div class = "search-box">
+    <input
+      type = "text"
+      [(ngModel)]="search"
+      placeholder="Search by name/UPC..."
+    />
+    <button (click)="searchFunction()">Search</button>
+  </div>
+
+  @if (results.length === 0 && search !== ''){
+    <p>No results found</p>
+  }
+
+  @for (item of results; track item.upc){
+    <div class = "product-card">
+      <div>
+        <strong>{{item.name}}</strong>
+      </div>
+      <div>UPC: {{item.upc}}</div>
+      <div>Sub-Commodity: {{item.subCommodity}}</div>
+
+      <div class = "actions">
+        <input type = "number" #qty placeholder="Qty" />
+        <button (click) = "orderAction(item, +qty.value)">Order</button>
+      </div>
+    </div>
+  }
+</div>
