@@ -1,0 +1,12 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>mocksims.project</groupId>
+    <artifactId>mock-sims-server</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>mock-sims-api</module>
+        <module>mock-sims-service</module>
+    </modules>
+</project>
