@@ -21,15 +21,16 @@ public class PlaceOrderController{
     public PlaceOrderResponse placeOrder(@RequestBody PlaceOrderRequest placeOrderRequest){
         PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
 
-        //validate storeNumber
-        //validate divisionNumber
         if(ValidationHelper.validateUpcNumber(placeOrderRequest.getUpcNumber())
         && ValidationHelper.validateDivisionNumber(placeOrderRequest.getDivisionNumber())
                 && ValidationHelper.validateStoreNumber(placeOrderRequest.getStoreNumber())
+                && ValidationHelper.validateUserEuid(placeOrderRequest.getUserEuid())
+                && placeOrderRequest.getQuantity() > 0
         ){
             placeOrderResponse = placeOrderService.placeOrder(placeOrderRequest);
         } else {
             placeOrderResponse.setResponseCode(400);
+            placeOrderResponse.setResponseMessage("Error: Order request has invalid parameters");
         }
 
 

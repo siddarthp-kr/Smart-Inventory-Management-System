@@ -49,6 +49,17 @@ public class ValidationHelper {
         return isValid;
     }
 
+    /*
+        Returns true if EUID is valid
+     */
+    public static boolean validateUserEuid(String euid){
+        boolean isValid = true;
+
+        isValid = euid.length() > 5 && euid.length() < 11;
+
+        return isValid;
+    }
+
     private static boolean canParseInt(String str) {
         if (str == null) {
             return false;
