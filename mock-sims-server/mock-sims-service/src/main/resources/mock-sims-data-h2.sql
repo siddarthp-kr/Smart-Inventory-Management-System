@@ -26,19 +26,41 @@ VALUES ('4011', '62000', '07', 'Bananas', 0.75);
 INSERT INTO PRODUCT_BASIC_INFO (upc_number, subcommodity_number, department_number, product_name, standard_price)
 VALUES ('4022', '64307', '07', 'ST Cashews', 4.99);
 INSERT INTO PRODUCT_BASIC_INFO (upc_number, subcommodity_number, department_number, product_name, standard_price)
-VALUES ('3001', '44805', '10', 'Feta Greek', 4.79);
+VALUES ('3011', '44805', '10', 'Feta Greek', 4.79);
 INSERT INTO PRODUCT_BASIC_INFO (upc_number, subcommodity_number, department_number, product_name, standard_price)
-VALUES ('3012', '40610', '10', 'Shortbread Butter Cookies', 3.79);
+VALUES ('3022', '40610', '10', 'Shortbread Butter Cookies', 3.79);
 INSERT INTO PRODUCT_BASIC_INFO (upc_number, subcommodity_number, department_number, product_name, standard_price)
-VALUES ('1001', '53000', '09', 'Chicken Breast Boneless', 9.48);
+VALUES ('1011', '53000', '09', 'Chicken Breast Boneless', 9.48);
 INSERT INTO PRODUCT_BASIC_INFO (upc_number, subcommodity_number, department_number, product_name, standard_price)
-VALUES ('1002', '56005', '09', 'KRO GRND BF Burger', 7.49);
+VALUES ('1022', '56005', '09', 'KRO GRND BF Burger', 7.49);
 INSERT INTO PRODUCT_BASIC_INFO (upc_number, subcommodity_number, department_number, product_name, standard_price)
-VALUES ('2002', '04703', '01', 'Merry Edwards Pinot Noir', 6.99);
+VALUES ('2011', '04703', '01', 'Merry Edwards Pinot Noir', 6.99);
 INSERT INTO PRODUCT_BASIC_INFO (upc_number, subcommodity_number, department_number, product_name, standard_price)
-VALUES ('2004', '98418', '01', 'LA PREF Garbanzo Chickpeas', 2.29);
+VALUES ('2022', '98418', '01', 'LA PREF Garbanzo Chickpeas', 2.29);
 INSERT INTO PRODUCT_BASIC_INFO (upc_number, subcommodity_number, department_number, product_name, standard_price)
-VALUES ('2006', '27602', '01', 'Motts Fruit Snacks', 8.49);
+VALUES ('2033', '27602', '01', 'Motts Fruit Snacks', 8.49);
 INSERT INTO PRODUCT_BASIC_INFO (upc_number, subcommodity_number, department_number, product_name, standard_price)
-VALUES ('2008', '29465', '01', 'Honey Bunches Oats', 4.29);
+VALUES ('2044', '29465', '01', 'Honey Bunches Oats', 4.29);
+
+// For Product BOH Info
+INSERT INTO PRODUCT_BOH_INFO (division_number, store_number, upc_number,qod_number, qom_number)
+VALUES ( '014', '0045', '4011', 0, 0 );
+INSERT INTO PRODUCT_BOH_INFO (division_number, store_number, upc_number,qod_number, qom_number)
+VALUES ( '014', '0045', '4022', 0, 0 );
+INSERT INTO PRODUCT_BOH_INFO (division_number, store_number, upc_number,qod_number, qom_number)
+VALUES ( '014', '0045', '3011', 0, 0 );
+INSERT INTO PRODUCT_BOH_INFO (division_number, store_number, upc_number,qod_number, qom_number)
+VALUES ( '014', '0045', '3022', 0, 0 );
+INSERT INTO PRODUCT_BOH_INFO (division_number, store_number, upc_number,qod_number, qom_number)
+VALUES ( '014', '0045', '1011', 0, 0 );
+INSERT INTO PRODUCT_BOH_INFO (division_number, store_number, upc_number,qod_number, qom_number)
+VALUES ( '014', '0045', '1022', 0, 0 );
+INSERT INTO PRODUCT_BOH_INFO (division_number, store_number, upc_number,qod_number, qom_number)
+VALUES ( '014', '0045', '2011', 0, 0 );
+INSERT INTO PRODUCT_BOH_INFO (division_number, store_number, upc_number,qod_number, qom_number)
+VALUES ( '014', '0045', '2022', 0, 0 );
+INSERT INTO PRODUCT_BOH_INFO (division_number, store_number, upc_number,qod_number, qom_number)
+VALUES ( '014', '0045', '2033', 0, 0 );
+INSERT INTO PRODUCT_BOH_INFO (division_number, store_number, upc_number,qod_number, qom_number)
+VALUES ( '014', '0045', '2044', 0, 0 );
 

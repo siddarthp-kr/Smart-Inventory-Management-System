@@ -31,8 +31,8 @@ export class OrderPage {
     //Grocery
     {upc: '2011', name: 'Merry Edwards Pinot Noir', subCommodity: '04703'},
     {upc: '2022', name: 'LA PREF Garbanzo Chickpeas', subCommodity: '98418'},
-    {upc: '3033', name: 'Motts Fruit Animal Snacks', subCommodity: '27602'},
-    {upc: '3044', name: 'Honey Bunches Oats', subCommodity: '29465'}
+    {upc: '2033', name: 'Motts Fruit Animal Snacks', subCommodity: '27602'},
+    {upc: '2044', name: 'Honey Bunches Oats', subCommodity: '29465'}
   ];
 
   // Triggers the search when button clicked
