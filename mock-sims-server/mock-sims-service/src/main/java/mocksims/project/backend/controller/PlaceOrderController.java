@@ -3,8 +3,10 @@ package mocksims.project.backend.controller;
 import mocksims.project.backend.api.domain.PlaceOrderRequest;
 import mocksims.project.backend.api.domain.PlaceOrderResponse;
 import mocksims.project.backend.domain.MockSimsConstants;
+import mocksims.project.backend.exception.RowNotFoundException;
 import mocksims.project.backend.service.PlaceOrderService;
 import mocksims.project.backend.util.ValidationHelper;
+import org.springframework.dao.DataAccessException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,11 +31,17 @@ public class PlaceOrderController{
         ){
             try {
                 placeOrderResponse = placeOrderService.placeOrder(placeOrderRequest);
-            } catch (Exception e){
-                System.out.println("Error: could not place order. See below: ");
-                System.out.println(e.getMessage());
+            } catch (RowNotFoundException rowNotFoundException){
+                System.out.println("Error: Failed to place order. See details below: ");
+                System.out.println(rowNotFoundException.getMessage());
+                placeOrderResponse.setResponseCode(404);
+                placeOrderResponse.setResponseMessage("Error: product record is missing from database");
+            } catch (DataAccessException dataAccessException){
+                System.out.println("Error: Failed to place order. See details below: ");
+                System.out.println(dataAccessException.getMessage());
+                placeOrderResponse.setResponseCode(500);
+                placeOrderResponse.setResponseMessage("Error: server failed to place order");
             }
-
         } else {
             placeOrderResponse.setResponseCode(400);
             placeOrderResponse.setResponseMessage("Error: Order request has invalid parameters");

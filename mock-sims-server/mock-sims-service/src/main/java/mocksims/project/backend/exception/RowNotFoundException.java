@@ -7,9 +7,13 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class CustomException extends RuntimeException{
+public class RowNotFoundException extends RuntimeException{
 
     private int errorCode;
     private String errorMessage;
 
+    @Override
+    public String getMessage(){
+        return this.getErrorMessage();
+    }
 }
