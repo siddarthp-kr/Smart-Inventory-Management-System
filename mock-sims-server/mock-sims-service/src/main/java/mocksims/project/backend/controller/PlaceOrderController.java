@@ -27,7 +27,13 @@ public class PlaceOrderController{
                 && ValidationHelper.validateUserEuid(placeOrderRequest.getUserEuid())
                 && placeOrderRequest.getQuantity() > 0
         ){
-            placeOrderResponse = placeOrderService.placeOrder(placeOrderRequest);
+            try {
+                placeOrderResponse = placeOrderService.placeOrder(placeOrderRequest);
+            } catch (Exception e){
+                System.out.println("Error: could not place order. See below: ");
+                System.out.println(e.getMessage());
+            }
+
         } else {
             placeOrderResponse.setResponseCode(400);
             placeOrderResponse.setResponseMessage("Error: Order request has invalid parameters");

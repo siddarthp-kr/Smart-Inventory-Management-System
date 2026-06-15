@@ -2,6 +2,7 @@ package mocksims.project.backend.service;
 
 import mocksims.project.backend.api.domain.PlaceOrderRequest;
 import mocksims.project.backend.api.domain.PlaceOrderResponse;
+import mocksims.project.backend.exception.CustomException;
 import mocksims.project.backend.repository.PlaceOrderRepository;
 import org.apache.logging.log4j.Logger;
 import org.springframework.dao.DataAccessException;
@@ -25,11 +26,14 @@ public class PlaceOrderServiceImpl implements PlaceOrderService{
             placeOrderRepository.updateBohInfo(placeOrderRequest.getStoreNumber(), placeOrderRequest.getDivisionNumber(), placeOrderRequest.getUpcNumber(), placeOrderRequest.getQuantity());
             placeOrderRepository.updateOrderTransactionInfo(placeOrderRequest.getStoreNumber(), placeOrderRequest.getDivisionNumber(), placeOrderRequest.getUserEuid());
             placeOrderRepository.updateProductInventoryInfo(placeOrderRequest.getUpcNumber(), placeOrderRequest.getQuantity());
-        } catch (DataAccessException dataAccessException){
-            System.out.println("Error placing order");
+
+            placeOrderResponse.setResponseCode(200);
+            placeOrderResponse.setResponseMessage("Order placed successfully");
+        } catch (DataAccessException | CustomException exception){
+            //System.out.println("Error placing order");
             placeOrderResponse.setResponseCode(500);
             placeOrderResponse.setResponseMessage("Error: could not add new order to DB");
-            throw dataAccessException;
+            throw exception;
         }
 
         return placeOrderResponse;

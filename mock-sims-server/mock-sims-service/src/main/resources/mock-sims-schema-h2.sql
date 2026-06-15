@@ -10,6 +10,7 @@ CREATE TABLE ORDER_TRANSACTION_INFO
     order_received_time timestamp
 );
 
+
 CREATE TABLE MARKDOWN_RULES
 (
     subcommodity_number varchar(15) PRIMARY KEY,
