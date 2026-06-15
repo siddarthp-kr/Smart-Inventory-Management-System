@@ -44,23 +44,23 @@ VALUES ('2044', '29465', '01', 'Honey Bunches Oats', 4.29);
 
 // For Product BOH Info
 INSERT INTO PRODUCT_BOH_INFO (division_number, store_number, upc_number,qod_number, qom_number)
-VALUES ( '014', '0045', '4011', 0, 0 );
+VALUES ( '014', '00045', '4011', 0, 0 );
 INSERT INTO PRODUCT_BOH_INFO (division_number, store_number, upc_number,qod_number, qom_number)
-VALUES ( '014', '0045', '4022', 0, 0 );
+VALUES ( '014', '00045', '4022', 0, 0 );
 INSERT INTO PRODUCT_BOH_INFO (division_number, store_number, upc_number,qod_number, qom_number)
-VALUES ( '014', '0045', '3011', 0, 0 );
+VALUES ( '014', '00045', '3011', 0, 0 );
 INSERT INTO PRODUCT_BOH_INFO (division_number, store_number, upc_number,qod_number, qom_number)
-VALUES ( '014', '0045', '3022', 0, 0 );
+VALUES ( '014', '00045', '3022', 0, 0 );
 INSERT INTO PRODUCT_BOH_INFO (division_number, store_number, upc_number,qod_number, qom_number)
-VALUES ( '014', '0045', '1011', 0, 0 );
+VALUES ( '014', '00045', '1011', 0, 0 );
 INSERT INTO PRODUCT_BOH_INFO (division_number, store_number, upc_number,qod_number, qom_number)
-VALUES ( '014', '0045', '1022', 0, 0 );
+VALUES ( '014', '00045', '1022', 0, 0 );
 INSERT INTO PRODUCT_BOH_INFO (division_number, store_number, upc_number,qod_number, qom_number)
-VALUES ( '014', '0045', '2011', 0, 0 );
+VALUES ( '014', '00045', '2011', 0, 0 );
 INSERT INTO PRODUCT_BOH_INFO (division_number, store_number, upc_number,qod_number, qom_number)
-VALUES ( '014', '0045', '2022', 0, 0 );
+VALUES ( '014', '00045', '2022', 0, 0 );
 INSERT INTO PRODUCT_BOH_INFO (division_number, store_number, upc_number,qod_number, qom_number)
-VALUES ( '014', '0045', '2033', 0, 0 );
+VALUES ( '014', '00045', '2033', 0, 0 );
 INSERT INTO PRODUCT_BOH_INFO (division_number, store_number, upc_number,qod_number, qom_number)
-VALUES ( '014', '0045', '2044', 0, 0 );
+VALUES ( '014', '00045', '2044', 0, 0 );
 
