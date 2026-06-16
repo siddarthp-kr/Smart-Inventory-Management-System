@@ -69,7 +69,7 @@ public class AddItemServiceImpl implements AddItemService{
             response.setResponseMessage("Item added successfully");
 
         } catch (DuplicateKeyException error){
-            LOG.error("Add Item failed: duplicate key detected. UPC already exist.", error);
+            LOG.error("Add Item failed: duplicate key detected. UPC already exists.", error);
             // Set transaction for rollback to prevent insertion
             throw new MockSimsCustomException(500, "Error: Failed to add item - UPC already exists");
         } catch (DataIntegrityViolationException error){
