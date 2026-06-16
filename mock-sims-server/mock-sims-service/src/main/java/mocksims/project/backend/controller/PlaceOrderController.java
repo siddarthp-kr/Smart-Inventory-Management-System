@@ -36,7 +36,7 @@ public class PlaceOrderController{
         ){
             try {
                 placeOrderResponse = placeOrderService.placeOrder(placeOrderRequest);
-                LOG.info("Order placed succesfully");
+                LOG.info("Order placed successfully");
             } catch (RowNotFoundException rowNotFoundException){
                 LOG.error("Error: Failed to place order. See details below: ", rowNotFoundException);
                 placeOrderResponse.setResponseCode(404);
