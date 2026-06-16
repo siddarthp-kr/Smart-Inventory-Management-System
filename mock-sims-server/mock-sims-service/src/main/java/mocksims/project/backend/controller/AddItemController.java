@@ -42,8 +42,8 @@ public class AddItemController {
             } catch (MockSimsCustomException error){
                 LOG.error("Add Item request failed", error);
 
-                response.setResponseCode(error.getResponseCode());
-                response.setResponseMessage(error.getResponseMessage());
+                response.setResponseCode(error.getErrorCode());
+                response.setResponseMessage(error.getMessage());
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
             }
         }

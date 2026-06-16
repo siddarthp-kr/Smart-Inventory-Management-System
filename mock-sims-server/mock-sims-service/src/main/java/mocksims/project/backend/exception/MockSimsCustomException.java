@@ -1,20 +1,15 @@
 package mocksims.project.backend.exception;
 
 public class MockSimsCustomException extends RuntimeException {
-    private final int responseCode;
-    private final String responseMessage;
+    private final int errorCode;
 
-    public MockSimsCustomException(int responseCode, String responseMessage){
+    public MockSimsCustomException(int errorCode, String responseMessage){
         super(responseMessage);
-        this.responseCode = responseCode;
-        this.responseMessage = responseMessage;
+        this.errorCode = errorCode;
     }
 
-    public int getResponseCode(){
-        return responseCode;
+    public int getErrorCode(){
+        return errorCode;
     }
 
-    public String getResponseMessage(){
-        return responseMessage;
-    }
 }
