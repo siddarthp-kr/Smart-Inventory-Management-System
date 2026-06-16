@@ -14,10 +14,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-/*
-    Need to add asynchronous handling
-    Need to add custom exception for
- */
 @Repository
 public class PlaceOrderRepositoryImpl implements PlaceOrderRepository {
 
@@ -70,7 +66,6 @@ public class PlaceOrderRepositoryImpl implements PlaceOrderRepository {
 
     @Override
     public Long insertOrderTransactionInfo(String storeNumber, String divisionNumber, String userEuid, LocalDateTime timeOrderPlaced, LocalDateTime timeOrderReceived) throws DataAccessException{
-
 
         MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
                 .addValue(STORE_NUMBER, storeNumber)
