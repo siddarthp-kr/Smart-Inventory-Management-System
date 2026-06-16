@@ -1,8 +1,8 @@
 package mocksims.project.backend.service;
 
-import lombok.extern.java.Log;
 import mocksims.project.backend.api.domain.AddItemRequest;
 import mocksims.project.backend.api.domain.AddItemResponse;
+import mocksims.project.backend.exception.MockSimsCustomException;
 import mocksims.project.backend.repository.AddItemRepository;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -69,16 +69,15 @@ public class AddItemServiceImpl implements AddItemService{
             response.setResponseMessage("Item added successfully");
 
         } catch (DuplicateKeyException error){
-            LOG.error("Add Item failed: Duplicate key Detected. UPC already exist.", error);
+            LOG.error("Add Item failed: duplicate key detected. UPC already exist.", error);
             // Set transaction for rollback to prevent insertion
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            response.setResponseCode(500);
-            response.setResponseMessage("Error: Failed to add item - UPC already exists");
+            throw new MockSimsCustomException(500, "Error: Failed to add item - UPC already exists");
         } catch (DataIntegrityViolationException error){
             LOG.error("Add Item Failed: insert prevented for requested item. (Database integrity rule)", error);
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            response.setResponseCode(500);
-            response.setResponseMessage("Error: Failed to add item - Insertion Prevented");
+            throw new MockSimsCustomException(500, "Error: Failed to add item - Database integrity rule prevented insert");
+        } catch (DataAccessException error){
+            LOG.error("Add Item failed: database error.", error);
+            throw new MockSimsCustomException(500, "Error: Failed to add item");
         }
         return response;
     }
