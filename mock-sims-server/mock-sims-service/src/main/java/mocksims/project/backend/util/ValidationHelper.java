@@ -55,7 +55,7 @@ public class ValidationHelper {
     public static boolean validateUserEuid(String euid){
         boolean isValid = true;
 
-        isValid = euid.length() > 5 && euid.length() < 11;
+        isValid = euid != null && euid.length() > 5 && euid.length() < 11;
 
         return isValid;
     }
