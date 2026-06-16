@@ -1,5 +1,9 @@
-import { Component } from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import {Api, PlaceOrderResponse} from '../services/api';
+import { ChangeDetectorRef } from '@angular/core';
+import {AuthService} from '../services/auth';
+
 
 @Component({
   selector: 'app-order-page',
@@ -8,11 +12,20 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './template/OrderPageTemplate.html'
 })
 export class OrderPage {
+
+  ngOnInit() {
+    this.searchFunction()
+  }
+
   //Store what is typed in search
   search: string = '';
   message: string = '';
   results: any[] = [];
   isSuccess: boolean = false;
+
+  private api = inject(Api)
+  private auth = inject(AuthService)
+  constructor(private cd: ChangeDetectorRef){}
 
   //Hard-coded Products - (4-Departments)
   products = [
@@ -37,7 +50,7 @@ export class OrderPage {
 
   // Triggers the search when button clicked
   searchFunction(){
-    const feature = this.search.toLowerCase();
+    const feature = this.search.trim().toLowerCase();
     //checking filter for each product
     this.results = this.products.filter(
       // Checking to see if the name is contained within the search
@@ -59,21 +72,44 @@ export class OrderPage {
 
   // Create order action (mock version)
   // Triggers order action when button clicked
-  orderAction(product: any, quantity: number, messageInput: any){
+  async orderAction(product: any, quantity: number, messageInput: any){
+    const user = this.auth.user()
+    console.log(user)
     // Quantity must be valid to proceed
+    if(!user){
+      this.showMessage('Failed to place order. You must be logged in to place an order', false);
+      return;
+    }
     if(!quantity || quantity <= 0){
       this.showMessage ('Enter a valid quantity', false);
       return;
     }
 
-    const successOrder = true;
+    // do extra validation here
+    let orderResponse: PlaceOrderResponse
+    try {
+      orderResponse = await this.api.placeOrder(user.storeNumber, user.divisionNumber, user.userEuid, product.upc, quantity);
+    } catch (error){
+      orderResponse = {
+        responseCode: 503,
+        responseMessage: 'Failed to contact server'
+      }
+    }
+
+    console.log(orderResponse)
+
+    let successOrder = false
+    if(orderResponse.responseCode === 200){
+      successOrder = true
+    }
 
     // Displays message at top when placing an order including quantity and product name
     if (successOrder){
       this.showMessage(`Ordered ${quantity} ${product.name} successfully`, true);
     } else{
-      this.showMessage(`Failed to place order for ${product.name}`, false);
+      this.showMessage(`Failed to place order for ${product.name}. Error: ${orderResponse.responseCode}: ${orderResponse.responseMessage}`, false);
     }
+    this.cd.detectChanges()
     // Allows for clearing any input when order is placed
     messageInput.value = '';
   }
