@@ -3,10 +3,12 @@ package mocksims.project.backend.service;
 import mocksims.project.backend.api.domain.PlaceOrderRequest;
 import mocksims.project.backend.api.domain.PlaceOrderResponse;
 import mocksims.project.backend.repository.PlaceOrderRepository;
-import org.apache.logging.log4j.Logger;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 
 @Service
 public class PlaceOrderServiceImpl implements PlaceOrderService{
@@ -19,18 +21,25 @@ public class PlaceOrderServiceImpl implements PlaceOrderService{
 
     @Override
     @Transactional
-    public PlaceOrderResponse placeOrder(PlaceOrderRequest placeOrderRequest){
+    public PlaceOrderResponse placeOrder(PlaceOrderRequest placeOrderRequest) {
         PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
-        try {
-            placeOrderRepository.updateBohInfo(placeOrderRequest.getStoreNumber(), placeOrderRequest.getDivisionNumber(), placeOrderRequest.getUpcNumber(), placeOrderRequest.getQuantity());
-            placeOrderRepository.updateOrderTransactionInfo(placeOrderRequest.getStoreNumber(), placeOrderRequest.getDivisionNumber(), placeOrderRequest.getUserEuid());
-            placeOrderRepository.updateProductInventoryInfo(placeOrderRequest.getUpcNumber(), placeOrderRequest.getQuantity());
-        } catch (DataAccessException dataAccessException){
-            System.out.println("Error placing order");
-            placeOrderResponse.setResponseCode(500);
-            placeOrderResponse.setResponseMessage("Error: could not add new order to DB");
-            throw dataAccessException;
-        }
+        LocalDateTime timeOrderPlaced = LocalDateTime.now();
+        /* THIS IS HARDCODED, but can change to simulate real use-case */
+        LocalDateTime timeOrderReceived = timeOrderPlaced.plusMinutes(30);
+
+        placeOrderRepository.updateBohInfo(placeOrderRequest.getStoreNumber(), placeOrderRequest.getDivisionNumber(), placeOrderRequest.getUpcNumber(), placeOrderRequest.getQuantity());
+        long orderId = placeOrderRepository.insertOrderTransactionInfo(placeOrderRequest.getStoreNumber(), placeOrderRequest.getDivisionNumber(), placeOrderRequest.getUserEuid(), timeOrderPlaced, timeOrderReceived);
+
+        String subcommodityNumber = placeOrderRepository.getSubcommodityNumber(placeOrderRequest.getUpcNumber());
+        Integer numberOfDaysBeforeExpiration = placeOrderRepository.getNumberOfDaysBeforeExpiration(subcommodityNumber);
+
+        LocalDate expirationDate = timeOrderReceived.toLocalDate().plusDays(numberOfDaysBeforeExpiration);
+
+        placeOrderRepository.insertProductInventoryInfo(placeOrderRequest.getUpcNumber(), placeOrderRequest.getQuantity(), orderId, timeOrderReceived.toLocalDate(), expirationDate);
+
+        //This only runs if one of the above lines throws an error
+        placeOrderResponse.setResponseCode(200);
+        placeOrderResponse.setResponseMessage("Order placed successfully");
 
         return placeOrderResponse;
     }
