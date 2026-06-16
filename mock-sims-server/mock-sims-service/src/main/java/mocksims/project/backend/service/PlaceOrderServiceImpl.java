@@ -39,7 +39,7 @@ public class PlaceOrderServiceImpl implements PlaceOrderService{
 
         //This only runs if one of the above lines throws an error
         placeOrderResponse.setResponseCode(200);
-        placeOrderResponse.setResponseMessage("Order placed successfully");
+        placeOrderResponse.setResponseMessage("Order placed successfully"); // add order number in message in log
 
         return placeOrderResponse;
     }
