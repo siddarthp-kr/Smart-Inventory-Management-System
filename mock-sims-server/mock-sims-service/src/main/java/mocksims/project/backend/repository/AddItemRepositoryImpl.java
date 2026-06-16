@@ -1,6 +1,5 @@
 package mocksims.project.backend.repository;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
@@ -13,22 +12,25 @@ public class AddItemRepositoryImpl implements AddItemRepository {
     private static final Logger LOG = LoggerFactory.getLogger(AddItemRepositoryImpl.class);
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    /**
-     * Injecting JDBC
-     * @param namedParameterJdbcTemplate implemented to handle database insertion
-     */
     public AddItemRepositoryImpl(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
+
+    // Check if mark-down rule already exists for the subcommodity
+    private static final String CHECK_MARKDOWN_RULE_EXISTS = """
+        SELECT COUNT(*) FROM MARKDOWN_RULES
+        WHERE subcommodity_number = :subcommodity
+    """;
+
     // Insert mark-down rules
     private static final String INSERT_MARKDOWN_RULES = """
-                INSERT INTO MARKDOWN_RULES
-                (subcommodity_number, first_markdown_percent, can_be_marked_down,
-                 days_before_exp_to_markdown_number, days_before_exp_to_rfi_number,
-                 days_after_order_to_set_exp)
-                VALUES (:subcommodity, :percent, :canMarkdown, :daysMD, :daysRFI, :daysExp)
-            """;
+        INSERT INTO MARKDOWN_RULES
+        (subcommodity_number, first_markdown_percent, can_be_marked_down,
+         days_before_exp_to_markdown_number, days_before_exp_to_rfi_number,
+         days_after_order_to_set_exp)
+        VALUES (:subcommodity, :percent, :canMarkdown, :daysMD, :daysRFI, :daysExp)
+    """;
 
     // Insert product basic info
     private static final String INSERT_PRODUCT_BASIC = """
@@ -45,13 +47,29 @@ public class AddItemRepositoryImpl implements AddItemRepository {
     """;
 
     /**
+     * Checks if the mark-down rule already exists for the subcommodity
+     * @param subcommodityNumber set as an identifier for an item
+     * @return true if mark-down rule exists for the subcmmodity or false
+     */
+
+    @Override
+    public boolean markdownRuleExists(String subcommodityNumber) {
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("subcommodity", subcommodityNumber);
+
+        Integer count = namedParameterJdbcTemplate.queryForObject(CHECK_MARKDOWN_RULE_EXISTS, params, Integer.class);
+        return count != null && count > 0;
+    }
+
+    /**
      * Insert new row for mark-down rules
-     * @param subcommodityNumber
-     * @param firstMarkdownPercent
-     * @param canBeMarkedDown
-     * @param daysBeforeExpToMD
-     * @param daysBeforeExpToRFI
-     * @param daysAfterOrderToSetExp
+     * @param subcommodityNumber identifier for an item
+     * @param firstMarkdownPercent first mark-down percent that is applied
+     * @param canBeMarkedDown whether an item can be marked down or not
+     * @param daysBeforeExpToMD number of days before expiration to mark-down
+     * @param daysBeforeExpToRFI number of days before expiration to rfi
+     * @param daysAfterOrderToSetExp number opf days after the order to set the expiration
      */
     @Override
     public void insertMarkdownRules (String subcommodityNumber, int firstMarkdownPercent, boolean canBeMarkedDown, int daysBeforeExpToMD, int daysBeforeExpToRFI, int daysAfterOrderToSetExp){
@@ -70,11 +88,11 @@ public class AddItemRepositoryImpl implements AddItemRepository {
 
     /**
      * Insert new row for product basic info
-     * @param upcNumber
-     * @param subcommodityNumber
-     * @param departmentNumber
-     * @param productName
-     * @param standardPrice
+     * @param upcNumber upc number for each product
+     * @param subcommodityNumber links to the product
+     * @param departmentNumber department identity for product
+     * @param productName name of product
+     * @param standardPrice retail price of product
      */
     @Override
     public void insertProductBasicInfo(String upcNumber, String subcommodityNumber, String departmentNumber, String productName, double standardPrice){
@@ -91,9 +109,11 @@ public class AddItemRepositoryImpl implements AddItemRepository {
 
     /**
      * Insert new row for product BOH info
-     * @param divisionNumber
-     * @param storeNumber
-     * @param upcNumber
+     * QOD Default value of 0
+     * QOM Default value of 0
+     * @param divisionNumber hardcoded division number
+     * @param storeNumber hardcoded store number
+     * @param upcNumber upc number for each product
      */
     @Override
     public void insertProductBohInfo(String divisionNumber, String storeNumber, String upcNumber){

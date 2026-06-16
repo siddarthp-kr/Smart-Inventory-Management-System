@@ -15,17 +15,13 @@ import org.springframework.web.bind.annotation.*;
 public class AddItemController {
     private final AddItemService addItemService;
 
-    /**
-     * Constructor for Add Item Service
-     * @param addItemService process the requests
-     */
     public AddItemController(AddItemService addItemService) {
         this.addItemService = addItemService;
     }
 
     /**
      * Post request for add new item
-     * Validate the request parameters before sending request
+     * Validate the request parameters (UPC, division, store) before sending request
      * @param request for item contains, mark-down rules, and BOH info
      * @return the response entity for add item and Http status update
      */

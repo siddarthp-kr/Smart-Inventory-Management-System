@@ -1,9 +1,12 @@
 package mocksims.project.backend.service;
 
+import lombok.extern.java.Log;
 import mocksims.project.backend.api.domain.AddItemRequest;
 import mocksims.project.backend.api.domain.AddItemResponse;
 import mocksims.project.backend.repository.AddItemRepository;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
@@ -35,16 +38,20 @@ public class AddItemServiceImpl implements AddItemService{
         AddItemResponse response = new AddItemResponse();
     // Insert each in specific order
         try{
-            addItemRepository.insertMarkdownRules(
-                    addItemRequest.getSubcommodityNumber(),
-                    addItemRequest.getFirstMarkdownPercent(),
-                    addItemRequest.isCanBeMarkedDown(),
-                    addItemRequest.getDaysBeforeExpToMD(),
-                    addItemRequest.getDaysBeforeExpToRFI(),
-                    addItemRequest.getDaysAfterOrderToSetExp()
-            );
 
-            addItemRepository.insertProductBasicInfo(
+            if (!addItemRepository.markdownRuleExists(addItemRequest.getSubcommodityNumber())) {
+                addItemRepository.insertMarkdownRules(
+                        addItemRequest.getSubcommodityNumber(),
+                        addItemRequest.getFirstMarkdownPercent(),
+                        addItemRequest.isCanBeMarkedDown(),
+                        addItemRequest.getDaysBeforeExpToMD(),
+                        addItemRequest.getDaysBeforeExpToRFI(),
+                        addItemRequest.getDaysAfterOrderToSetExp()
+                );
+            }
+
+
+                addItemRepository.insertProductBasicInfo(
                     addItemRequest.getUpcNumber(),
                     addItemRequest.getSubcommodityNumber(),
                     addItemRequest.getDepartmentNumber(),
@@ -61,12 +68,17 @@ public class AddItemServiceImpl implements AddItemService{
             response.setResponseCode(200);
             response.setResponseMessage("Item added successfully");
 
-        } catch (DataAccessException error){
-            LOG.error("Error adding item", error);
+        } catch (DuplicateKeyException error){
+            LOG.error("Add Item failed: Duplicate key Detected. UPC already exist.", error);
             // Set transaction for rollback to prevent insertion
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             response.setResponseCode(500);
-            response.setResponseMessage("Error: Failed to add item");
+            response.setResponseMessage("Error: Failed to add item - UPC already exists");
+        } catch (DataIntegrityViolationException error){
+            LOG.error("Add Item Failed: insert prevented for requested item. (Database integrity rule)", error);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            response.setResponseCode(500);
+            response.setResponseMessage("Error: Failed to add item - Insertion Prevented");
         }
         return response;
     }
