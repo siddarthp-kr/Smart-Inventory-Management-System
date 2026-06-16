@@ -15,7 +15,7 @@ CREATE TABLE MARKDOWN_RULES
 (
     subcommodity_number varchar(15) PRIMARY KEY,
     first_markdown_percent int,
-    can_be_marked_down boolean,
+    can_be_marked_down boolean NOT NULL,
     days_before_exp_to_markdown_number int,
     days_before_exp_to_rfi_number int,
     days_after_order_to_set_exp int
@@ -47,6 +47,7 @@ CREATE TABLE PRODUCT_BOH_INFO
         REFERENCES PRODUCT_BASIC_INFO(upc_number)
 
 );
+
 
 CREATE TABLE PRODUCT_INVENTORY_INFO
 (
