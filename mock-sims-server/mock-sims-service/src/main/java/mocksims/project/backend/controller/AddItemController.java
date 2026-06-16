@@ -3,17 +3,22 @@ package mocksims.project.backend.controller;
 import mocksims.project.backend.api.domain.AddItemRequest;
 import mocksims.project.backend.api.domain.AddItemResponse;
 import mocksims.project.backend.domain.MockSimsConstants;
+import mocksims.project.backend.exception.MockSimsCustomException;
 import mocksims.project.backend.service.AddItemService;
 import mocksims.project.backend.util.ValidationHelper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping(value = "/api/items")
 @CrossOrigin(origins = "http://localhost:4200/")
 public class AddItemController {
     private final AddItemService addItemService;
+
+    private static final Logger LOG = LoggerFactory.getLogger(AddItemController.class);
 
     public AddItemController(AddItemService addItemService) {
         this.addItemService = addItemService;
@@ -30,13 +35,15 @@ public class AddItemController {
         AddItemResponse response = new AddItemResponse();
         //Validating fields before advancing to service layer
         if (ValidationHelper.validateUpcNumber(request.getUpcNumber()) && ValidationHelper.validateDivisionNumber(request.getDivisionNumber()) && ValidationHelper.validateStoreNumber(request.getStoreNumber())) {
-            response = addItemService.addItem(request);
 
-            //Return 200 success status code
-            if (response.getResponseCode() == 200){
+            try{
+                response = addItemService.addItem(request);
                 return ResponseEntity.ok(response);
-            //Return 500 for internal error
-            } else{
+            } catch (MockSimsCustomException error){
+                LOG.error("Add Item request failed", error);
+
+                response.setResponseCode(error.getErrorCode());
+                response.setResponseMessage(error.getMessage());
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
             }
         }
