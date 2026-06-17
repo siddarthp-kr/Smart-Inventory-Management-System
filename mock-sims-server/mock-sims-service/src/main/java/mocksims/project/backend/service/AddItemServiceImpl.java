@@ -71,10 +71,10 @@ public class AddItemServiceImpl implements AddItemService{
         } catch (DuplicateKeyException error){
             LOG.error("Add Item failed: duplicate key detected. UPC already exists.", error);
             // Set transaction for rollback to prevent insertion
-            throw new MockSimsCustomException(500, "Error: Failed to add item - UPC already exists");
+            throw new MockSimsCustomException(409, "Error: Failed to add item - UPC already exists");
         } catch (DataIntegrityViolationException error){
             LOG.error("Add Item Failed: insert prevented for requested item. (Database integrity rule)", error);
-            throw new MockSimsCustomException(500, "Error: Failed to add item - Database integrity rule prevented insert");
+            throw new MockSimsCustomException(400, "Error: Failed to add item - Database integrity rule prevented insert");
         } catch (DataAccessException error){
             LOG.error("Add Item failed: database error.", error);
             throw new MockSimsCustomException(500, "Error: Failed to add item");
