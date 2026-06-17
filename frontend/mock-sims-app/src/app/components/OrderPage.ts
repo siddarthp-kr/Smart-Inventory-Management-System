@@ -92,7 +92,8 @@ export class OrderPage {
     } catch (error){
       orderResponse = {
         responseCode: 503,
-        responseMessage: 'Failed to contact server'
+        responseMessage: 'Failed to contact server',
+        orderId: -1
       }
     }
 
@@ -105,9 +106,9 @@ export class OrderPage {
 
     // Displays message at top when placing an order including quantity and product name
     if (successOrder){
-      this.showMessage(`Ordered ${quantity} ${product.name} successfully`, true);
+      this.showMessage(`Order placed successfully! Product: ${product.name} | Quantity: ${quantity} | Order ID: ${orderResponse.orderId}`, true);
     } else{
-      this.showMessage(`Failed to place order for ${product.name}. Error: ${orderResponse.responseCode}: ${orderResponse.responseMessage}`, false);
+      this.showMessage(`Failed to place order for ${product.name}. Error: ${orderResponse.responseCode} ${orderResponse.responseMessage}`, false);
     }
     this.cd.detectChanges()
     // Allows for clearing any input when order is placed
