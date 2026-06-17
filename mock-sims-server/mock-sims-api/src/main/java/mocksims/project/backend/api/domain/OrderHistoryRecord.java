@@ -1,10 +1,10 @@
-package mocksims.project.backend.domain;
+package mocksims.project.backend.api.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 public class OrderHistoryRecord {
     Integer orderId;
     String userEuid;
-    LocalDateTime orderPlacedTime;
-    LocalDateTime orderReceivedTime;
+    LocalDate orderPlacedDate;
     String upcNumber;
+    String productName;
     Integer quantity;
 }
