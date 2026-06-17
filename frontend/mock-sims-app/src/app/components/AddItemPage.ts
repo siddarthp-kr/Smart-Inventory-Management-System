@@ -27,7 +27,7 @@ export class AddItemPage{
   daysBeforeExpToRFI: number | null = null;
   daysAfterOrderToSetExp: number | null = null;
 
-  // UI response
+
   message: string = '';
   isSuccess: boolean = false;
 
@@ -87,13 +87,13 @@ export class AddItemPage{
     }
   }
 
-  // Validating the required fields
+  // Validates the required fields
   validateForm(): boolean {
     this.resetValidationFlags();
 
     let isValid = true;
 
-    // Required + specific expected values
+    // This is for value specification
     if (!this.upcNumber || this.upcNumber.trim() === '') {
       this.invalidUpcNumber = true;
       isValid = false;
