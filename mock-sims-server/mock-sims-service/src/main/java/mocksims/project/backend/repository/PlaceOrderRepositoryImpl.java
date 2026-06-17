@@ -1,6 +1,10 @@
 package mocksims.project.backend.repository;
 
+import mocksims.project.backend.exception.MockSimsCustomException;
 import mocksims.project.backend.exception.RowNotFoundException;
+import mocksims.project.backend.service.PlaceOrderServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -15,6 +19,8 @@ import java.util.Objects;
 
 @Repository
 public class PlaceOrderRepositoryImpl implements PlaceOrderRepository {
+
+    private static final Logger LOG = LoggerFactory.getLogger(PlaceOrderRepositoryImpl.class);
 
     private static final String QUANTITY = "QUANTITY";
     private static final String UPC_NUMBER = "UPC_NUMBER";
@@ -56,10 +62,16 @@ public class PlaceOrderRepositoryImpl implements PlaceOrderRepository {
                 .addValue(STORE_NUMBER, storeNumber)
                 .addValue(DIVISION_NUMBER, divisionNumber);
 
-        int numRowsUpdated = namedParameterJdbcTemplate.update(SQL_UPDATE_BOH_INFO, mapSqlParameterSource);
+        int numRowsUpdated = 0;
+
+        try {
+            numRowsUpdated = namedParameterJdbcTemplate.update(SQL_UPDATE_BOH_INFO, mapSqlParameterSource);
+        } catch (DataAccessException e) {
+            throw new MockSimsCustomException(500, e.getMessage());
+        }
 
         if(numRowsUpdated == 0){
-            throw new RowNotFoundException(404, "Error: BOH information record for product " + upcNumber + " does not exist at store " + storeNumber + " in division " + divisionNumber);
+            throw new MockSimsCustomException(404, "Row Not Found: BOH information record for product " + upcNumber + " does not exist at store " + storeNumber + " in division " + divisionNumber);
         }
     }
 
@@ -75,19 +87,26 @@ public class PlaceOrderRepositoryImpl implements PlaceOrderRepository {
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        namedParameterJdbcTemplate.update(SQL_INSERT_ORDER_TRANSACTION_INFO, mapSqlParameterSource, keyHolder, new String[] {"product_order_id"});
+        try {
+            namedParameterJdbcTemplate.update(SQL_INSERT_ORDER_TRANSACTION_INFO, mapSqlParameterSource, keyHolder, new String[] {"product_order_id"});
+        } catch (DataAccessException e){
+            throw new MockSimsCustomException(500, "Failed to perform order placed by user " + userEuid + " at " + timeOrderPlaced.toString() + ". " + e.getMessage());
+        }
+
 
         Number key = keyHolder.getKey();
 
+        LOG.info("Inserted order transaction successfully. ID: {}, User: {}, Time: {}", key, userEuid, timeOrderPlaced);
+
         if(key == null){
-            throw new IllegalStateException("Error: Could not retrieve product_order_id for order");
+            throw new MockSimsCustomException(500, "Could not retrieve product_order_id for order place by user " + userEuid + " at " + timeOrderPlaced.toString() + ".");
         }
 
         return key.longValue();
     }
 
     @Override
-    public void insertProductInventoryInfo(String upcNumber, int quantity, long orderId, LocalDate orderDate, LocalDate expirationDate) throws DataAccessException {
+    public void insertProductInventoryInfo(String upcNumber, int quantity, long orderId, LocalDate orderDate, LocalDate expirationDate, boolean orderIsActive) throws DataAccessException {
 
         MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
                 .addValue(PRODUCT_ORDER_ID, orderId)
@@ -95,16 +114,27 @@ public class PlaceOrderRepositoryImpl implements PlaceOrderRepository {
                 .addValue(QUANTITY, quantity)
                 .addValue(EXPIRATION_DATE, expirationDate)
                 .addValue(ORDER_DATE, orderDate)
-                .addValue(IS_ACTIVE, true);
+                .addValue(IS_ACTIVE, orderIsActive);
 
-        namedParameterJdbcTemplate.update(SQL_INSERT_PRODUCT_INVENTORY_INFO, mapSqlParameterSource);
+        try {
+            namedParameterJdbcTemplate.update(SQL_INSERT_PRODUCT_INVENTORY_INFO, mapSqlParameterSource);
+        } catch (DataAccessException e){
+            throw new MockSimsCustomException(500, "Failed to insert product inventory info for order " + orderId + ". " + e.getMessage());
+        }
 
     }
 
     @Override
     public String getSubcommodityNumber(String upcNumber) throws DataAccessException {
         MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource().addValue(UPC_NUMBER, upcNumber);
-        String subcommodityNumber = namedParameterJdbcTemplate.queryForObject(SQL_QUERY_PRODUCT_BASIC_INFO_SUBCOMMODITY_NUMBER, mapSqlParameterSource, String.class);
+
+        String subcommodityNumber = "";
+
+        try {
+            subcommodityNumber = namedParameterJdbcTemplate.queryForObject(SQL_QUERY_PRODUCT_BASIC_INFO_SUBCOMMODITY_NUMBER, mapSqlParameterSource, String.class);
+        } catch (DataAccessException e){
+            throw new MockSimsCustomException(500, "Failed to get subcommodity for upc " + upcNumber + ". " + e.getMessage());
+        }
 
         return subcommodityNumber;
     }
@@ -112,7 +142,14 @@ public class PlaceOrderRepositoryImpl implements PlaceOrderRepository {
     @Override
     public Integer getNumberOfDaysBeforeExpiration(String subcommodityNumber) {
         MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource().addValue(SUBCOMMODITY_NUMBER, subcommodityNumber);
-        Integer numberOfDaysBeforeExpiration = namedParameterJdbcTemplate.queryForObject(SQL_QUERY_MD_RULES_EXPIRATION_DATE, mapSqlParameterSource, Integer.class);
+
+        Integer numberOfDaysBeforeExpiration = 0;
+
+        try{
+            numberOfDaysBeforeExpiration = namedParameterJdbcTemplate.queryForObject(SQL_QUERY_MD_RULES_EXPIRATION_DATE, mapSqlParameterSource, Integer.class);
+        } catch (DataAccessException e){
+            throw new MockSimsCustomException(500, "Failed to get day number for subcommodity " + subcommodityNumber + ". " + e.getMessage());
+        }
 
         return numberOfDaysBeforeExpiration;
     }

@@ -5,7 +5,8 @@ import {first, firstValueFrom} from 'rxjs';
 
 export interface PlaceOrderResponse {
   responseCode: number,
-  responseMessage: string
+  responseMessage: string,
+  orderId: number
 }
 export interface AddItemResponse{
   responseCode: number;

@@ -7,6 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlaceOrderResponse {
-    int responseCode;
+    Integer responseCode;
     String responseMessage;
+    Long orderId;
 }

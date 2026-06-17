@@ -11,5 +11,5 @@ public class PlaceOrderRequest {
     String divisionNumber;
     String userEuid;
     String upcNumber;
-    int quantity;
+    Integer quantity;
 }
