@@ -1,5 +1,6 @@
 package mocksims.project.backend.repository;
 
+import mocksims.project.backend.exception.RowNotFoundException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
