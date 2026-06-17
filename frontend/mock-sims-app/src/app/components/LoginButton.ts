@@ -1,35 +1,25 @@
-import { Component, inject, OnInit} from '@angular/core';
-import {Router, RouterLink} from '@angular/router';
-import { AuthService} from '../services/auth';
+import { Component, inject } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../services/auth';
 
 @Component({
+  selector: 'login-button',
+  standalone: true,
+  imports: [RouterLink],
   template: `
-    @if(this.isLoggedIn){
-      <button class="login-btn" routerLink="/LoginPage">Login</button>
-    } @else {
+    @if (auth.isLoggedIn()) {
       <button class="login-btn" (click)="handleLogout()">Logout</button>
+    } @else {
+      <button class="login-btn" routerLink="/LoginPage">Login</button>
     }
-    `,
-  selector: `login-button`,
-  imports: [
-    RouterLink
-  ],
-  standalone: true
+  `,
 })
 export class LoginButton {
-// make it so that this button switches to logout if logged in
-  private router = inject(Router)
-  private auth = inject(AuthService)
-  private user = this.auth.user()
-  public isLoggedIn = false
-  ngOnInit(){
-    this.isLoggedIn = this.user === null
-  }
+  protected auth = inject(AuthService);
+  private router = inject(Router);
 
-  handleLogout(){
-    this.auth.logout()
-    this.isLoggedIn = false
-    this.router.navigate(['/Dashboard'])
+  handleLogout() {
+    this.auth.logout();
+    this.router.navigate(['/Dashboard']);
   }
-
 }
