@@ -34,7 +34,7 @@ public class OrderHistoryRepositoryImpl implements OrderHistoryRepository {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    public OrderHistoryRepositoryImpl(JdbcTemplate jdbcTemplate) throws MockSimsCustomException{
+    public OrderHistoryRepositoryImpl(JdbcTemplate jdbcTemplate){
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(Objects.requireNonNull(jdbcTemplate.getDataSource()));
     }
 

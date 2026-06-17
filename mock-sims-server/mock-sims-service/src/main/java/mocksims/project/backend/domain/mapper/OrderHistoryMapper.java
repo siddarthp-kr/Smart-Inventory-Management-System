@@ -16,6 +16,7 @@ public class OrderHistoryMapper implements RowMapper<OrderHistoryRecord> {
     private static final String PRODUCT_NAME = "product_name";
     private static final String QUANTITY = "quantity";
 
+    @Override
     public OrderHistoryRecord mapRow(ResultSet rs, int index) throws SQLException {
         OrderHistoryRecord orderHistoryRecord = new OrderHistoryRecord();
 

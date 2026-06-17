@@ -28,6 +28,9 @@ public class OrderHistoryController {
 
     @GetMapping(value = ORDER_HISTORY_ENDPOINT)
     public OrderHistoryResponse getOrderHistory(OrderHistoryRequest orderHistoryRequest){
+
+        //validate request
+
         OrderHistoryResponse orderHistoryResponse = new OrderHistoryResponse();
         try {
             orderHistoryResponse = this.orderHistoryService.getOrderHistory(orderHistoryRequest);
