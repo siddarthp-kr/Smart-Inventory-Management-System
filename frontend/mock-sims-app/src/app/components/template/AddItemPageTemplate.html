@@ -39,29 +39,36 @@
       <input type = "number" [(ngModel)] = "standardPrice" placeholder="Enter Standard Price" [class.invalid-field] = "invalidStandardPrice" />
     </div>
 
-    <div class = "form-group">
-      <label>First Markdown Percent</label>
-      <input type = "number" [(ngModel)] = "firstMarkdownPercent" placeholder="Enter Markdown Percent" />
+    <div class="form-group">
+      <label>Can Be Marked Down</label>
+      <select
+        [(ngModel)]="canBeMarkedDown"
+        (ngModelChange)="onCanBeMarkedDownChange()"
+      >
+        <option [ngValue]="false">No</option>
+        <option [ngValue]="true">Yes</option>
+      </select>
     </div>
 
-    <div class = "form-group checkbox-group">
-      <label>
-        <input type = "checkbox" [(ngModel)] = "canBeMarkedDown" /> Can Be Marked Down </label>
+    <div class = "form-group">
+      <label>First Markdown Percent</label>
+      <input type = "number" [(ngModel)] = "firstMarkdownPercent" placeholder="Enter Markdown Percent" [disabled]="!canBeMarkedDown" [class.disabled-field] = "!canBeMarkedDown" [class.invalid-field]="invalidFirstMarkdownPercent"/>
     </div>
+
 
     <div class = "form-group">
       <label>Days Before Expiration To Markdown</label>
-      <input type = "number" [(ngModel)] = "daysBeforeExpToMD" placeholder="Enter days" />
+      <input type = "number" [(ngModel)] = "daysBeforeExpToMD" placeholder="Enter days" [disabled]="!canBeMarkedDown" [class.disabled-field] = "!canBeMarkedDown" [class.invalid-field]="invalidDaysBeforeExpToMD" />
     </div>
 
     <div class = "form-group">
       <label>Days Before Expiration To RFI</label>
-      <input type = "number" [(ngModel)] = "daysBeforeExpToRFI" placeholder="Enter days" />
+      <input type = "number" [(ngModel)] = "daysBeforeExpToRFI" placeholder="Enter days" [disabled]="!canBeMarkedDown" [class.disabled-field] = "!canBeMarkedDown" [class.invalid-field]="invalidDaysBeforeExpToRFI" />
     </div>
 
     <div class = "form-group">
-      <label>Days After Order Expiration</label>
-      <input type = "number" [(ngModel)] = "daysAfterOrderToSetExp" placeholder="Enter days" />
+      <label>Days After Order To Set Expiration</label>
+      <input type = "number" [(ngModel)] = "daysAfterOrderToSetExp" placeholder="Enter days" [disabled]="!canBeMarkedDown" [class.disabled-field] = "!canBeMarkedDown" [class.invalid-field]="invalidDaysAfterOrderToSetExp"/>
     </div>
   </div>
 
@@ -96,8 +103,12 @@
     padding: 8px;
   }
 
-  .checkbox-group{
-    justify-content: center;
+  .form-group select {
+    padding: 8px;
+    border: 1px solid;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .actions{
@@ -130,6 +141,12 @@
   .invalid-field {
     border: 2px solid red;
     background-color: #fff5f5;
+  }
+
+  .disabled-field {
+    background-color: #f0f0f0;
+    color: #777;
+    cursor: not-allowed;
   }
 
 </style>

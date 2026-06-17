@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { inject } from '@angular/core';
-import {first, firstValueFrom} from 'rxjs';
+import {firstValueFrom} from 'rxjs';
 
 export interface PlaceOrderResponse {
   responseCode: number,
@@ -37,7 +37,7 @@ export class Api {
     return result
   }
 
-  async addItem(storeNumber: string, divisionNumber: string, upcNumber: string, subcommodityNumber: string, departmentNumber: string, productName: string, standardPrice: number, firstMarkdownPercent: number, canBeMarkedDown: boolean, daysBeforeExpToMD: number, daysBeforeExpToRFI: number, daysAfterOrderToSetExp: number): Promise<AddItemResponse>{
+  async addItem(storeNumber: string, divisionNumber: string, upcNumber: string, subcommodityNumber: string, departmentNumber: string, productName: string, standardPrice: number, firstMarkdownPercent: number | null, canBeMarkedDown: boolean, daysBeforeExpToMD: number | null, daysBeforeExpToRFI: number | null, daysAfterOrderToSetExp: number| null): Promise<AddItemResponse>{
     const requestBody = {
       storeNumber: storeNumber,
       divisionNumber: divisionNumber,

@@ -39,11 +39,17 @@ public class AddItemServiceImpl implements AddItemService{
     // Insert each in specific order
         try{
 
+            if (Boolean.TRUE.equals(addItemRequest.getCanBeMarkedDown())){
+                if (addItemRequest.getFirstMarkdownPercent() == null || addItemRequest.getDaysBeforeExpToMD() == null || addItemRequest.getDaysBeforeExpToRFI() == null || addItemRequest.getDaysAfterOrderToSetExp() == null){
+                    throw  new MockSimsCustomException(400, "Error: Markdown fields are required when item can be marked down");
+                }
+            }
+
             if (!addItemRepository.markdownRuleExists(addItemRequest.getSubcommodityNumber())) {
                 addItemRepository.insertMarkdownRules(
                         addItemRequest.getSubcommodityNumber(),
                         addItemRequest.getFirstMarkdownPercent(),
-                        addItemRequest.isCanBeMarkedDown(),
+                        addItemRequest.getCanBeMarkedDown(),
                         addItemRequest.getDaysBeforeExpToMD(),
                         addItemRequest.getDaysBeforeExpToRFI(),
                         addItemRequest.getDaysAfterOrderToSetExp()
