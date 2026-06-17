@@ -1,0 +1,135 @@
+<div class = "add-item-container">
+  <h2>Add Item</h2>
+
+  @if (message !== '' && isSuccess){
+    <div class = "message-box success">
+      {{ message }}
+    </div>
+  }
+
+  @if (message !== '' && !isSuccess){
+    <div class = "message-box invalid">
+      {{ message }}
+    </div>
+  }
+
+  <div class = "form-grid">
+    <div class = "form-group">
+      <label>UPC Number</label>
+      <input type = "text" [(ngModel)] = "upcNumber" placeholder="Enter UPC Number" [class.invalid-field] = "invalidUpcNumber" />
+    </div>
+
+    <div class = "form-group">
+      <label>Subcommodity Number</label>
+      <input type = "text" [(ngModel)] = "subcommodityNumber" placeholder="Enter Subcommodity Number" [class.invalid-field] = "invalidSubcommodityNumber" />
+    </div>
+
+    <div class = "form-group">
+      <label>Department Number</label>
+      <input type = "text" [(ngModel)] = "departmentNumber" placeholder="Enter Department Number" [class.invalid-field] = "invalidDepartmentNumber" />
+    </div>
+
+    <div class = "form-group">
+      <label>Product Name</label>
+      <input type = "text" [(ngModel)] = "productName" placeholder="Enter Product Name" [class.invalid-field] = "invalidProductName"/>
+    </div>
+
+    <div class = "form-group">
+      <label>Standard Price</label>
+      <input type = "number" [(ngModel)] = "standardPrice" placeholder="Enter Standard Price" [class.invalid-field] = "invalidStandardPrice" />
+    </div>
+
+    <div class = "form-group">
+      <label>First Markdown Percent</label>
+      <input type = "number" [(ngModel)] = "firstMarkdownPercent" placeholder="Enter Markdown Percent" />
+    </div>
+
+    <div class = "form-group checkbox-group">
+      <label>
+        <input type = "checkbox" [(ngModel)] = "canBeMarkedDown" /> Can Be Marked Down </label>
+    </div>
+
+    <div class = "form-group">
+      <label>Days Before Expiration To Markdown</label>
+      <input type = "number" [(ngModel)] = "daysBeforeExpToMD" placeholder="Enter days" />
+    </div>
+
+    <div class = "form-group">
+      <label>Days Before Expiration To RFI</label>
+      <input type = "number" [(ngModel)] = "daysBeforeExpToRFI" placeholder="Enter days" />
+    </div>
+
+    <div class = "form-group">
+      <label>Days After Order Expiration</label>
+      <input type = "number" [(ngModel)] = "daysAfterOrderToSetExp" placeholder="Enter days" />
+    </div>
+  </div>
+
+  <div class = "actions">
+    <button (click) = "addItemAction()">Add Item</button>
+  </div>
+</div>
+
+<style>
+  .add-item-container{
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .form-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-group label {
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+
+  .form-group input{
+    padding: 8px;
+  }
+
+  .checkbox-group{
+    justify-content: center;
+  }
+
+  .actions{
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+  }
+
+  .actions button{
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+
+  .message-box{
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+  }
+
+  .success{
+    background-color: #e8f5e9;
+    border-color: green;
+  }
+
+  .invalid{
+    background-color: #ffe5e5;
+    border-color: red;
+  }
+
+  .invalid-field {
+    border: 2px solid red;
+    background-color: #fff5f5;
+  }
+
+</style>

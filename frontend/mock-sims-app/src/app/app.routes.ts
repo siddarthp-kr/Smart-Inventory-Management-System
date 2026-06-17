@@ -4,6 +4,7 @@ import { Dashboard } from './pages/Dashboard';
 import { OrderPage } from './components/OrderPage';
 import { BohPage } from './components/BohPage';
 import { AlertsPage } from './components/AlertsPage';
+import {AddItemPage} from './components/AddItemPage';
 
 
 export const routes: Routes = [
@@ -26,6 +27,11 @@ export const routes: Routes = [
     path: 'OrderPage',
     title: "SIMS Ordering",
     component: OrderPage
+  },
+  {
+    path: 'AddItemPage',
+    title: "SIMS Add Item",
+    component: AddItemPage
   },
   {
     path: 'BohPage',

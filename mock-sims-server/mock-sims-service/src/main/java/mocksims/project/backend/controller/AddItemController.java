@@ -44,7 +44,7 @@ public class AddItemController {
 
                 response.setResponseCode(error.getErrorCode());
                 response.setResponseMessage(error.getMessage());
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+                return ResponseEntity.status(error.getErrorCode()).body(response);
             }
         }
         //Return 400 for failed validation
