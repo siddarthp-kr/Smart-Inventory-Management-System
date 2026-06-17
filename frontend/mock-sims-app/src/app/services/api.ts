@@ -5,7 +5,8 @@ import { firstValueFrom } from 'rxjs';
 
 export interface PlaceOrderResponse {
   responseCode: number,
-  responseMessage: string
+  responseMessage: string,
+  orderId: number
 }
 @Injectable({ providedIn: 'root' })
 export class Api {

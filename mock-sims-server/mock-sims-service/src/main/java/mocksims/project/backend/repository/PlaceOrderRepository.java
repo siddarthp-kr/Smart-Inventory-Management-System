@@ -58,10 +58,12 @@ public interface PlaceOrderRepository {
      *      The date on which the order was placed
      * @param expirationDate
      *      The date on which the ordered product is set to expire
+     * @param orderIsActive
+     *      Whether or not the record should have a PDM alert created for it
      * @throws DataAccessException
      *      If an error occurs while accessing the database
      */
-    public void insertProductInventoryInfo(String upcNumber, int quantity, long orderId, LocalDate orderDate, LocalDate expirationDate);
+    public void insertProductInventoryInfo(String upcNumber, int quantity, long orderId, LocalDate orderDate, LocalDate expirationDate, boolean orderIsActive);
 
     /**
      * Retrieves the subcommodity number associated with a given product from the PRODUCT_BASIC_INFO table.
