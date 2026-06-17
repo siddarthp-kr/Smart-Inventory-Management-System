@@ -1,11 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { inject } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import {first, firstValueFrom} from 'rxjs';
 
 export interface PlaceOrderResponse {
   responseCode: number,
   responseMessage: string
+}
+export interface AddItemResponse{
+  responseCode: number;
+  responseMessage: string;
 }
 @Injectable({ providedIn: 'root' })
 export class Api {
@@ -31,4 +35,30 @@ export class Api {
     console.log(result)
     return result
   }
+
+  async addItem(storeNumber: string, divisionNumber: string, upcNumber: string, subcommodityNumber: string, departmentNumber: string, productName: string, standardPrice: number, firstMarkdownPercent: number, canBeMarkedDown: boolean, daysBeforeExpToMD: number, daysBeforeExpToRFI: number, daysAfterOrderToSetExp: number): Promise<AddItemResponse>{
+    const requestBody = {
+      storeNumber: storeNumber,
+      divisionNumber: divisionNumber,
+      upcNumber: upcNumber,
+      subcommodityNumber: subcommodityNumber,
+      departmentNumber: departmentNumber,
+      productName: productName,
+      standardPrice: standardPrice,
+      firstMarkdownPercent: firstMarkdownPercent,
+      canBeMarkedDown: canBeMarkedDown,
+      daysBeforeExpToMD: daysBeforeExpToMD,
+      daysBeforeExpToRFI: daysBeforeExpToRFI,
+      daysAfterOrderToSetExp: daysAfterOrderToSetExp
+    };
+
+    let result: AddItemResponse = await firstValueFrom(
+      this.http.post<AddItemResponse>('http://localhost:8080/api/items/add-item', requestBody)
+    );
+
+    console.log(result)
+    return result;
+  }
+
+
 }

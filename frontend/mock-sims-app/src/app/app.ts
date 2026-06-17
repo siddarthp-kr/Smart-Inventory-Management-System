@@ -17,6 +17,7 @@ import {LoginButton} from './components/LoginButton';
       <nav class = "nav-bar">
         <a routerLink="/Dashboard">Dashboard</a>
         <a routerLink="/OrderPage">Ordering</a>
+        <a routerLink="/AddItemPage">Add Item</a>
         <a routerLink="/BohPage">BOH</a>
         <a routerLink="/AlertsPage">Alerts</a>
       </nav>
