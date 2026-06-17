@@ -5,6 +5,7 @@
     <input
       type = "text"
       [(ngModel)]="search"
+      (ngModelChange)="searchFunction()"
       placeholder="Search by name/UPC..."
     />
     <button (click)="searchFunction()">Search</button>

@@ -1,4 +1,4 @@
-// For Mark Down
+--For Mark Down
 INSERT INTO MARKDOWN_RULES
 VALUES ('62000', 20, TRUE, 1, 2, 3);
 INSERT INTO MARKDOWN_RULES
@@ -20,7 +20,7 @@ VALUES ('27602', 20, TRUE, 1, 2, 3);
 INSERT INTO MARKDOWN_RULES
 VALUES ('29465', 20, TRUE, 1, 2, 3);
 
-// For Product Basic Info
+--For Product Basic Info
 INSERT INTO PRODUCT_BASIC_INFO (upc_number, subcommodity_number, department_number, product_name, standard_price)
 VALUES ('4011', '62000', '07', 'Bananas', 0.75);
 INSERT INTO PRODUCT_BASIC_INFO (upc_number, subcommodity_number, department_number, product_name, standard_price)
@@ -42,7 +42,7 @@ VALUES ('2033', '27602', '01', 'Motts Fruit Snacks', 8.49);
 INSERT INTO PRODUCT_BASIC_INFO (upc_number, subcommodity_number, department_number, product_name, standard_price)
 VALUES ('2044', '29465', '01', 'Honey Bunches Oats', 4.29);
 
-// For Product BOH Info
+--For Product BOH Info
 INSERT INTO PRODUCT_BOH_INFO (division_number, store_number, upc_number,qod_number, qom_number)
 VALUES ( '014', '00045', '4011', 0, 0 );
 INSERT INTO PRODUCT_BOH_INFO (division_number, store_number, upc_number,qod_number, qom_number)

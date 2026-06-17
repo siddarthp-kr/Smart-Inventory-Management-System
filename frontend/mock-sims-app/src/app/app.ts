@@ -2,15 +2,16 @@ import {ChangeDetectorRef, Component, signal} from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { LoginPage} from './components/LoginPage';
 import {Dashboard} from './pages/Dashboard';
+import {LoginButton} from './components/LoginButton';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLink, LoginPage],
+  imports: [RouterOutlet, RouterLink, RouterLink, LoginPage, LoginButton],
   template: `
       <div class = "top-bar">
         <h2>Smart Inventory System</h2>
-        <button class = "login-btn" routerLink="/LoginPage">Login</button>
+        <login-button />
       </div>
 
       <nav class = "nav-bar">
