@@ -11,7 +11,7 @@ export interface PlaceOrderResponse {
 
 
 export interface OrderHistoryRecord {
-  productOrderId: number,
+  orderId: number,
   userEuid: string,
   orderPlacedDate: string,
   upcNumber: string,
@@ -22,7 +22,7 @@ export interface OrderHistoryRecord {
 export interface OrderHistoryResponse {
   responseCode: number,
   responseMessage: string,
-  orderHistoryRecords: Array<OrderHistoryRecord>
+  orders: Array<OrderHistoryRecord>
 }
 
 export interface AddItemResponse{
@@ -50,8 +50,6 @@ export class Api {
       this.http.post<PlaceOrderResponse>('http://localhost:8080/api/order/place-order', requestBody)
     )
 
-    console.log(result)
-    console.log(this.getOrderHistory('00045','014'))
     return result
   }
 
@@ -88,7 +86,6 @@ export class Api {
       this.http.post<AddItemResponse>('http://localhost:8080/api/items/add-item', requestBody)
     );
 
-    console.log(result)
     return result;
   }
 

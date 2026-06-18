@@ -14,7 +14,7 @@
       type="text"
       [(ngModel)]="search"
       (ngModelChange)="applySearch()"
-      placeholder="Search by name/UPC..."
+      placeholder="Search by product name/UPC..."
     />
   </div>
 
@@ -33,28 +33,31 @@
 
   <!-- Empty state -->
   @if (filteredRecords.length === 0) {
-    <p class="empty-message">No orders have been placed</p>
+    @if(statusIsSuccess){
+      <p class="empty-message">No orders have been placed</p>
+    }
   } @else {
     <!-- Orders table -->
     <table class="orders-table">
       <thead>
       <tr>
         <th>Order ID</th>
-        <th>User EUID</th>
         <th>Order Date</th>
-        <th>UPC</th>
+        <th>User</th>
         <th>Product Name</th>
+        <th>UPC</th>
         <th>Quantity</th>
+
       </tr>
       </thead>
       <tbody>
-        @for (record of pagedRecords; track record.productOrderId) {
+        @for (record of pagedRecords; track record.orderId) {
           <tr>
-            <td>{{ record.productOrderId }}</td>
-            <td>{{ record.userEuid }}</td>
+            <td>{{ record.orderId }}</td>
             <td>{{ record.orderPlacedDate }}</td>
-            <td>{{ record.upcNumber }}</td>
+            <td>{{ record.userEuid }}</td>
             <td>{{ record.productName }}</td>
+            <td>{{ record.upcNumber }}</td>
             <td>{{ record.quantity }}</td>
           </tr>
         }

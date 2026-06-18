@@ -98,8 +98,6 @@ export class OrderPage {
       }
     }
 
-    console.log(orderResponse)
-
     let successOrder = false
     if(orderResponse.responseCode === 200){
       successOrder = true

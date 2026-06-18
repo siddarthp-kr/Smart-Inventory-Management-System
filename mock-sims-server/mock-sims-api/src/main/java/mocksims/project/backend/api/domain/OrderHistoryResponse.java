@@ -10,7 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderHistoryResponse {
-    Integer orderHistoryResponseCode;
-    String orderHistoryResponseMessage;
+    Integer responseCode;
+    String responseMessage;
     List<OrderHistoryRecord> orders;
 }
