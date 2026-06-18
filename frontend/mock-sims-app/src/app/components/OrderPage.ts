@@ -1,14 +1,15 @@
 import {Component, inject, OnInit} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {Api, PlaceOrderResponse} from '../services/api';
+import {Api, OrderHistoryRecord, OrderHistoryResponse, PlaceOrderResponse} from '../services/api';
 import { ChangeDetectorRef } from '@angular/core';
 import {AuthService} from '../services/auth';
+import {Router, RouterLink} from '@angular/router';
 
 
 @Component({
   selector: 'app-order-page',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './template/OrderPageTemplate.html'
 })
 export class OrderPage {
@@ -25,6 +26,7 @@ export class OrderPage {
 
   private api = inject(Api)
   private auth = inject(AuthService)
+  private router = inject(Router);
   constructor(private cd: ChangeDetectorRef){}
 
   //Hard-coded Products - (4-Departments)
@@ -74,7 +76,6 @@ export class OrderPage {
   // Triggers order action when button clicked
   async orderAction(product: any, quantity: number, messageInput: any){
     const user = this.auth.user()
-    console.log(user)
     // Quantity must be valid to proceed
     if(!user){
       this.showMessage('Failed to place order. You must be logged in to place an order', false);
@@ -97,8 +98,6 @@ export class OrderPage {
       }
     }
 
-    console.log(orderResponse)
-
     let successOrder = false
     if(orderResponse.responseCode === 200){
       successOrder = true
@@ -114,5 +113,6 @@ export class OrderPage {
     // Allows for clearing any input when order is placed
     messageInput.value = '';
   }
+
 }
 

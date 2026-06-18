@@ -3,11 +3,12 @@ import {FormsModule} from '@angular/forms';
 import {Api, AddItemResponse} from '../services/api';
 import {ChangeDetectorRef} from '@angular/core';
 import {AuthService} from '../services/auth';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-add-item-page',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './template/AddItemPageTemplate.html'
 })
 
