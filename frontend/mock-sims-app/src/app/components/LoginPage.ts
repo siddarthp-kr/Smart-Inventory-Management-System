@@ -57,8 +57,8 @@ export class LoginPage {
 
   loginIsValid(credentials: {userEuid: string, storeNumber: string, divisionNumber: string}){
     let euidIsValid = credentials.userEuid !== null && /^[a-zA-Z]{2}\d{5}$/.test(credentials.userEuid)
-    let storeNumberIsValid = credentials.storeNumber && /^\d{5}$/.test(credentials.storeNumber)
-    let divisionNumberIsValid = credentials.divisionNumber && /^\d{5}$/.test(credentials.divisionNumber)
+    let storeNumberIsValid = credentials.storeNumber !== null && /^\d{5}$/.test(credentials.storeNumber)
+    let divisionNumberIsValid = credentials.divisionNumber !== null && /^\d{3}$/.test(credentials.divisionNumber)
     let loginIsValid = euidIsValid && storeNumberIsValid && divisionNumberIsValid
 
     return {
