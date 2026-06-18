@@ -3,13 +3,13 @@ import { FormsModule } from '@angular/forms';
 import {Api, OrderHistoryRecord, OrderHistoryResponse, PlaceOrderResponse} from '../services/api';
 import { ChangeDetectorRef } from '@angular/core';
 import {AuthService} from '../services/auth';
-import {Router} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 
 
 @Component({
   selector: 'app-order-page',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './template/OrderPageTemplate.html'
 })
 export class OrderPage {
