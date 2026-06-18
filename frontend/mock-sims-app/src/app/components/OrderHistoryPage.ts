@@ -13,6 +13,7 @@ import { Router, RouterLink } from '@angular/router';
   standalone: true
 })
 export class OrderHistoryPage implements OnInit {
+
   private auth = inject(AuthService)
   private api = inject(Api)
   private router = inject(Router)
@@ -60,6 +61,7 @@ export class OrderHistoryPage implements OnInit {
 
     try {
       orderHistoryResponse = await this.api.getOrderHistory(user.storeNumber, user.divisionNumber)
+      console.log(orderHistoryResponse)
     } catch (error) {
       orderHistoryResponse = {
         responseCode: 503,
@@ -71,8 +73,6 @@ export class OrderHistoryPage implements OnInit {
     if(orderHistoryResponse.responseCode !== 200){
       this.showMessage(`Error: ${orderHistoryResponse.responseCode} ${orderHistoryResponse.responseMessage}`, false)
     }
-
-
 
     // Sort by productOrderId descending (just in case backend ordering changes)
     this.allRecords = (orderHistoryResponse.orders || [])
