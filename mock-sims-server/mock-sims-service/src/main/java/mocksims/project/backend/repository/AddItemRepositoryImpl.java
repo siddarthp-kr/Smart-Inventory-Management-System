@@ -1,5 +1,6 @@
 package mocksims.project.backend.repository;
 
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
@@ -72,7 +73,7 @@ public class AddItemRepositoryImpl implements AddItemRepository {
      * @param daysAfterOrderToSetExp number opf days after the order to set the expiration
      */
     @Override
-    public void insertMarkdownRules (String subcommodityNumber, int firstMarkdownPercent, boolean canBeMarkedDown, int daysBeforeExpToMD, int daysBeforeExpToRFI, int daysAfterOrderToSetExp){
+    public void insertMarkdownRules (String subcommodityNumber, Integer firstMarkdownPercent, Boolean canBeMarkedDown, Integer daysBeforeExpToMD, Integer daysBeforeExpToRFI, Integer daysAfterOrderToSetExp){
 
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("subcommodity", subcommodityNumber)

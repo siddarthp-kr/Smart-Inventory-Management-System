@@ -15,10 +15,10 @@ public class AddItemRequest {
     String departmentNumber;
     String productName;
     double standardPrice;
-    int firstMarkdownPercent;
-    boolean canBeMarkedDown;
-    int daysBeforeExpToMD;
-    int daysBeforeExpToRFI;
-    int daysAfterOrderToSetExp;
+    Integer firstMarkdownPercent;
+    Boolean canBeMarkedDown;
+    Integer daysBeforeExpToMD;
+    Integer daysBeforeExpToRFI;
+    Integer daysAfterOrderToSetExp;
 
 }

@@ -32,6 +32,18 @@
     font-size: 14px;
   }
 
+  .readonly-field {
+    background-color: #f0f0f0;
+    color: #666;
+  }
+
+  .error-message {
+    color: red;
+    font-size: 13px;
+    margin-top: 10px;
+    text-align: center;
+  }
+
   button {
     width: 100%;
     padding: 10px;
@@ -68,7 +80,8 @@
       type="text"
       id="storeNumber"
       [(ngModel)]="storeNumber"
-      placeholder="Enter your store number"
+      readonly
+      class = "readonly-field"
     />
   </div>
 
@@ -78,9 +91,14 @@
       type="text"
       id="division"
       [(ngModel)]="divisionNumber"
-      placeholder="Enter your division number"
+      readonly
+      class = "readonly-field"
     />
   </div>
+
+  @if (loginError !== ''){
+    <div class = "error-message"> {{loginError}} </div>
+  }
 
   <button type="button" (click)="onLogin()">Login</button>
 </div>
