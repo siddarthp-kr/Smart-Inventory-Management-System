@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderHistoryRequest {
-    Integer pageSize;
-    Integer offset;
     String storeNumber;
     String divisionNumber;
 }
