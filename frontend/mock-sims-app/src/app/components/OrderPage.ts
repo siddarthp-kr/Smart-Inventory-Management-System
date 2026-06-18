@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import {Api, OrderHistoryRecord, OrderHistoryResponse, PlaceOrderResponse} from '../services/api';
 import { ChangeDetectorRef } from '@angular/core';
 import {AuthService} from '../services/auth';
+import {Router} from '@angular/router';
 
 
 @Component({
@@ -25,7 +26,7 @@ export class OrderPage {
 
   private api = inject(Api)
   private auth = inject(AuthService)
-  private user = this.auth.user()
+  private router = inject(Router);
   constructor(private cd: ChangeDetectorRef){}
 
   //Hard-coded Products - (4-Departments)
@@ -115,26 +116,5 @@ export class OrderPage {
     messageInput.value = '';
   }
 
-  async orderHistoryAction(){
-
-    const user = this.auth.user()
-
-    let orderHistoryResponse: OrderHistoryResponse
-
-    if(!user){
-      console.log('Error: must be logged in to view order history')
-      return
-    }
-
-    try {
-      orderHistoryResponse = await this.api.getOrderHistory(user.storeNumber, user.divisionNumber)
-    }  catch (error){
-      orderHistoryResponse = {
-        responseCode: 503,
-        responseMessage: 'Failed to contact server',
-        orderHistoryRecords: []
-      }
-    }
-  }
 }
 

@@ -1,5 +1,12 @@
 <div class = "order-container">
-  <h2>Ordering</h2>
+
+  <div class = "header-bar">
+    <h2>Ordering</h2>
+    <div>
+      <button>Add New Item</button>
+      <button>View Order History</button>
+    </div>
+  </div>
   <!-- Implementing Search here -->
   <div class = "search-bar">
     <input
@@ -90,5 +97,20 @@
   .invalid {
     background-color: #ffe5e5; /* red */
     border-color: red;
+  }
+  .header-bar{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    margin-top: 20px;
+  }
+  .header-bar h2{
+    margin: 0;
+  }
+  .header-bar button{
+    padding: 8px 12px;
+    cursor: pointer;
+    margin-left: 5px;
   }
 </style>

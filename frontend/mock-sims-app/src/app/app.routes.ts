@@ -4,7 +4,8 @@ import { Dashboard } from './pages/Dashboard';
 import { OrderPage } from './components/OrderPage';
 import { BohPage } from './components/BohPage';
 import { AlertsPage } from './components/AlertsPage';
-import {AddItemPage} from './components/AddItemPage';
+import { AddItemPage } from './components/AddItemPage';
+import { OrderHistoryPage } from './components/OrderHistoryPage';
 
 
 export const routes: Routes = [
@@ -42,5 +43,10 @@ export const routes: Routes = [
     path: 'AlertsPage',
     title: "Product Expiration Alerts",
     component: AlertsPage
+  },
+  {
+    path: 'OrderHistoryPage',
+    title: "Order History",
+    component: OrderHistoryPage
   }
 ];
