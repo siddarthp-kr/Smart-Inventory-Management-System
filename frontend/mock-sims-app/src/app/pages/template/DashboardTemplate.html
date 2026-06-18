@@ -1,11 +1,18 @@
 
 <!--Mock Data for ui starter-->
 <div class = "dashboard-home">
-  <h1 class = "center-title"> Welcome to Smart Inventory Management Dashboard (SIMS)</h1>
-  <p>
-    This is the dashboard page!
-  </p>
+  @if (auth.user()){
+    <h1 class = "center-title">
+      Welcome, {{auth.user()?.userEuid}}
+    </h1>
+  }
+    @else {
+      <h1 class="center-title">
+        Welcome, to Smart Inventory Management Dashboard (SIMS)
+      </h1>
+    }
 
+  <p>This is the dashboard page!</p>
 </div>
 
 <style>
