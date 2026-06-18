@@ -23,7 +23,7 @@ public class OrderHistoryController {
         this.orderHistoryService = orderHistoryService;
     }
 
-    @GetMapping(value = ORDER_HISTORY_ENDPOINT)
+    @PostMapping(value = ORDER_HISTORY_ENDPOINT)
     public OrderHistoryResponse getOrderHistory(@RequestBody OrderHistoryRequest orderHistoryRequest){
 
         //validate request

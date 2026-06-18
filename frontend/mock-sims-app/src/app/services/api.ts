@@ -8,6 +8,23 @@ export interface PlaceOrderResponse {
   responseMessage: string,
   orderId: number
 }
+
+
+export interface OrderHistoryRecord {
+  productOrderId: number,
+  userEuid: string,
+  orderPlacedDate: string,
+  upcNumber: string,
+  productName: string,
+  quantity: number
+}
+
+export interface OrderHistoryResponse {
+  responseCode: number,
+  responseMessage: string,
+  orderHistoryRecords: Array<OrderHistoryRecord>
+}
+
 export interface AddItemResponse{
   responseCode: number;
   responseMessage: string;
@@ -34,7 +51,21 @@ export class Api {
     )
 
     console.log(result)
+    console.log(this.getOrderHistory('00045','014'))
     return result
+  }
+
+  async getOrderHistory(storeNumber: string, divisionNumber: string): Promise<OrderHistoryResponse>{
+    const requestBody = {
+      storeNumber: storeNumber,
+      divisionNumber: divisionNumber
+    }
+
+    let result: OrderHistoryResponse = await firstValueFrom(
+      this.http.post<any>('http://localhost:8080/api/order/order-history', requestBody)
+    )
+
+    return result;
   }
 
   async addItem(storeNumber: string, divisionNumber: string, upcNumber: string, subcommodityNumber: string, departmentNumber: string, productName: string, standardPrice: number, firstMarkdownPercent: number | null, canBeMarkedDown: boolean, daysBeforeExpToMD: number | null, daysBeforeExpToRFI: number | null, daysAfterOrderToSetExp: number| null): Promise<AddItemResponse>{

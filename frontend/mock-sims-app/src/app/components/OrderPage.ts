@@ -1,6 +1,6 @@
 import {Component, inject, OnInit} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {Api, PlaceOrderResponse} from '../services/api';
+import {Api, OrderHistoryRecord, OrderHistoryResponse, PlaceOrderResponse} from '../services/api';
 import { ChangeDetectorRef } from '@angular/core';
 import {AuthService} from '../services/auth';
 
@@ -25,6 +25,7 @@ export class OrderPage {
 
   private api = inject(Api)
   private auth = inject(AuthService)
+  private user = this.auth.user()
   constructor(private cd: ChangeDetectorRef){}
 
   //Hard-coded Products - (4-Departments)
@@ -74,7 +75,6 @@ export class OrderPage {
   // Triggers order action when button clicked
   async orderAction(product: any, quantity: number, messageInput: any){
     const user = this.auth.user()
-    console.log(user)
     // Quantity must be valid to proceed
     if(!user){
       this.showMessage('Failed to place order. You must be logged in to place an order', false);
@@ -113,6 +113,28 @@ export class OrderPage {
     this.cd.detectChanges()
     // Allows for clearing any input when order is placed
     messageInput.value = '';
+  }
+
+  async orderHistoryAction(){
+
+    const user = this.auth.user()
+
+    let orderHistoryResponse: OrderHistoryResponse
+
+    if(!user){
+      console.log('Error: must be logged in to view order history')
+      return
+    }
+
+    try {
+      orderHistoryResponse = await this.api.getOrderHistory(user.storeNumber, user.divisionNumber)
+    }  catch (error){
+      orderHistoryResponse = {
+        responseCode: 503,
+        responseMessage: 'Failed to contact server',
+        orderHistoryRecords: []
+      }
+    }
   }
 }
 
