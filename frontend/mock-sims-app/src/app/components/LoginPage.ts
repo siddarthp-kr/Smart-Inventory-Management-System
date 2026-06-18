@@ -16,8 +16,8 @@ export class LoginPage {
   private router = inject(Router)
 
   euid = ''
-  storeNumber = '00045'
-  divisionNumber = '014'
+  storeNumber = ''
+  divisionNumber = ''
 
   loginError = '';
 
@@ -49,12 +49,6 @@ export class LoginPage {
       console.log(this.loginError)
       return;
     }
-
-    // if (!euidPattern.test(trimmedEuid) && !isTestUser) {
-    //   this.loginError = 'EUID must be 2 letters followed by 5 numbers (example: AB12345), or use "test" for testing.';
-    //   return;
-    // }
-
 
     this.auth.login(credentials);
     this.router.navigate(['/Dashboard']);
