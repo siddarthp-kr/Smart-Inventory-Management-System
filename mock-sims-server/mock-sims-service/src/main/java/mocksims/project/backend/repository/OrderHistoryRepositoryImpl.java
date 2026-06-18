@@ -3,7 +3,6 @@ package mocksims.project.backend.repository;
 import mocksims.project.backend.api.domain.OrderHistoryRequest;
 import mocksims.project.backend.domain.mapper.OrderHistoryMapper;
 import mocksims.project.backend.exception.MockSimsCustomException;
-import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -52,6 +51,7 @@ public class OrderHistoryRepositoryImpl implements OrderHistoryRepository {
             orders = namedParameterJdbcTemplate.query(SQL_GET_ORDER_HISTORY, mapSqlParameterSource, orderHistoryMapper);
         } catch (DataAccessException e){
             throw new MockSimsCustomException(500, "Failed to get order history for division " + orderHistoryRequest.getDivisionNumber() + " store " + orderHistoryRequest.getStoreNumber() + ". " + e.getMessage());
+
         }
 
         return orders;
