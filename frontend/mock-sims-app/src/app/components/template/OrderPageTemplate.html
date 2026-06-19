@@ -34,13 +34,12 @@
     <p>No results found</p>
   }
 
-  @for (item of results; track item.upc){
+  @for (item of results; track item.upcNumber){
     <div class = "product-card">
       <div>
-        <strong>{{item.name}}</strong>
+        <strong>{{item.productName}}</strong>
       </div>
-      <div>UPC: {{item.upc}}</div>
-      <div>Sub-Commodity: {{item.subCommodity}}</div>
+      <div>UPC: {{item.upcNumber}}</div>
 
       <div class = "actions">
         <input type = "number" #qty placeholder="Qty" />

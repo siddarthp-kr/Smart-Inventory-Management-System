@@ -229,7 +229,7 @@ export class AddItemPage{
     }
 
     if (addItemResponse.responseCode === 200){
-      this.showMessage(`Added item ${this.productName} successfully`, true);
+      this.showMessage(addItemResponse.responseMessage, true);
 
       // Clears the form fields after success
       this.upcNumber = '';
@@ -246,7 +246,7 @@ export class AddItemPage{
       this.resetValidationFlags()
     }
     else {
-      this.showMessage( `${addItemResponse.responseMessage}`, false);
+      this.showMessage( addItemResponse.responseMessage, false);
     }
 
     this.cd.detectChanges();

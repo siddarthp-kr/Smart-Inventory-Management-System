@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RestController
-@RequestMapping(value = "/api/items")
+@RequestMapping(value = "/api/order")
 @CrossOrigin(origins = "http://localhost:4200/")
 public class AddItemController {
     private final AddItemService addItemService;

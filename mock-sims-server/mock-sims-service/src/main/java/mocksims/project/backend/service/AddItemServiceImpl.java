@@ -37,14 +37,19 @@ public class AddItemServiceImpl implements AddItemService{
     public AddItemResponse addItem(AddItemRequest addItemRequest){
         AddItemResponse response = new AddItemResponse();
     // Insert each in specific order
-        try{
 
-            if (Boolean.TRUE.equals(addItemRequest.getCanBeMarkedDown())){
-                if (addItemRequest.getFirstMarkdownPercent() == null || addItemRequest.getDaysBeforeExpToMD() == null || addItemRequest.getDaysBeforeExpToRFI() == null || addItemRequest.getDaysAfterOrderToSetExp() == null){
-                    throw  new MockSimsCustomException(400, "Error: Markdown fields are required when item can be marked down");
+        try {
+            // If markdown is enabled, markdown fields must be present
+            if (Boolean.TRUE.equals(addItemRequest.getCanBeMarkedDown())) {
+                if (addItemRequest.getFirstMarkdownPercent() == null
+                        || addItemRequest.getDaysBeforeExpToMD() == null
+                        || addItemRequest.getDaysBeforeExpToRFI() == null
+                        || addItemRequest.getDaysAfterOrderToSetExp() == null) {
+                    throw new MockSimsCustomException(400, "Error: Markdown fields are required when item can be marked down");
                 }
             }
 
+            // Insert markdown rule only if subcommodity does not already exist
             if (!addItemRepository.markdownRuleExists(addItemRequest.getSubcommodityNumber())) {
                 addItemRepository.insertMarkdownRules(
                         addItemRequest.getSubcommodityNumber(),
@@ -56,35 +61,61 @@ public class AddItemServiceImpl implements AddItemService{
                 );
             }
 
-
-                addItemRepository.insertProductBasicInfo(
-                    addItemRequest.getUpcNumber(),
-                    addItemRequest.getSubcommodityNumber(),
-                    addItemRequest.getDepartmentNumber(),
-                    addItemRequest.getProductName(),
-                    addItemRequest.getStandardPrice()
-            );
-
-            addItemRepository.insertProductBohInfo(
+            boolean productExists = addItemRepository.productExists(addItemRequest.getUpcNumber());
+            boolean bohExists = addItemRepository.bohRecordExists(
                     addItemRequest.getDivisionNumber(),
                     addItemRequest.getStoreNumber(),
                     addItemRequest.getUpcNumber()
             );
 
-            response.setResponseCode(200);
-            response.setResponseMessage("Item added successfully");
+            // Product does not exist globally yet
+            if (!productExists) {
+                addItemRepository.insertProductBasicInfo(
+                        addItemRequest.getUpcNumber(),
+                        addItemRequest.getSubcommodityNumber(),
+                        addItemRequest.getDepartmentNumber(),
+                        addItemRequest.getProductName(),
+                        addItemRequest.getStandardPrice()
+                );
 
-        } catch (DuplicateKeyException error){
-            LOG.error("Add Item failed: duplicate key detected. UPC already exists.", error);
-            // Set transaction for rollback to prevent insertion
-            throw new MockSimsCustomException(409, "Error: Failed to add item - UPC already exists");
-        } catch (DataIntegrityViolationException error){
-            LOG.error("Add Item Failed: insert prevented for requested item. (Database integrity rule)", error);
+                addItemRepository.insertProductBohInfo(
+                        addItemRequest.getDivisionNumber(),
+                        addItemRequest.getStoreNumber(),
+                        addItemRequest.getUpcNumber()
+                );
+
+                response.setResponseCode(200);
+                response.setResponseMessage("Item added successfully");
+
+                // Product exists globally, but not for this store/division
+            } else if (!bohExists) {
+                addItemRepository.insertProductBohInfo(
+                        addItemRequest.getDivisionNumber(),
+                        addItemRequest.getStoreNumber(),
+                        addItemRequest.getUpcNumber()
+                );
+
+                response.setResponseCode(200);
+                response.setResponseMessage("Item added successfully for this store and division");
+
+                // Case 3: Product already exists for this store/division
+            } else {
+                throw new MockSimsCustomException(409, "Error: UPC already exists for this store and division");
+            }
+
+        } catch (DuplicateKeyException error) {
+            LOG.error("Add Item failed: duplicate key detected.", error);
+            throw new MockSimsCustomException(409, "Error: UPC already exists for this store and division");
+
+        } catch (DataIntegrityViolationException error) {
+            LOG.error("Add Item failed: insert prevented by database integrity rule.", error);
             throw new MockSimsCustomException(400, "Error: Failed to add item - Database integrity rule prevented insert");
-        } catch (DataAccessException error){
+
+        } catch (DataAccessException error) {
             LOG.error("Add Item failed: database error.", error);
             throw new MockSimsCustomException(500, "Error: Failed to add item");
         }
+
         return response;
     }
 }

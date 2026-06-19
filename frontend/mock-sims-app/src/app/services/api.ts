@@ -29,6 +29,13 @@ export interface AddItemResponse{
   responseCode: number;
   responseMessage: string;
 }
+export interface ProductItem{
+  upcNumber: string;
+  productName: string;
+}
+export interface ProductsResponse{
+  products: ProductItem[];
+}
 @Injectable({ providedIn: 'root' })
 export class Api {
   private http = inject(HttpClient);
@@ -83,11 +90,19 @@ export class Api {
     };
 
     let result: AddItemResponse = await firstValueFrom(
-      this.http.post<AddItemResponse>('http://localhost:8080/api/items/add-item', requestBody)
+      this.http.post<AddItemResponse>('http://localhost:8080/api/order/add-item', requestBody)
     );
 
     return result;
   }
 
 
+  async getProducts(storeNumber: string, divisionNumber: string): Promise<ProductsResponse> {
+    let result: ProductsResponse = await firstValueFrom(
+      this.http.get<ProductsResponse>(`http://localhost:8080/api/order/products?storeNumber=${storeNumber}&divisionNumber=${divisionNumber}`)
+    );
+
+    console.log(result);
+    return result;
+  }
 }
