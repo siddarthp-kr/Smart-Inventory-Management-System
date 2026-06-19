@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {Api, BohRecord, DepartmentInfoRecord} from '../services/api';
+import { Api, BohRecord, DepartmentInfoRecord } from '../services/api';
 import { AuthService } from '../services/auth';
 
 
@@ -31,6 +31,11 @@ export class BohPage implements OnInit {
 
   // Search input
   search: string = ''
+
+  // Pagination
+  pageSizeOptions: number[] = [5, 10, 50, 100, 500]
+  pageSize: number = 10
+  currentPage: number = 1
 
   // Status message (same pattern as other pages)
   statusMessage: string = ''
@@ -112,6 +117,34 @@ export class BohPage implements OnInit {
     }
 
     this.filteredRecords = records
+    // Reset back to first page when filter changes
+    this.currentPage = 1
+  }
+
+  // Pagination handlers
+  onPageSizeChange() {
+    this.currentPage = 1
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++
+    }
+  }
+
+  previousPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--
+    }
+  }
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.filteredRecords.length / this.pageSize))
+  }
+
+  get pagedRecords(): BohRecord[] {
+    const start = (this.currentPage - 1) * this.pageSize
+    return this.filteredRecords.slice(start, start + this.pageSize)
   }
 
   // Used in template to decide which empty-state message to show
