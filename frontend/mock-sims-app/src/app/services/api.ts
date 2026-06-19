@@ -90,7 +90,7 @@ export class Api {
     };
 
     let result: AddItemResponse = await firstValueFrom(
-      this.http.post<AddItemResponse>('http://localhost:8080/api/items/add-item', requestBody)
+      this.http.post<AddItemResponse>('http://localhost:8080/api/order/add-item', requestBody)
     );
 
     return result;
