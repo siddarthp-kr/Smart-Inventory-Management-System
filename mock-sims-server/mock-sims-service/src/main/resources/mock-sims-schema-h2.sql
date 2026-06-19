@@ -80,7 +80,7 @@ CREATE TABLE PDM_ALERTS
     alert_id int AUTO_INCREMENT PRIMARY KEY,
     store_number varchar(5) NOT NULL,
     division_number varchar(3) NOT NULL,
-    department_number varchar(2) NOT NULL,
+    department_number char(2) NOT NULL,
     upc_number varchar(15) NOT NULL,
     quantity int,
     expiration_date date,

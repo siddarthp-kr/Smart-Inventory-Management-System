@@ -9,6 +9,10 @@ export interface PlaceOrderResponse {
   orderId: number
 }
 
+export interface DepartmentInfoRecord {
+  departmentNumber: string,
+  departmentName: string
+}
 
 export interface OrderHistoryRecord {
   orderId: number,
@@ -70,6 +74,13 @@ export class Api {
       this.http.post<any>('http://localhost:8080/api/order/order-history', requestBody)
     )
 
+    return result;
+  }
+
+  async getDepartmentInfo(): Promise<DepartmentInfoRecord[]>{
+    let result: DepartmentInfoRecord[] = await firstValueFrom(
+      this.http.get<any>('http://localhost:8080/api/boh/department-info')
+    )
     return result;
   }
 
