@@ -1,1 +1,232 @@
-<p>BOH Page!</p>
+<div class="boh-container">
+  <!-- Header with title and refresh button -->
+  <div class="header-bar">
+    <h2>Balance on Hand</h2>
+    <button (click)="refresh()">Refresh</button>
+  </div>
+
+  <!-- Department dropdown -->
+  <div class="department-bar">
+    <label for="department">Department:</label>
+    <select
+      id="department"
+      [(ngModel)]="selectedDepartment"
+      (ngModelChange)="onDepartmentChange()"
+    >
+      <option [ngValue]="ALL_DEPARTMENTS">All Departments</option>
+      @for (dept of departmentInfo; track dept.departmentNumber) {
+        <option [ngValue]="dept.departmentNumber">
+          {{ dept.departmentNumber }} {{ dept.departmentName }}
+        </option>
+      }
+    </select>
+  </div>
+
+  <!-- Search bar -->
+  <div class="search-bar">
+    <input
+      type="text"
+      [(ngModel)]="search"
+      (ngModelChange)="applyFilters()"
+      placeholder="Search by name/UPC..."
+    />
+  </div>
+
+  <!-- Status / error messages -->
+  @if (statusMessage !== '' && statusIsSuccess) {
+    <div class="message-box success">
+      {{ statusMessage }}
+    </div>
+  }
+
+  @if (statusMessage !== '' && !statusIsSuccess) {
+    <div class="message-box invalid">
+      {{ statusMessage }}
+    </div>
+  }
+
+  <!-- Empty states -->
+  @if (filteredRecords.length === 0 && isSearching) {
+    <p class="empty-message">No results match your search</p>
+  } @else if (filteredRecords.length === 0) {
+    <p class="empty-message">There are no products to display</p>
+  } @else {
+    <!-- BOH table -->
+    <table class="boh-table">
+      <thead>
+      <tr>
+        <th>UPC</th>
+        <th>Product Name</th>
+        <th>Department</th>
+        <th>QOD</th>
+        <th>QOM</th>
+      </tr>
+      </thead>
+      <tbody>
+        @for (record of pagedRecords; track record.upcNumber) {
+          <tr>
+            <td>{{ record.upcNumber }}</td>
+            <td>{{ record.productName }}</td>
+            <td>{{ record.departmentNumber }}</td>
+            <td>{{ record.qodNumber }}</td>
+            <td>{{ record.qomNumber }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <!-- Pagination controls -->
+    <div class="pagination-bar">
+      <div class="page-size-selector">
+        <label for="pageSize">Results per page:</label>
+        <select
+          id="pageSize"
+          [(ngModel)]="pageSize"
+          (ngModelChange)="onPageSizeChange()"
+        >
+          @for (size of pageSizeOptions; track size) {
+            <option [ngValue]="size">{{ size }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="page-navigation">
+        <button (click)="previousPage()" [disabled]="currentPage === 1">Previous</button>
+        <span class="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
+        <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
+      </div>
+    </div>
+  }
+</div>
+
+<style>
+  .boh-container {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    margin-top: 20px;
+  }
+
+  .header-bar h2 {
+    margin: 0;
+  }
+
+  .header-bar button {
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+
+  .department-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+
+  .department-bar select {
+    flex: 1;
+    padding: 8px;
+    cursor: pointer;
+  }
+
+  .search-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .search-bar input {
+    flex: 1;
+    padding: 8px;
+  }
+
+  .message-box {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #e8f5e9;
+  }
+
+  .success {
+    background-color: #e8f5e9;
+    border-color: green;
+  }
+
+  .invalid {
+    background-color: #ffe5e5;
+    border-color: red;
+  }
+
+  .empty-message {
+    text-align: center;
+    font-style: italic;
+    color: #666;
+    padding: 20px;
+  }
+
+  .boh-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background: #f9f9f9;
+  }
+
+  .boh-table th,
+  .boh-table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+  }
+
+  .boh-table thead {
+    background-color: #e0e0e0;
+  }
+
+  .boh-table tbody tr:hover {
+    background-color: #f1f1f1;
+  }
+
+  .pagination-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+  }
+
+  .page-size-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .page-size-selector select {
+    padding: 5px;
+    cursor: pointer;
+  }
+
+  .page-navigation {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .page-navigation button {
+    padding: 6px 12px;
+    cursor: pointer;
+  }
+
+  .page-navigation button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .page-info {
+    font-weight: bold;
+  }
+</style>
