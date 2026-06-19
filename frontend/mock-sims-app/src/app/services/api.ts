@@ -3,6 +3,15 @@ import { Injectable } from '@angular/core';
 import { inject } from '@angular/core';
 import {firstValueFrom} from 'rxjs';
 
+export interface BohRecord {
+  upcNumber: string,
+  qodNumber: number,
+  qomNumber: number,
+  departmentName: string,
+  departmentNumber: string,
+  productName: string
+}
+
 export interface PlaceOrderResponse {
   responseCode: number,
   responseMessage: string,
@@ -114,6 +123,13 @@ export class Api {
     );
 
     console.log(result);
+    return result;
+  }
+
+  async getBohInfo(storeNumber: string, divisionNumber: string): Promise<BohRecord[]> {
+    let result: Array<BohRecord> = await firstValueFrom(
+      this.http.get<any>(`http://localhost:8080/api/boh/get-boh-count?storeNumber=${storeNumber}&divisionNumber=${divisionNumber}`)
+    )
     return result;
   }
 }
