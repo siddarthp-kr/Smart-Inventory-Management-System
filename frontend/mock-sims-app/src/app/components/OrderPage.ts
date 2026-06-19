@@ -1,6 +1,6 @@
 import {Component, inject, OnInit} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {Api, PlaceOrderResponse} from '../services/api';
+import {Api, PlaceOrderResponse, ProductItem, ProductsResponse} from '../services/api';
 import { ChangeDetectorRef } from '@angular/core';
 import {AuthService} from '../services/auth';
 
@@ -11,42 +11,49 @@ import {AuthService} from '../services/auth';
   imports: [FormsModule],
   templateUrl: './template/OrderPageTemplate.html'
 })
-export class OrderPage {
-
-  ngOnInit() {
-    this.searchFunction()
-  }
+export class OrderPage implements OnInit{
 
   //Store what is typed in search
   search: string = '';
   message: string = '';
-  results: any[] = [];
+  results: ProductItem[] = [];
   isSuccess: boolean = false;
+  products: ProductItem[] = [];
 
   private api = inject(Api)
   private auth = inject(AuthService)
   constructor(private cd: ChangeDetectorRef){}
 
-  //Hard-coded Products - (4-Departments)
-  products = [
-    //Produce
-    {upc: '4011', name: 'Banana', subCommodity: '62000'},
-    {upc: '4022', name: 'ST Cashews', subCommodity: '64307'},
+  async ngOnInit(){
+    await this.loadProducts();
+    this.searchFunction()
+  }
 
-    //Deli/Bakery
-    {upc: '3011', name: 'Feta Greek', subCommodity: '44805'},
-    {upc: '3022', name: 'Shortbread Butter Cookies', subCommodity: '64307'},
 
-    //Meat
-    {upc: '1011', name: 'Chicken Breast Boneless', subCommodity: '53000'},
-    {upc: '1022', name: 'KRO GRND BF Burger', subCommodity: '56005'},
+  async loadProducts() {
+    const user = this.auth.user();
 
-    //Grocery
-    {upc: '2011', name: 'Merry Edwards Pinot Noir', subCommodity: '04703'},
-    {upc: '2022', name: 'LA PREF Garbanzo Chickpeas', subCommodity: '98418'},
-    {upc: '2033', name: 'Motts Fruit Animal Snacks', subCommodity: '27602'},
-    {upc: '2044', name: 'Honey Bunches Oats', subCommodity: '29465'}
-  ];
+    if (!user) {
+      this.showMessage('You must be logged in to load products.', false);
+      return;
+    }
+
+    try {
+      const productResponse: ProductsResponse = await this.api.getProducts(
+        user.storeNumber,
+        user.divisionNumber
+      );
+
+      this.products = productResponse.products;
+      this.results = this.products;
+
+    } catch (error) {
+      console.error('Failed to load products:', error);
+      this.showMessage('Failed to load products from server.', false);
+    }
+
+    this.cd.detectChanges();
+  }
 
   // Triggers the search when button clicked
   searchFunction(){
@@ -54,9 +61,9 @@ export class OrderPage {
     //checking filter for each product
     this.results = this.products.filter(
       // Checking to see if the name is contained within the search
-      p => p.name.toLowerCase().includes(feature) ||
+      p => p.productName.toLowerCase().includes(feature) ||
         // Checking to see if the upc is contained within the search
-        p.upc.includes(feature)
+        p.upcNumber.includes(feature)
     );
   }
 
@@ -72,7 +79,7 @@ export class OrderPage {
 
   // Create order action (mock version)
   // Triggers order action when button clicked
-  async orderAction(product: any, quantity: number, messageInput: any){
+  async orderAction(product: ProductItem, quantity: number, messageInput: any){
     const user = this.auth.user()
     console.log(user)
     // Quantity must be valid to proceed
@@ -88,7 +95,7 @@ export class OrderPage {
     // do extra validation here
     let orderResponse: PlaceOrderResponse
     try {
-      orderResponse = await this.api.placeOrder(user.storeNumber, user.divisionNumber, user.userEuid, product.upc, quantity);
+      orderResponse = await this.api.placeOrder(user.storeNumber, user.divisionNumber, user.userEuid, product.upcNumber, quantity);
     } catch (error){
       orderResponse = {
         responseCode: 503,
@@ -106,9 +113,9 @@ export class OrderPage {
 
     // Displays message at top when placing an order including quantity and product name
     if (successOrder){
-      this.showMessage(`Order placed successfully! Product: ${product.name} | Quantity: ${quantity} | Order ID: ${orderResponse.orderId}`, true);
+      this.showMessage(`Order placed successfully! Product: ${product.productName} | Quantity: ${quantity} | Order ID: ${orderResponse.orderId}`, true);
     } else{
-      this.showMessage(`Failed to place order for ${product.name}. Error: ${orderResponse.responseCode} ${orderResponse.responseMessage}`, false);
+      this.showMessage(`Failed to place order for ${product.productName}. Error: ${orderResponse.responseCode} ${orderResponse.responseMessage}`, false);
     }
     this.cd.detectChanges()
     // Allows for clearing any input when order is placed

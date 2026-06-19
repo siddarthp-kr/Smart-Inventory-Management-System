@@ -12,6 +12,13 @@ export interface AddItemResponse{
   responseCode: number;
   responseMessage: string;
 }
+export interface ProductItem{
+  upcNumber: string;
+  productName: string;
+}
+export interface ProductsResponse{
+  products: ProductItem[];
+}
 @Injectable({ providedIn: 'root' })
 export class Api {
   private http = inject(HttpClient);
@@ -62,4 +69,12 @@ export class Api {
   }
 
 
+  async getProducts(storeNumber: string, divisionNumber: string): Promise<ProductsResponse> {
+    let result: ProductsResponse = await firstValueFrom(
+      this.http.get<ProductsResponse>(`http://localhost:8080/api/products?storeNumber=${storeNumber}&divisionNumber=${divisionNumber}`)
+    );
+
+    console.log(result);
+    return result;
+  }
 }

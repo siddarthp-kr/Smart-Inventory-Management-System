@@ -17,8 +17,6 @@ public interface PlaceOrderRepository {
      *      The identifier for the item that was ordered
      * @param quantity
      *      The number of units of the item that were ordered
-     * @throws RowNotFoundException
-     *      If no matching BOH information record exists for the given upcNumber, storeNumber, and divisionNumber
      * @throws DataAccessException
      *      If an error occurs while accessing the database
      */

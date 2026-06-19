@@ -24,6 +24,20 @@ public class AddItemRepositoryImpl implements AddItemRepository {
         WHERE subcommodity_number = :subcommodity
     """;
 
+    // Check if product already exists globally
+    private static final String CHECK_PRODUCT_EXISTS = """
+        SELECT COUNT(*) FROM PRODUCT_BASIC_INFO
+        WHERE upc_number = :upc
+    """;
+
+    // Check if BOH record already exists for this store/division/upc
+    private static final String CHECK_BOH_RECORD_EXISTS = """
+        SELECT COUNT(*) FROM PRODUCT_BOH_INFO
+        WHERE division_number = :division
+          AND store_number = :store
+          AND upc_number = :upc
+    """;
+
     // Insert mark-down rules
     private static final String INSERT_MARKDOWN_RULES = """
         INSERT INTO MARKDOWN_RULES
@@ -60,6 +74,26 @@ public class AddItemRepositoryImpl implements AddItemRepository {
                 .addValue("subcommodity", subcommodityNumber);
 
         Integer count = namedParameterJdbcTemplate.queryForObject(CHECK_MARKDOWN_RULE_EXISTS, params, Integer.class);
+        return count != null && count > 0;
+    }
+
+    @Override
+    public boolean productExists(String upcNumber) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("upc", upcNumber);
+
+        Integer count = namedParameterJdbcTemplate.queryForObject(CHECK_PRODUCT_EXISTS, params, Integer.class);
+        return count != null && count > 0;
+    }
+
+    @Override
+    public boolean bohRecordExists(String divisionNumber, String storeNumber, String upcNumber) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("division", divisionNumber)
+                .addValue("store", storeNumber)
+                .addValue("upc", upcNumber);
+
+        Integer count = namedParameterJdbcTemplate.queryForObject(CHECK_BOH_RECORD_EXISTS, params, Integer.class);
         return count != null && count > 0;
     }
 
