@@ -22,8 +22,8 @@ public class OrderHistoryServiceImpl implements OrderHistoryService {
         List<OrderHistoryRecord> orders = orderHistoryRepository.getOrderHistory(orderHistoryRequest);
 
         orderHistoryResponse.setOrders(orders);
-        orderHistoryResponse.setOrderHistoryResponseCode(200);
-        orderHistoryResponse.setOrderHistoryResponseMessage("Successfully retrieved order history");
+        orderHistoryResponse.setResponseCode(200);
+        orderHistoryResponse.setResponseMessage("Successfully retrieved order history");
 
         return orderHistoryResponse;
     }

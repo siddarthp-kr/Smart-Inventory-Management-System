@@ -1,6 +1,8 @@
 <div class = "add-item-container">
-  <h2>Add Item</h2>
-
+  <div class="header-bar">
+    <h2>Add Item</h2>
+    <button routerLink="/OrderPage">Back to Ordering</button>
+  </div>
   @if (message !== '' && isSuccess){
     <div class = "message-box success">
       {{ message }}
@@ -147,6 +149,22 @@
     background-color: #f0f0f0;
     color: #777;
     cursor: not-allowed;
+  }
+
+  .header-bar{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    margin-top: 20px;
+  }
+  .header-bar h2{
+    margin: 0;
+  }
+  .header-bar button{
+    padding: 8px 12px;
+    cursor: pointer;
+    margin-left: 5px;
   }
 
 </style>

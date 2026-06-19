@@ -3,12 +3,13 @@ import { FormsModule } from '@angular/forms';
 import {Api, PlaceOrderResponse, ProductItem, ProductsResponse} from '../services/api';
 import { ChangeDetectorRef } from '@angular/core';
 import {AuthService} from '../services/auth';
+import {Router, RouterLink} from '@angular/router';
 
 
 @Component({
   selector: 'app-order-page',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './template/OrderPageTemplate.html'
 })
 export class OrderPage implements OnInit{
@@ -22,6 +23,7 @@ export class OrderPage implements OnInit{
 
   private api = inject(Api)
   private auth = inject(AuthService)
+  private router = inject(Router);
   constructor(private cd: ChangeDetectorRef){}
 
   async ngOnInit(){
@@ -104,8 +106,6 @@ export class OrderPage implements OnInit{
       }
     }
 
-    console.log(orderResponse)
-
     let successOrder = false
     if(orderResponse.responseCode === 200){
       successOrder = true
@@ -121,5 +121,6 @@ export class OrderPage implements OnInit{
     // Allows for clearing any input when order is placed
     messageInput.value = '';
   }
+
 }
 

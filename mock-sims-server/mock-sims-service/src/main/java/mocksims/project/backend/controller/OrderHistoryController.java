@@ -4,6 +4,7 @@ import mocksims.project.backend.api.domain.OrderHistoryRequest;
 import mocksims.project.backend.api.domain.OrderHistoryResponse;
 import mocksims.project.backend.exception.MockSimsCustomException;
 import mocksims.project.backend.service.OrderHistoryService;
+import mocksims.project.backend.util.ValidationHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -23,19 +24,26 @@ public class OrderHistoryController {
         this.orderHistoryService = orderHistoryService;
     }
 
-    @GetMapping(value = ORDER_HISTORY_ENDPOINT)
+    @PostMapping(value = ORDER_HISTORY_ENDPOINT)
     public OrderHistoryResponse getOrderHistory(@RequestBody OrderHistoryRequest orderHistoryRequest){
 
-        //validate request
-
         OrderHistoryResponse orderHistoryResponse = new OrderHistoryResponse();
-        try {
-            orderHistoryResponse = this.orderHistoryService.getOrderHistory(orderHistoryRequest);
-        } catch (MockSimsCustomException e){
-            LOG.error("Failed to get order history.", e);
-            orderHistoryResponse.setOrderHistoryResponseCode(500);
-            orderHistoryResponse.setOrderHistoryResponseMessage("Failed to get order history");
+
+        if(!ValidationHelper.validateStoreNumber(orderHistoryRequest.getStoreNumber()) || !ValidationHelper.validateDivisionNumber(orderHistoryRequest.getDivisionNumber())){
+            LOG.error("Invalid store or division number.", new MockSimsCustomException(400, "Error: Invalid order history request parameters"));
+            orderHistoryResponse.setResponseCode(400);
+            orderHistoryResponse.setResponseMessage("Failed to get order history due to invalid store or division number.");
+        } else {
+            try {
+                orderHistoryResponse = this.orderHistoryService.getOrderHistory(orderHistoryRequest);
+            } catch (MockSimsCustomException e){
+                LOG.error("Failed to get order history.", e);
+                orderHistoryResponse.setResponseCode(500);
+                orderHistoryResponse.setResponseMessage("Failed to get order history");
+            }
         }
+
+
 
         return orderHistoryResponse;
     }
