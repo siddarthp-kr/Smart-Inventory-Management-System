@@ -23,7 +23,7 @@ CREATE TABLE MARKDOWN_RULES
 
 CREATE TABLE DEPARTMENT_INFO (
     department_number char(2) PRIMARY KEY,
-    department_name varchar(50)
+    department_name varchar(50) NOT NULL
 );
 
 CREATE TABLE PRODUCT_BASIC_INFO
