@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(value = "/api")
+@RequestMapping(value = "/api/order")
 @CrossOrigin(origins = "http://localhost:4200")
 public class ProductsController {
     private static final Logger LOG = LoggerFactory.getLogger(ProductsController.class);

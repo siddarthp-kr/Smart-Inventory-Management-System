@@ -99,7 +99,7 @@ export class Api {
 
   async getProducts(storeNumber: string, divisionNumber: string): Promise<ProductsResponse> {
     let result: ProductsResponse = await firstValueFrom(
-      this.http.get<ProductsResponse>(`http://localhost:8080/api/products?storeNumber=${storeNumber}&divisionNumber=${divisionNumber}`)
+      this.http.get<ProductsResponse>(`http://localhost:8080/api/order/products?storeNumber=${storeNumber}&divisionNumber=${divisionNumber}`)
     );
 
     console.log(result);
