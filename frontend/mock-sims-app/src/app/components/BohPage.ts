@@ -52,7 +52,8 @@ export class BohPage implements OnInit {
 
   async getDepartmentInfo() {
     try {
-      this.departmentInfo = await this.api.getDepartmentInfo()
+      const response = await this.api.getDepartmentInfo()
+      this.departmentInfo = response.departmentInfoRecords
       console.log(this.departmentInfo)
     } catch (error) {
       this.showMessage('Failed to load department info. Error 503: Failed to contact server', false)
@@ -68,8 +69,9 @@ export class BohPage implements OnInit {
     }
 
     try {
-      // TODO: replace with actual API method name once implemented in Api service
-      this.allBohRecords = await this.api.getBohInfo(user.storeNumber, user.divisionNumber)
+      const response = await this.api.getBohInfo(user.storeNumber, user.divisionNumber)
+      console.log(response)
+      this.allBohRecords = response.products
     } catch (error) {
       this.allBohRecords = []
       this.showMessage('Failed to load balance on hand info. Error 503: Failed to contact server', false)
@@ -93,7 +95,7 @@ export class BohPage implements OnInit {
 
   // Triggered when search input changes
   applyFilters() {
-    let records = Array.from(this.allBohRecords)
+    let records = this.allBohRecords.slice()
 
     // Filter by department first (unless "All Departments")
     if (this.selectedDepartment !== this.ALL_DEPARTMENTS) {
