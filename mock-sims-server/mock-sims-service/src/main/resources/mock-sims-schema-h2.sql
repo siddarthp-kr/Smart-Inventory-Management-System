@@ -21,16 +21,23 @@ CREATE TABLE MARKDOWN_RULES
     days_after_order_to_set_exp int
 );
 
+CREATE TABLE DEPARTMENT_INFO (
+    department_number char(2) PRIMARY KEY,
+    department_name varchar(50)
+);
+
 CREATE TABLE PRODUCT_BASIC_INFO
 (
     upc_number varchar(15) PRIMARY KEY,
     subcommodity_number varchar(5) NOT NULL,
-    department_number varchar(2) NOT NULL,
+    department_number char(2) NOT NULL,
     product_name varchar(100) NOT NULL,
     standard_price decimal(10,2) NOT NULL,
     CONSTRAINT FK_PRODUCT_BASIC_MARKDOWN
         FOREIGN KEY (subcommodity_number)
-            REFERENCES MARKDOWN_RULES(subcommodity_number)
+            REFERENCES MARKDOWN_RULES(subcommodity_number),
+    CONSTRAINT FK_PRODUCT_BASIC_INFO
+        FOREIGN KEY (department_number) REFERENCES DEPARTMENT_INFO(department_number)
 );
 
 CREATE TABLE PRODUCT_BOH_INFO
@@ -117,4 +124,5 @@ CREATE TABLE MD_TRANSACTIONS (
         FOREIGN KEY (product_upc)
         REFERENCES PRODUCT_BASIC_INFO(upc_number)
 );
+
 

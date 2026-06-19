@@ -20,6 +20,30 @@ VALUES ('27602', 20, TRUE, 1, 2, 3);
 INSERT INTO MARKDOWN_RULES
 VALUES ('29465', 20, TRUE, 1, 2, 3);
 
+--For Department Info
+
+INSERT INTO DEPARTMENT_INFO (department_number, department_name)
+VALUES ('00', 'DFLT 159 VALUE');
+INSERT INTO DEPARTMENT_INFO (department_number, department_name)
+VALUES ('01', 'GROCERY');
+INSERT INTO DEPARTMENT_INFO (department_number, department_name)
+VALUES ('03', 'DRUG/GM');
+INSERT INTO DEPARTMENT_INFO (department_number, department_name)
+VALUES ('06', 'PHARMACY');
+INSERT INTO DEPARTMENT_INFO (department_number, department_name)
+VALUES ('07', 'PRODUCE');
+INSERT INTO DEPARTMENT_INFO (department_number, department_name)
+VALUES ('09', 'MEAT');
+INSERT INTO DEPARTMENT_INFO (department_number, department_name)
+VALUES ('10', 'DELI/BAKE');
+INSERT INTO DEPARTMENT_INFO (department_number, department_name)
+VALUES ('30', 'SUPPLIES');
+INSERT INTO DEPARTMENT_INFO (department_number, department_name)
+VALUES ('34', 'MISC SALES TRAN');
+INSERT INTO DEPARTMENT_INFO (department_number, department_name)
+VALUES ('58', 'FUEL');
+
+
 --For Product Basic Info
 INSERT INTO PRODUCT_BASIC_INFO (upc_number, subcommodity_number, department_number, product_name, standard_price)
 VALUES ('4011', '62000', '07', 'Bananas', 0.75);
