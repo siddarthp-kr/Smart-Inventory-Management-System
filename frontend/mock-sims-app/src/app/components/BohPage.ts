@@ -213,25 +213,40 @@ export class BohPage implements OnInit {
     }
 
     try{
-      for (const item of this.cartItems){
-        await this.api.placeOrder(
-          user.storeNumber,
-          user.divisionNumber,
-          user.userEuid,
-          item.upcNumber,
-          item.quantity
-        );
+      const products = this.cartItems.map(item => ({
+        upcNumber: item.upcNumber,
+        quantity: item.quantity
+      }));
+
+      const response = await this.api.placeOrder(
+        user.storeNumber,
+        user.divisionNumber,
+        user.userEuid,
+        products
+      );
+
+      if (response.responseCode === 200) {
+        this.showMessage(response.responseMessage, true);
+        this.clearCart();
+        await this.getBohInfo();
+      } else {
+        this.showMessage(response.responseMessage, false);
       }
 
-      this.showMessage('Order placed successfully.', true);
-      this.clearCart();
-      await this.getBohInfo();
-
-    } catch (error){
+    } catch (error: any) {
       console.error('Failed to place cart order:', error);
-      this.showMessage('Failed to place one or more order items.', false);
+
+      if (error?.error?.responseCode && error?.error?.responseMessage) {
+        this.showMessage(
+          `Error: ${error.error.responseCode} ${error.error.responseMessage}`,
+          false
+        );
+      } else {
+        this.showMessage('Failed to place order.', false);
+      }
     }
 
     this.cd.detectChanges();
   }
+
 }

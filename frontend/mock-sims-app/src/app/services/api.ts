@@ -16,6 +16,11 @@ export interface BohResponse {
   products: BohRecord[]
 }
 
+export interface PlaceOrderProduct{
+  upcNumber: string;
+  quantity: number;
+}
+
 export interface PlaceOrderResponse {
   responseCode: number,
   responseMessage: string,
@@ -63,14 +68,18 @@ export class Api {
 
 
 
-  async placeOrder(storeNumber: string, divisionNumber: string, userEuid: string, upcNumber: string, quantity: number): Promise<PlaceOrderResponse>{
+  async placeOrder(
+    storeNumber: string,
+    divisionNumber: string,
+    userEuid: string,
+    products: PlaceOrderProduct[]
+  ): Promise<PlaceOrderResponse> {
     const requestBody = {
-      storeNumber: storeNumber,
-      divisionNumber: divisionNumber,
-      userEuid: userEuid,
-      upcNumber: upcNumber,
-      quantity: quantity
-    }
+      storeNumber,
+      divisionNumber,
+      userEuid,
+      items: products
+    };
 
 
     //do validation to make sure that the request is valid
@@ -78,7 +87,7 @@ export class Api {
       this.http.post<PlaceOrderResponse>('http://localhost:8080/api/order/place-order', requestBody)
     )
 
-    return result
+    return result;
   }
 
   async getOrderHistory(storeNumber: string, divisionNumber: string): Promise<OrderHistoryResponse>{
