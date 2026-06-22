@@ -4,12 +4,10 @@ import mocksims.project.backend.api.domain.PlaceOrderRequest;
 import mocksims.project.backend.api.domain.PlaceOrderResponse;
 import mocksims.project.backend.domain.MockSimsConstants;
 import mocksims.project.backend.exception.MockSimsCustomException;
-import mocksims.project.backend.exception.RowNotFoundException;
 import mocksims.project.backend.service.PlaceOrderService;
 import mocksims.project.backend.util.ValidationHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataAccessException;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -29,11 +27,11 @@ public class PlaceOrderController{
     public PlaceOrderResponse placeOrder(@RequestBody PlaceOrderRequest placeOrderRequest){
         PlaceOrderResponse placeOrderResponse = new PlaceOrderResponse();
 
-        if(ValidationHelper.validateUpcNumber(placeOrderRequest.getUpcNumber())
-        && ValidationHelper.validateDivisionNumber(placeOrderRequest.getDivisionNumber())
+        if(
+        ValidationHelper.validateDivisionNumber(placeOrderRequest.getDivisionNumber())
                 && ValidationHelper.validateStoreNumber(placeOrderRequest.getStoreNumber())
                 && ValidationHelper.validateUserEuid(placeOrderRequest.getUserEuid())
-                && placeOrderRequest.getQuantity() > 0
+                && ValidationHelper.validateOrderItems(placeOrderRequest.getItems())
         ){
             try {
                 placeOrderResponse = placeOrderService.placeOrder(placeOrderRequest);
