@@ -1,7 +1,11 @@
 package mocksims.project.backend.repository;
 
+import mocksims.project.backend.api.domain.PlaceOrderItem;
+import org.springframework.dao.DataAccessException;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface PlaceOrderRepository {
 
@@ -13,14 +17,13 @@ public interface PlaceOrderRepository {
      *      The store number from which the order was placed
      * @param divisionNumber
      *      The division number from which the order was placed
-     * @param upcNumber
-     *      The identifier for the item that was ordered
-     * @param quantity
-     *      The number of units of the item that were ordered
+     * @param items
+     *      List containing item information for each item being ordered
      * @throws DataAccessException
      *      If an error occurs while accessing the database
      */
-    public void updateBohInfo(String storeNumber, String divisionNumber, String upcNumber, int quantity);
+    public void updateBohInfo(String storeNumber, String divisionNumber, List<PlaceOrderItem> items);
+
 
     /**
      * Creates a row in the ORDER_TRANSACTION_INFO table which contains information about the order transaction.
@@ -46,22 +49,16 @@ public interface PlaceOrderRepository {
     /**
      * Creates a row in the PRODUCT_INVENTORY_INFO table that records inventory details for a specific
      * ordered product, linking it back to its corresponding order transaction.
-     * @param upcNumber
-     *      The identifier for the item that was ordered
-     * @param quantity
-     *      The number of units of the item that were ordered
      * @param orderId
      *      The primary key (product_order_id) of the associated row in the ORDER_TRANSACTION_INFO table
      * @param orderDate
      *      The date on which the order was placed
-     * @param expirationDate
-     *      The date on which the ordered product is set to expire
-     * @param orderIsActive
-     *      Whether or not the record should have a PDM alert created for it
+     * @param items
+     *      List containing item information for each item being ordered
      * @throws DataAccessException
      *      If an error occurs while accessing the database
      */
-    public void insertProductInventoryInfo(String upcNumber, int quantity, long orderId, LocalDate orderDate, LocalDate expirationDate, boolean orderIsActive);
+    public void insertProductInventoryInfo(long orderId, LocalDate orderDate, List<PlaceOrderItem> items);
 
     /**
      * Retrieves the subcommodity number associated with a given product from the PRODUCT_BASIC_INFO table.
