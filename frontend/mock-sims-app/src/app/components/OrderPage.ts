@@ -1,6 +1,6 @@
 import {Component, inject, OnInit} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {Api, PlaceOrderResponse, ProductItem, ProductsResponse} from '../services/api';
+import {Api, BohRecord, PlaceOrderResponse, ProductItem, ProductsResponse} from '../services/api';
 import { ChangeDetectorRef } from '@angular/core';
 import {AuthService} from '../services/auth';
 import {Router, RouterLink} from '@angular/router';
@@ -20,6 +20,7 @@ export class OrderPage implements OnInit{
   results: ProductItem[] = [];
   isSuccess: boolean = false;
   products: ProductItem[] = [];
+  boh: BohRecord[] = [];
 
   private api = inject(Api)
   private auth = inject(AuthService)
@@ -28,8 +29,10 @@ export class OrderPage implements OnInit{
 
   async ngOnInit(){
     await this.loadProducts();
+
     this.searchFunction()
   }
+
 
 
   async loadProducts() {
