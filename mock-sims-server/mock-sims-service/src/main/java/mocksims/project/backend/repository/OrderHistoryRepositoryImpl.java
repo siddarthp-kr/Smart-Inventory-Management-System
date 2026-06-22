@@ -16,17 +16,17 @@ import java.util.Objects;
 @Repository
 public class OrderHistoryRepositoryImpl implements OrderHistoryRepository {
     private static final String SQL_GET_ORDER_HISTORY = "SELECT " +
-            "    ord.product_order_id, " +
+            "    ord.general_order_id, " +
             "    ord.user_euid, " +
             "    inv.upc_number, " +
             "    inv.quantity, " +
             "    inv.order_date, " +
             "    prod.product_name " +
             "FROM ORDER_TRANSACTION_INFO ord " +
-            "INNER JOIN PRODUCT_INVENTORY_INFO inv ON ord.product_order_id = inv.product_order_id " +
+            "INNER JOIN PRODUCT_INVENTORY_INFO inv ON ord.general_order_id = inv.general_order_id " +
             "INNER JOIN PRODUCT_BASIC_INFO prod ON inv.upc_number = prod.upc_number " +
             "WHERE ord.store_number = :STORE_NUMBER AND ord.division_number = :DIVISION_NUMBER " +
-            "ORDER BY ord.product_order_id DESC " +
+            "ORDER BY ord.general_order_id DESC " +
             "LIMIT 500";
 
     private static final String STORE_NUMBER = "STORE_NUMBER";
@@ -50,6 +50,8 @@ public class OrderHistoryRepositoryImpl implements OrderHistoryRepository {
         try {
             orders = namedParameterJdbcTemplate.query(SQL_GET_ORDER_HISTORY, mapSqlParameterSource, orderHistoryMapper);
         } catch (DataAccessException e){
+            System.out.println(e.getMostSpecificCause().getMessage());
+            System.out.println(e.getCause().getMessage());
             throw new MockSimsCustomException(500, "Failed to get order history for division " + orderHistoryRequest.getDivisionNumber() + " store " + orderHistoryRequest.getStoreNumber() + ". " + e.getMessage());
         }
 

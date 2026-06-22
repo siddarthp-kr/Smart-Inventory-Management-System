@@ -9,7 +9,7 @@ import java.sql.SQLException;
 @Component
 public class OrderHistoryMapper implements RowMapper<OrderHistoryRecord> {
 
-    private static final String PRODUCT_ORDER_ID = "product_order_id";
+    private static final String GENERAL_ORDER_ID = "general_order_id";
     private static final String USER_EUID = "user_euid";
     private static final String ORDER_DATE = "order_date";
     private static final String UPC_NUMBER = "upc_number";
@@ -20,7 +20,7 @@ public class OrderHistoryMapper implements RowMapper<OrderHistoryRecord> {
     public OrderHistoryRecord mapRow(ResultSet rs, int index) throws SQLException {
         OrderHistoryRecord orderHistoryRecord = new OrderHistoryRecord();
 
-        orderHistoryRecord.setOrderId(rs.getInt(PRODUCT_ORDER_ID));
+        orderHistoryRecord.setOrderId(rs.getInt(GENERAL_ORDER_ID));
         orderHistoryRecord.setUserEuid(rs.getString(USER_EUID));
         orderHistoryRecord.setOrderPlacedDate(rs.getDate(ORDER_DATE).toLocalDate());
         orderHistoryRecord.setUpcNumber(rs.getString(UPC_NUMBER));
