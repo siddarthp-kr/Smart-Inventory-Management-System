@@ -49,22 +49,16 @@ public interface PlaceOrderRepository {
     /**
      * Creates a row in the PRODUCT_INVENTORY_INFO table that records inventory details for a specific
      * ordered product, linking it back to its corresponding order transaction.
-     * @param upcNumber
-     *      The identifier for the item that was ordered
-     * @param quantity
-     *      The number of units of the item that were ordered
      * @param orderId
      *      The primary key (product_order_id) of the associated row in the ORDER_TRANSACTION_INFO table
      * @param orderDate
      *      The date on which the order was placed
-     * @param expirationDate
-     *      The date on which the ordered product is set to expire
-     * @param orderIsActive
-     *      Whether or not the record should have a PDM alert created for it
+     * @param items
+     *      List containing item information for each item being ordered
      * @throws DataAccessException
      *      If an error occurs while accessing the database
      */
-    public void insertProductInventoryInfo(String upcNumber, int quantity, long orderId, LocalDate orderDate, LocalDate expirationDate, boolean orderIsActive);
+    public void insertProductInventoryInfo(long orderId, LocalDate orderDate, List<PlaceOrderItem> items);
 
     /**
      * Retrieves the subcommodity number associated with a given product from the PRODUCT_BASIC_INFO table.

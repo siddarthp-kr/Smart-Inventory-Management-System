@@ -64,8 +64,7 @@ public class PlaceOrderServiceImpl implements PlaceOrderService{
             }
         }
 
-
-        placeOrderRepository.insertProductInventoryInfo(placeOrderRequest.getItems(), orderId, timeOrderReceived.toLocalDate());
+        placeOrderRepository.insertProductInventoryInfo(orderId, timeOrderReceived.toLocalDate(), placeOrderRequest.getItems());
 
         placeOrderResponse.setResponseCode(200);
         placeOrderResponse.setResponseMessage("Order placed successfully");

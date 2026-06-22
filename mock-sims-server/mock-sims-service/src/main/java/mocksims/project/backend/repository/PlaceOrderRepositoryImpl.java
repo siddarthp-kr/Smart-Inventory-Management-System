@@ -1,6 +1,7 @@
 package mocksims.project.backend.repository;
 
 import mocksims.project.backend.api.domain.PlaceOrderItem;
+import mocksims.project.backend.api.domain.ProductItem;
 import mocksims.project.backend.exception.MockSimsCustomException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,11 +13,13 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.awt.event.MouseAdapter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.IntStream;
 
 @Repository
 public class PlaceOrderRepositoryImpl implements PlaceOrderRepository {
@@ -32,7 +35,7 @@ public class PlaceOrderRepositoryImpl implements PlaceOrderRepository {
     private static final String ORDER_PLACED_TIME = "ORDER_PLACED_TIME";
     private static final String ORDER_RECEIVED_TIME = "ORDER_RECEIVED_TIME";
 
-    private static final String PRODUCT_ORDER_ID = "PRODUCT_ORDER_ID";
+    private static final String GENERAL_ORDER_ID = "GENERAL_ORDER_ID";
     private static final String EXPIRATION_DATE = "EXPIRATION_DATE";
     private static final String ORDER_DATE = "ORDER_DATE";
     private static final String IS_ACTIVE = "IS_ACTIVE";
@@ -45,7 +48,7 @@ public class PlaceOrderRepositoryImpl implements PlaceOrderRepository {
 
     private static final String SQL_QUERY_MD_RULES_EXPIRATION_DATE = "SELECT days_after_order_to_set_exp FROM MARKDOWN_RULES WHERE subcommodity_number = :SUBCOMMODITY_NUMBER";
 
-    private static final String SQL_INSERT_PRODUCT_INVENTORY_INFO = "INSERT INTO PRODUCT_INVENTORY_INFO (product_order_id, upc_number, quantity, expiration_date, order_date, is_active) VALUES (:PRODUCT_ORDER_ID, :UPC_NUMBER, :QUANTITY, :EXPIRATION_DATE, :ORDER_DATE, :IS_ACTIVE)";
+    private static final String SQL_INSERT_PRODUCT_INVENTORY_INFO = "INSERT INTO PRODUCT_INVENTORY_INFO (general_order_id, upc_number, quantity, expiration_date, order_date, is_active) VALUES (:GENERAL_ORDER_ID, :UPC_NUMBER, :QUANTITY, :EXPIRATION_DATE, :ORDER_DATE, :IS_ACTIVE)";
 
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -57,7 +60,7 @@ public class PlaceOrderRepositoryImpl implements PlaceOrderRepository {
     @Override
     public void updateBohInfo(String storeNumber, String divisionNumber, List<PlaceOrderItem> items) throws DataAccessException{
 
-        int[] retVal;
+        int[] retVals;
 
         try {
             List<MapSqlParameterSource> batchArgs = new ArrayList<>();
@@ -68,16 +71,18 @@ public class PlaceOrderRepositoryImpl implements PlaceOrderRepository {
                         .addValue(UPC_NUMBER, item.getUpcNumber())
                         .addValue(STORE_NUMBER, storeNumber)
                         .addValue(DIVISION_NUMBER, divisionNumber);
+
+                batchArgs.add(mapSqlParameterSource);
             }
 
-            batchArgs.add(new MapSqlParameterSource());
 
-            retVal = namedParameterJdbcTemplate.batchUpdate(SQL_UPDATE_BOH_INFO, batchArgs.toArray(new MapSqlParameterSource[batchArgs.size()]));
+
+            retVals = namedParameterJdbcTemplate.batchUpdate(SQL_UPDATE_BOH_INFO, batchArgs.toArray(new MapSqlParameterSource[batchArgs.size()]));
         } catch (DataAccessException e) {
             throw new MockSimsCustomException(500, e.getMessage());
         }
 
-        if(retVal.length != items.size()){
+        if(IntStream.of(retVals).sum() != items.size()){
             throw new MockSimsCustomException(404, "Row Not Found: BOH information records are missing at store " + storeNumber + " in division " + divisionNumber);
         }
     }
@@ -95,7 +100,7 @@ public class PlaceOrderRepositoryImpl implements PlaceOrderRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         try {
-            namedParameterJdbcTemplate.update(SQL_INSERT_ORDER_TRANSACTION_INFO, mapSqlParameterSource, keyHolder, new String[] {"product_order_id"});
+            namedParameterJdbcTemplate.update(SQL_INSERT_ORDER_TRANSACTION_INFO, mapSqlParameterSource, keyHolder, new String[] {"general_order_id"});
         } catch (DataAccessException e){
             throw new MockSimsCustomException(500, "Failed to perform order placed by user " + userEuid + " at " + timeOrderPlaced.toString() + ". " + e.getMessage());
         }
@@ -113,22 +118,26 @@ public class PlaceOrderRepositoryImpl implements PlaceOrderRepository {
     }
 
     @Override
-    public void insertProductInventoryInfo(String upcNumber, int quantity, long orderId, LocalDate orderDate, LocalDate expirationDate, boolean orderIsActive) throws DataAccessException {
-
-        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
-                .addValue(PRODUCT_ORDER_ID, orderId)
-                .addValue(UPC_NUMBER, upcNumber)
-                .addValue(QUANTITY, quantity)
-                .addValue(EXPIRATION_DATE, expirationDate)
-                .addValue(ORDER_DATE, orderDate)
-                .addValue(IS_ACTIVE, orderIsActive);
-
+    public void insertProductInventoryInfo(long orderId, LocalDate orderDate, List<PlaceOrderItem> items) throws DataAccessException {
         try {
-            namedParameterJdbcTemplate.update(SQL_INSERT_PRODUCT_INVENTORY_INFO, mapSqlParameterSource);
+            List<MapSqlParameterSource> batchArgs = new ArrayList<>();
+
+            for(PlaceOrderItem item: items){
+                MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+                        .addValue(GENERAL_ORDER_ID, orderId)
+                        .addValue(UPC_NUMBER, item.getUpcNumber())
+                        .addValue(QUANTITY, item.getQuantity())
+                        .addValue(EXPIRATION_DATE, item.getExpirationDate())
+                        .addValue(ORDER_DATE, orderDate)
+                        .addValue(IS_ACTIVE, item.getIsActive());
+
+                batchArgs.add(mapSqlParameterSource);
+            }
+
+            namedParameterJdbcTemplate.batchUpdate(SQL_INSERT_PRODUCT_INVENTORY_INFO, batchArgs.toArray(new MapSqlParameterSource[batchArgs.size()]));
         } catch (DataAccessException e){
             throw new MockSimsCustomException(500, "Failed to insert product inventory info for order " + orderId + ". " + e.getMessage());
         }
-
     }
 
     @Override
