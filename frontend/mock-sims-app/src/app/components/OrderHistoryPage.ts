@@ -131,6 +131,6 @@ export class OrderHistoryPage implements OnInit {
 
   // Back navigation
   goBack() {
-    this.router.navigate(['/OrderPage'])
+    this.router.navigate(['/BohPage'])
   }
 }
