@@ -1,8 +1,7 @@
 package mocksims.project.backend.repository;
 
+import mocksims.project.backend.api.domain.PlaceOrderItem;
 import mocksims.project.backend.exception.MockSimsCustomException;
-import mocksims.project.backend.exception.RowNotFoundException;
-import mocksims.project.backend.service.PlaceOrderServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
@@ -15,6 +14,8 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Repository
@@ -54,24 +55,30 @@ public class PlaceOrderRepositoryImpl implements PlaceOrderRepository {
     }
 
     @Override
-    public void updateBohInfo(String storeNumber, String divisionNumber, String upcNumber, int quantity) throws DataAccessException{
+    public void updateBohInfo(String storeNumber, String divisionNumber, List<PlaceOrderItem> items) throws DataAccessException{
 
-        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
-                .addValue(QUANTITY, quantity)
-                .addValue(UPC_NUMBER, upcNumber)
-                .addValue(STORE_NUMBER, storeNumber)
-                .addValue(DIVISION_NUMBER, divisionNumber);
-
-        int numRowsUpdated = 0;
+        int[] retVal;
 
         try {
-            numRowsUpdated = namedParameterJdbcTemplate.update(SQL_UPDATE_BOH_INFO, mapSqlParameterSource);
+            List<MapSqlParameterSource> batchArgs = new ArrayList<>();
+
+            for(PlaceOrderItem item: items){
+                MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+                        .addValue(QUANTITY, item.getQuantity())
+                        .addValue(UPC_NUMBER, item.getUpcNumber())
+                        .addValue(STORE_NUMBER, storeNumber)
+                        .addValue(DIVISION_NUMBER, divisionNumber);
+            }
+
+            batchArgs.add(new MapSqlParameterSource());
+
+            retVal = namedParameterJdbcTemplate.batchUpdate(SQL_UPDATE_BOH_INFO, batchArgs.toArray(new MapSqlParameterSource[batchArgs.size()]));
         } catch (DataAccessException e) {
             throw new MockSimsCustomException(500, e.getMessage());
         }
 
-        if(numRowsUpdated == 0){
-            throw new MockSimsCustomException(404, "Row Not Found: BOH information record for product " + upcNumber + " does not exist at store " + storeNumber + " in division " + divisionNumber);
+        if(retVal.length != items.size()){
+            throw new MockSimsCustomException(404, "Row Not Found: BOH information records are missing at store " + storeNumber + " in division " + divisionNumber);
         }
     }
 

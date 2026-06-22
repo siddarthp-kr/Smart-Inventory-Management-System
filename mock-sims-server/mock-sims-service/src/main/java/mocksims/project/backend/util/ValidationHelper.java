@@ -1,6 +1,15 @@
 package mocksims.project.backend.util;
 
+import mocksims.project.backend.api.domain.PlaceOrderItem;
+import mocksims.project.backend.controller.PlaceOrderController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
+
 public class ValidationHelper {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ValidationHelper.class);
 
     /*
         Returns true if the UPC number is valid
@@ -72,4 +81,23 @@ public class ValidationHelper {
         }
     }
 
+    public static boolean validateOrderItems(List<PlaceOrderItem> items) {
+
+        if(items == null || items.isEmpty()){
+            return false;
+        } else {
+            for(PlaceOrderItem item: items){
+                if(! validateUpcNumber(item.getUpcNumber())){
+                    LOG.error("Invalid item in order: {} is not a valid UPC.", item.getUpcNumber());
+                    return false;
+                }
+                if (! (item.getQuantity() > 0)){
+                    LOG.error("Invalid item in order: Cannot order quantity {} of UPC {}.", item.getQuantity(), item.getUpcNumber());
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
 }

@@ -2,7 +2,7 @@
 
 CREATE TABLE ORDER_TRANSACTION_INFO
 (
-    product_order_id int AUTO_INCREMENT PRIMARY KEY,
+    general_order_id int AUTO_INCREMENT PRIMARY KEY,
     store_number varchar(5) NOT NULL,
     division_number varchar(3) NOT NULL,
     user_euid varchar(10),
@@ -58,15 +58,16 @@ CREATE TABLE PRODUCT_BOH_INFO
 
 CREATE TABLE PRODUCT_INVENTORY_INFO
 (
-    product_order_id int PRIMARY KEY,
+    product_order_id int AUTO_INCREMENT PRIMARY KEY,
+    general_order_id int NOT NULL,
     upc_number varchar(15) NOT NULL,
     quantity int,
     expiration_date date,
     order_date date,
     is_active boolean,
     CONSTRAINT FK_PRODUCT_INVENTORY_ORDER
-        FOREIGN KEY (product_order_id)
-        REFERENCES ORDER_TRANSACTION_INFO(product_order_id),
+        FOREIGN KEY (general_order_id)
+        REFERENCES ORDER_TRANSACTION_INFO(general_order_id),
     CONSTRAINT FK_PRODUCT_INVENTORY_UPC
         FOREIGN KEY (upc_number)
         REFERENCES PRODUCT_BASIC_INFO(upc_number)

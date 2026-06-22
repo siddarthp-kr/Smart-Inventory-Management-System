@@ -1,7 +1,11 @@
 package mocksims.project.backend.repository;
 
+import mocksims.project.backend.api.domain.PlaceOrderItem;
+import org.springframework.dao.DataAccessException;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface PlaceOrderRepository {
 
@@ -13,14 +17,13 @@ public interface PlaceOrderRepository {
      *      The store number from which the order was placed
      * @param divisionNumber
      *      The division number from which the order was placed
-     * @param upcNumber
-     *      The identifier for the item that was ordered
-     * @param quantity
-     *      The number of units of the item that were ordered
+     * @param items
+     *      List containing item information for each item being ordered
      * @throws DataAccessException
      *      If an error occurs while accessing the database
      */
-    public void updateBohInfo(String storeNumber, String divisionNumber, String upcNumber, int quantity);
+    public void updateBohInfo(String storeNumber, String divisionNumber, List<PlaceOrderItem> items);
+
 
     /**
      * Creates a row in the ORDER_TRANSACTION_INFO table which contains information about the order transaction.
