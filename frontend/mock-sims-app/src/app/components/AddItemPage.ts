@@ -1,9 +1,9 @@
 import {Component, inject} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {Api, AddItemResponse} from '../services/api';
+import {Api, AddItemResponse, DepartmentInfoRecord} from '../services/api';
 import {ChangeDetectorRef} from '@angular/core';
 import {AuthService} from '../services/auth';
-import {RouterLink} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-add-item-page',
@@ -28,7 +28,7 @@ export class AddItemPage{
   daysBeforeExpToRFI: number | null = null;
   daysAfterOrderToSetExp: number | null = null;
 
-
+  departmentInfo: DepartmentInfoRecord[] = [];
   message: string = '';
   isSuccess: boolean = false;
 
@@ -45,6 +45,21 @@ export class AddItemPage{
   invalidDaysBeforeExpToRFI: boolean = false;
   invalidDaysAfterOrderToSetExp: boolean = false;
 
+  ngOnInit() {
+    this.getDepartmentInfo();
+  }
+
+  async getDepartmentInfo(){
+
+    try {
+      const response = await this.api.getDepartmentInfo();
+      this.departmentInfo = response.departmentInfoRecords;
+      console.log(this.departmentInfo);
+    } catch (error) {
+      this.showMessage('Failed to load department info. Error 503: Failed to contact server', false);
+    }
+    this.cd.detectChanges();
+  }
 
   showMessage(text: string, success: boolean){
     this.message = text;

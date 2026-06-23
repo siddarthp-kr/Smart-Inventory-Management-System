@@ -3,12 +3,18 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Api, BohRecord, DepartmentInfoRecord } from '../services/api';
 import { AuthService } from '../services/auth';
+import {RouterLink} from '@angular/router';
 
+interface CartItem{
+  upcNumber: string;
+  productName: string;
+  quantity: number;
+}
 
 @Component({
   selector: 'app-boh-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './template/BohPageTemplate.html'
 })
 export class BohPage implements OnInit {
@@ -33,13 +39,16 @@ export class BohPage implements OnInit {
   search: string = ''
 
   // Pagination
-  pageSizeOptions: number[] = [5, 10, 50, 100, 500]
-  pageSize: number = 10
+  pageSizeOptions: (number | 'ALL')[] = ['ALL',5,10,50,100,500];
+  pageSize: number | 'ALL' = 10;
   currentPage: number = 1
 
   // Status message (same pattern as other pages)
   statusMessage: string = ''
   statusIsSuccess: boolean = true
+
+  cartItems: CartItem[] = [];
+  pendingQuantities: Record<string, number> = {};
 
   ngOnInit() {
     this.getDepartmentInfo()
@@ -139,10 +148,16 @@ export class BohPage implements OnInit {
   }
 
   get totalPages(): number {
+    if (this.pageSize === 'ALL'){
+      return 1;
+    }
     return Math.max(1, Math.ceil(this.filteredRecords.length / this.pageSize))
   }
 
   get pagedRecords(): BohRecord[] {
+    if (this.pageSize === 'ALL'){
+      return this.filteredRecords;
+    }
     const start = (this.currentPage - 1) * this.pageSize
     return this.filteredRecords.slice(start, start + this.pageSize)
   }
@@ -151,4 +166,87 @@ export class BohPage implements OnInit {
   get isSearching(): boolean {
     return this.search.trim() !== ''
   }
+
+  addToCart(record: BohRecord){
+    const qty = Number(this.pendingQuantities[record.upcNumber]);
+
+    if (!qty || qty <= 0 || !Number.isInteger(qty)) {
+      this.showMessage('Enter a valid quantity before adding to order.', false);
+      return;
+    }
+
+    const existingItem = this.cartItems.find(item => item.upcNumber === record.upcNumber);
+
+    if(existingItem){
+      existingItem.quantity += qty;
+    } else{
+      this.cartItems.push({
+        upcNumber: record.upcNumber,
+        productName: record.productName,
+        quantity: qty
+      });
+    }
+
+    delete this.pendingQuantities[record.upcNumber];
+    this.showMessage(`${record.productName} added to order.`, true);
+  }
+
+  removeFromCart(upcNumber: string){
+    this.cartItems = this.cartItems.filter(item => item.upcNumber !== upcNumber);
+  }
+
+  clearCart(){
+    this.cartItems = [];
+    this.pendingQuantities = {};
+  }
+
+  async placeCartOrder(){
+    const user = this.auth.user();
+    if (!user) {
+      this.showMessage('Failed to place order. You must be logged in.', false);
+      return;
+    }
+
+    if (this.cartItems.length === 0) {
+      this.showMessage('There are no items in the order.', false);
+      return;
+    }
+
+    try{
+      const products = this.cartItems.map(item => ({
+        upcNumber: item.upcNumber,
+        quantity: item.quantity
+      }));
+
+      const response = await this.api.placeOrder(
+        user.storeNumber,
+        user.divisionNumber,
+        user.userEuid,
+        products
+      );
+
+      if (response.responseCode === 200) {
+        this.showMessage(response.responseMessage, true);
+        this.clearCart();
+        await this.getBohInfo();
+      } else {
+        this.showMessage(response.responseMessage, false);
+      }
+
+    } catch (error: any) {
+      console.error('Failed to place cart order:', error);
+
+      if (error?.error?.responseCode && error?.error?.responseMessage) {
+        this.showMessage(
+          `Error: ${error.error.responseCode} ${error.error.responseMessage}`,
+          false
+        );
+      } else {
+        this.showMessage('Failed to place order.', false);
+      }
+    }
+
+    this.cd.detectChanges();
+  }
+
 }
