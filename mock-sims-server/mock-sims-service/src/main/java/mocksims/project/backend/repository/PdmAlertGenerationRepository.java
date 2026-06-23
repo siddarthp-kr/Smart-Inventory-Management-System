@@ -10,4 +10,7 @@ public interface PdmAlertGenerationRepository {
 
     public void insertNewAlerts(List<PdmAlertInfoRecord> alerts);
 
+    public Integer getItemTotalQuantity(PdmAlertInfoRecord alert);
+
+    public Integer getItemTotalBoh(PdmAlertInfoRecord alert);
 }

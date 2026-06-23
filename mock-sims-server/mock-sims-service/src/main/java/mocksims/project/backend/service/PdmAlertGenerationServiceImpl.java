@@ -76,22 +76,31 @@ public class PdmAlertGenerationServiceImpl implements PdmAlertGenerationService{
 
     private List<PdmAlertInfoRecord> filterForEligibleAlerts(List<PdmAlertInfoRecord> potentialAlertsInfo) {
         List<PdmAlertInfoRecord> filteredAlerts = new ArrayList<>();
+        List<Integer> orderIdsToSetInactive = new ArrayList<>();
 
-        //check whether today is between MD day and expiration date
-
-        //check whether BOH makes sense - EDIT THIS to mark products no longer on the shelves as inactive
         for(PdmAlertInfoRecord potentialAlert: potentialAlertsInfo){
-            if(validateDateIsEligible(potentialAlert) && validateItemsStillOnShelf(potentialAlert)){
+            boolean alertIsEligible = true;
+            if(!validateItemsStillOnShelf(potentialAlert)){
+                alertIsEligible = false;
+                orderIdsToSetInactive.add(potentialAlert.getProductOrderId());
+            }
+            if(alertIsEligible && !validateDateIsEligible(potentialAlert)){
+                alertIsEligible = false;
+            }
+            if(alertIsEligible){
                 filteredAlerts.add(potentialAlert);
             }
         }
+
+        //MAKE METHOD CALL HERE to use list of order ids to mark inactive orders
 
         return filteredAlerts;
     }
 
     private boolean validateItemsStillOnShelf(PdmAlertInfoRecord potentialAlert) {
-
-        return false;
+        Integer bohAmount = pdmAlertGenerationRepository.getItemTotalBoh(potentialAlert);
+        Integer totalQuantity = pdmAlertGenerationRepository.getItemTotalQuantity(potentialAlert);
+        return totalQuantity - potentialAlert.getQuantity() > bohAmount;
     }
 
     private boolean validateDateIsEligible(PdmAlertInfoRecord potentialAlert) {

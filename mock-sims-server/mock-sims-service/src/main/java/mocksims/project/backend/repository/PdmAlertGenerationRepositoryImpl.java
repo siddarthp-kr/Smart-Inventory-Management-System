@@ -49,6 +49,17 @@ public class PdmAlertGenerationRepositoryImpl implements PdmAlertGenerationRepos
     private static final String SQL_GET_BOH = "SELECT (qod_number + qom_number) " +
             "FROM PRODUCT_BOH_INFO " +
             "WHERE store_number = :STORE_NUMBER AND division_number = :DIVISION_NUMBER AND upc_number = :UPC_NUMBER;";
+    private static final String SQL_GET_TOTAL_QUANTITY = """
+            SELECT
+                COALESCE(SUM(pii.quantity), 0) AS total_active_quantity
+            FROM PRODUCT_INVENTORY_INFO pii
+            JOIN ORDER_TRANSACTION_INFO oti
+                ON pii.general_order_id = oti.general_order_id
+            WHERE pii.upc_number = :UPC_NUMBER
+              AND oti.store_number = :STORE_NUMBER
+              AND oti.division_number = :DIVISION_NUMBER
+              AND pii.is_active = TRUE;
+            """;
 
     private static final String SQL_GET_ALERTS_INFO = "" +
             "SELECT\n" +
@@ -130,7 +141,7 @@ public class PdmAlertGenerationRepositoryImpl implements PdmAlertGenerationRepos
                 .addValue(DIVISION_NUMBER, alert.getDivisionNumber())
                 .addValue(UPC_NUMBER, alert.getUpcNumber());
 
-        return 0;
+        return namedParameterJdbcTemplate.queryForObject(SQL_GET_TOTAL_QUANTITY, mapSqlParameterSource, Integer.class);
     }
 
 }
