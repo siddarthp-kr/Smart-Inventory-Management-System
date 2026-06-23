@@ -147,6 +147,6 @@ export class Api {
     let result: BohResponse = await firstValueFrom(
       this.http.get<any>(`http://localhost:8080/api/boh/get-boh-count?storeNumber=${storeNumber}&divisionNumber=${divisionNumber}`)
     )
-    return result;
+    return result
   }
 }
