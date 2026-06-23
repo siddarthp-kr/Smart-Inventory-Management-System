@@ -1,12 +1,11 @@
 package mocksims.project.backend.service;
 
-import mocksims.project.backend.api.domain.PdmAlertInfo;
+import mocksims.project.backend.api.domain.PdmAlertInfoRecord;
 import mocksims.project.backend.repository.PdmAlertGenerationRepository;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.xml.crypto.Data;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,9 +21,9 @@ public class PdmAlertGenerationServiceImpl implements PdmAlertGenerationService{
     @Transactional
     public void generatePdmAlerts(){
 
-        List<PdmAlertInfo> potentialAlertsInfo = pdmAlertGenerationRepository.getPdmAlertsInfo();
+        List<PdmAlertInfoRecord> potentialAlertsInfo = pdmAlertGenerationRepository.getPdmAlertsInfo();
 
-        List<PdmAlertInfo> eligibleAlertsInfo = filterForEligibleAlerts(potentialAlertsInfo);
+        List<PdmAlertInfoRecord> eligibleAlertsInfo = filterForEligibleAlerts(potentialAlertsInfo);
 
         pdmAlertGenerationRepository.insertNewAlerts(eligibleAlertsInfo);
 
@@ -75,14 +74,29 @@ public class PdmAlertGenerationServiceImpl implements PdmAlertGenerationService{
 
     }
 
-    private List<PdmAlertInfo> filterForEligibleAlerts(List<PdmAlertInfo> potentialAlertsInfo) {
-        List<PdmAlertInfo> filteredAlerts = new ArrayList<>();
+    private List<PdmAlertInfoRecord> filterForEligibleAlerts(List<PdmAlertInfoRecord> potentialAlertsInfo) {
+        List<PdmAlertInfoRecord> filteredAlerts = new ArrayList<>();
 
         //check whether today is between MD day and expiration date
 
-        //check whether BOH makes sense
+        //check whether BOH makes sense - EDIT THIS to mark products no longer on the shelves as inactive
+        for(PdmAlertInfoRecord potentialAlert: potentialAlertsInfo){
+            if(validateDateIsEligible(potentialAlert) && validateItemsStillOnShelf(potentialAlert)){
+                filteredAlerts.add(potentialAlert);
+            }
+        }
 
         return filteredAlerts;
+    }
+
+    private boolean validateItemsStillOnShelf(PdmAlertInfoRecord potentialAlert) {
+
+        return false;
+    }
+
+    private boolean validateDateIsEligible(PdmAlertInfoRecord potentialAlert) {
+        LocalDate markdownDate = potentialAlert.getExpirationDate().minusDays(potentialAlert.getDaysBeforeExpToMD());
+        return markdownDate.isEqual(LocalDate.now()) || markdownDate.isBefore(LocalDate.now());
     }
 
 }

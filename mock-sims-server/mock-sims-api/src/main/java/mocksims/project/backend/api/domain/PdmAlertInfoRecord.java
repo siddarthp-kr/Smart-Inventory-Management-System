@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PdmAlertInfo {
+public class PdmAlertInfoRecord {
     Integer productOrderId;
     String storeNumber;
     String divisionNumber;
