@@ -5,18 +5,39 @@
     <h1 class = "center-title">
       Welcome, {{auth.user()?.userEuid}}
     </h1>
+
+    <p class = "center-subtitle">
+      Store: {{auth.user()?.storeNumber}} | Division: {{auth.user()?.divisionNumber}}
+    </p>
   }
     @else {
       <h1 class="center-title">
         Welcome, to Smart Inventory Management Dashboard (SIMS)
       </h1>
+      <p>You must be logged in!</p>
     }
 
-  <p>This is the dashboard page!</p>
 </div>
 
+
 <style>
-  .center-title{
+  .dashboard-home {
     text-align: center;
+    padding: 20px;
+  }
+
+  .center-title {
+    margin-bottom: 8px;
+  }
+
+  .center-subtitle {
+    font-size: 16px;
+    color: #6b7280;
+    margin-bottom: 16px;
+  }
+
+  .dashboard-text {
+    font-size: 15px;
   }
 </style>
+

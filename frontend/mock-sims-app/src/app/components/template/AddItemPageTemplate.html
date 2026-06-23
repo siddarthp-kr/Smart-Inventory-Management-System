@@ -1,7 +1,7 @@
 <div class = "add-item-container">
   <div class="header-bar">
     <h2>Add Item</h2>
-    <button routerLink="/OrderPage">Back to Ordering</button>
+    <button routerLink="/BohPage">Back to Ordering</button>
   </div>
   @if (message !== '' && isSuccess){
     <div class = "message-box success">
@@ -26,9 +26,19 @@
       <input type = "text" [(ngModel)] = "subcommodityNumber" placeholder="Enter Subcommodity Number" [class.invalid-field] = "invalidSubcommodityNumber" />
     </div>
 
-    <div class = "form-group">
-      <label>Department Number</label>
-      <input type = "text" [(ngModel)] = "departmentNumber" placeholder="Enter Department Number" [class.invalid-field] = "invalidDepartmentNumber" />
+    <div class="form-group">
+      <label>Department</label>
+      <select
+        [(ngModel)]="departmentNumber"
+        [class.invalid-field]="invalidDepartmentNumber"
+      >
+        <option value="">Select Department</option>
+        @for (dept of departmentInfo; track dept.departmentNumber) {
+          <option [value]="dept.departmentNumber">
+            {{ dept.departmentNumber }} {{ dept.departmentName }}
+          </option>
+        }
+      </select>
     </div>
 
     <div class = "form-group">
@@ -80,91 +90,150 @@
 </div>
 
 <style>
-  .add-item-container{
-    max-width: 700px;
-    margin: 0 auto;
-  }
-  .form-grid{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    margin-bottom: 20px;
+  /* Container (MAIN IMPROVEMENT) */
+  .add-item-container {
+    max-width: 900px;
+    margin: 30px auto;
+    background: white;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
   }
 
+  /* Header */
+  .header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+  }
+
+  .header-bar h2 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  /* Back button */
+  .header-bar button {
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+
+  .header-bar button:hover {
+    background: #f3f4f6;
+  }
+
+  /* Form Grid */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 25px;
+  }
+
+  /* Form Groups */
   .form-group {
     display: flex;
     flex-direction: column;
   }
 
   .form-group label {
-    margin-bottom: 5px;
-    font-weight: 500;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
   }
 
-  .form-group input{
-    padding: 8px;
-  }
-
+  /* Inputs / Selects */
+  .form-group input,
   .form-group select {
-    padding: 8px;
-    border: 1px solid;
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
     font-size: 14px;
-    width: 100%;
-    box-sizing: border-box;
+    outline: none;
+    transition: all 0.2s ease;
   }
 
-  .actions{
-    margin-top: 10px;
-    display: flex;
-    gap: 10px;
+  /* Hover */
+  .form-group input:hover,
+  .form-group select:hover {
+    border-color: #9ca3af;
   }
 
-  .actions button{
-    padding: 8px 12px;
-    cursor: pointer;
+  /* Focus */
+  .form-group input:focus,
+  .form-group select:focus {
+    border-color: #5b5de6;
+    box-shadow: 0 0 0 3px rgba(91, 93, 230, 0.15);
   }
 
-  .message-box{
-    margin-bottom: 15px;
-    padding: 10px;
-    border: 1px solid #ccc;
-  }
-
-  .success{
-    background-color: #e8f5e9;
-    border-color: green;
-  }
-
-  .invalid{
-    background-color: #ffe5e5;
-    border-color: red;
-  }
-
-  .invalid-field {
-    border: 2px solid red;
-    background-color: #fff5f5;
-  }
-
+  /* Disabled */
   .disabled-field {
-    background-color: #f0f0f0;
-    color: #777;
+    background-color: #f9fafb;
+    color: #9ca3af;
     cursor: not-allowed;
   }
 
-  .header-bar{
+  /* Validation */
+  .invalid-field {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1);
+  }
+
+  /* Action Button */
+  .actions {
+    margin-top: 10px;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    margin-top: 20px;
+    justify-content: flex-start;
   }
-  .header-bar h2{
-    margin: 0;
-  }
-  .header-bar button{
-    padding: 8px 12px;
+
+  .actions button {
+    background: dodgerblue;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 18px;
+    font-size: 14px;
+    font-weight: 600;
     cursor: pointer;
-    margin-left: 5px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(91, 93, 230, 0.2);
   }
+
+  .actions button:hover {
+    background: darkblue;
+    transform: translateY(-1px);
+  }
+
+  /* Messages */
+  .message-box {
+    margin-bottom: 15px;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .success {
+    background-color: #ecfdf5;
+    border: 1px solid #10b981;
+    color: #065f46;
+  }
+
+  .invalid {
+    background-color: #fef2f2;
+    border: 1px solid #ef4444;
+    color: #7f1d1d;
+  }
+
 
 </style>

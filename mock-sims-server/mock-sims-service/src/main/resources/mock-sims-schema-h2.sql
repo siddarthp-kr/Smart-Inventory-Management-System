@@ -100,13 +100,15 @@ CREATE TABLE RFI_TRANSACTIONS (
       user_euid varchar(10),
       store_number varchar(5) NOT NULL,
       division_number varchar(3) NOT NULL,
-      product_upc varchar(15) NOT NULL,
+      upc_number varchar(15) NOT NULL,
+      qod_before_transaction int NOT NULL,
+      qom_before_transaction int NOT NULL,
       action_time timestamp,
       quantity_removed int,
       reason_code varchar(10),
 
       CONSTRAINT FK_RFI_PRODUCT
-          FOREIGN KEY (product_upc)
+          FOREIGN KEY (upc_number)
           REFERENCES PRODUCT_BASIC_INFO(upc_number)
 );
 
@@ -115,14 +117,16 @@ CREATE TABLE MD_TRANSACTIONS (
      user_euid varchar(10),
      store_number varchar(5) NOT NULL,
      division_number varchar(3) NOT NULL,
-     product_upc varchar(15) NOT NULL,
+     upc_number varchar(15) NOT NULL,
+     qod_before_transaction int NOT NULL,
+     qom_before_transaction int NOT NULL,
      action_time timestamp,
      quantity_marked_down int,
      original_price decimal(10,2),
      new_price decimal(10,2),
 
     CONSTRAINT FK_MD_PRODUCT
-        FOREIGN KEY (product_upc)
+        FOREIGN KEY (upc_number)
         REFERENCES PRODUCT_BASIC_INFO(upc_number)
 );
 

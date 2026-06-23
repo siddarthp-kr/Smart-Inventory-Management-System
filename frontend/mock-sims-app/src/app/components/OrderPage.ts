@@ -97,7 +97,7 @@ export class OrderPage implements OnInit{
     // do extra validation here
     let orderResponse: PlaceOrderResponse
     try {
-      orderResponse = await this.api.placeOrder(user.storeNumber, user.divisionNumber, user.userEuid, product.upcNumber, quantity);
+      orderResponse = await this.api.placeOrder(user.storeNumber, user.divisionNumber, user.userEuid, [{upcNumber: product.upcNumber, quantity: quantity}]);
     } catch (error){
       orderResponse = {
         responseCode: 503,

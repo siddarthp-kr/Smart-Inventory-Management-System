@@ -5,6 +5,13 @@ import { Api, OrderHistoryRecord, OrderHistoryResponse } from '../services/api';
 import { AuthService } from '../services/auth';
 import { Router, RouterLink } from '@angular/router';
 
+interface GroupedOrder{
+  orderId: number;
+  orderPlacedDate: string
+  userEuid: string;
+  items: OrderHistoryRecord[];
+  expanded: boolean;
+}
 
 @Component({
   templateUrl: `./template/OrderHistoryPageTemplate.html`,
@@ -26,7 +33,8 @@ export class OrderHistoryPage implements OnInit {
   allRecords: OrderHistoryRecord[] = []
 
   // Records after applying search filter
-  filteredRecords: OrderHistoryRecord[] = []
+  groupedOrders: GroupedOrder[] = [];
+  filteredGroupedOrders: GroupedOrder[] = [];
 
   // Search input
   search: string = ''
@@ -46,6 +54,7 @@ export class OrderHistoryPage implements OnInit {
 
     setTimeout(() => {
       this.statusMessage = '';
+      this.cd.detectChanges();
     }, 3000);
   }
 
@@ -79,8 +88,32 @@ export class OrderHistoryPage implements OnInit {
       .slice()
       .sort((a, b) => b.orderId - a.orderId)
 
+    this.groupOrders();
     this.applySearch()
     this.cd.detectChanges()
+  }
+
+  groupOrders(){
+    const groupedMap = new Map<number, GroupedOrder>();
+
+    for (const record of this.allRecords){
+      const existing = groupedMap.get(record.orderId);
+
+      if (existing){
+        existing.items.push(record);
+      } else{
+        groupedMap.set(record.orderId, {
+          orderId:record.orderId,
+          orderPlacedDate:record.orderPlacedDate,
+          userEuid: record.userEuid,
+          items: [record],
+          expanded: false
+        });
+      }
+    }
+
+
+    this.groupedOrders = Array.from(groupedMap.values()).sort((a, b) => b.orderId - a.orderId);
   }
 
   // Refresh button handler
@@ -88,20 +121,33 @@ export class OrderHistoryPage implements OnInit {
     this.orderHistoryAction()
   }
 
-  // Search bar handler - filters by UPC or product name
+  // Search bar handler - filters by UPC, product name, user, or order id
   applySearch() {
     const term = this.search.trim().toLowerCase()
     if (term === '') {
-      this.filteredRecords = this.allRecords.slice()
+      this.filteredGroupedOrders = this.groupedOrders.slice();
     } else {
-      this.filteredRecords = this.allRecords.filter(r =>
-        (r.productName?.toLowerCase().includes(term)) ||
-        (r.upcNumber?.includes(term))
-      )
+      this.filteredGroupedOrders = this.groupedOrders.filter(order =>
+        order.orderId.toString().includes(term) ||
+        order.userEuid?.toLowerCase().includes(term) ||
+        order.items.some(item =>
+          item.productName?.toLowerCase().includes(term) ||
+          item.upcNumber?.includes(term)
+        )
+      );
     }
     // Reset back to first page when filter changes
     this.currentPage = 1
   }
+
+
+  toggleOrder(orderId: number) {
+    const order = this.filteredGroupedOrders.find(o => o.orderId === orderId);
+    if (order) {
+      order.expanded = !order.expanded;
+    }
+  }
+
 
   // Pagination handlers
   onPageSizeChange() {
@@ -121,16 +167,16 @@ export class OrderHistoryPage implements OnInit {
   }
 
   get totalPages(): number {
-    return Math.max(1, Math.ceil(this.filteredRecords.length / this.pageSize))
+    return Math.max(1, Math.ceil(this.filteredGroupedOrders.length / this.pageSize))
   }
 
-  get pagedRecords(): OrderHistoryRecord[] {
+  get pagedRecords(): GroupedOrder[] {
     const start = (this.currentPage - 1) * this.pageSize
-    return this.filteredRecords.slice(start, start + this.pageSize)
+    return this.filteredGroupedOrders.slice(start, start + this.pageSize)
   }
 
   // Back navigation
   goBack() {
-    this.router.navigate(['/OrderPage'])
+    this.router.navigate(['/BohPage'])
   }
 }
