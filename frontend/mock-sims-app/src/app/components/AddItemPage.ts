@@ -3,7 +3,7 @@ import {FormsModule} from '@angular/forms';
 import {Api, AddItemResponse, DepartmentInfoRecord} from '../services/api';
 import {ChangeDetectorRef} from '@angular/core';
 import {AuthService} from '../services/auth';
-import {RouterLink} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-add-item-page',
