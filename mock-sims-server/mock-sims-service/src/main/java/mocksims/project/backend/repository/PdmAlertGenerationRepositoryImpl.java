@@ -13,7 +13,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.IntStream;
 
 @Repository
@@ -41,33 +40,26 @@ public class PdmAlertGenerationRepositoryImpl implements PdmAlertGenerationRepos
     private static final String FIRST_MARKDOWN_PERCENT = "FIRST_MARKDOWN_PERCENT";
     private static final String IS_ACTIVE = "IS_ACTIVE";
 
+    private static final String SUBCOMMODITY_NUMBER = "SUBCOMMODITY_NUMBER";
+
     private static final String SQL_INSERT_ALERTS = """
             INSERT INTO PDM_ALERTS (store_number, division_number, department_number, upc_number, quantity, expiration_date, markdown_after_date, rfi_after_date, first_markdown_percent, is_active)
             VALUES (:STORE_NUMBER, :DIVISION_NUMBER, :DEPARTMENT_NUMBER, :UPC_NUMBER, :QUANTITY, :EXPIRATION_DATE, :MARKDOWN_AFTER_DATE, :RFI_AFTER_DATE, :FIRST_MARKDOWN_PERCENT, :IS_ACTIVE);
             """;
 
 
-    private static final String SQL_GET_QUANTITY_INFO = "" +
-            "SELECT\n" +
-            "    pboh.qod_number,\n" +
-            "    pboh.qom_number,\n" +
-            "    COALESCE(SUM(pii.quantity), 0) AS total_active_quantity\n" +
-            "FROM PRODUCT_BOH_INFO pboh\n" +
-            "JOIN PRODUCT_INVENTORY_INFO pii\n" +
-            "    ON pii.upc_number = pboh.upc_number\n" +
-            "JOIN ORDER_TRANSACTION_INFO oti\n" +
-            "    ON pii.general_order_id = oti.general_order_id\n" +
-            "   AND oti.store_number = pboh.store_number\n" +
-            "   AND oti.division_number = pboh.division_number\n" +
-            "WHERE pboh.upc_number = :UPC_NUMBER\n" +
-            "  AND pboh.store_number = :STORE_NUMBER\n" +
-            "  AND pboh.division_number = :DIVISION_NUMBER\n" +
-            "  AND pii.is_active = TRUE\n" +
-            "GROUP BY pboh.qod_number, pboh.qom_number;";
+    private static final String SQL_GET_MARKDOWN_ELIGIBILITY = """
+            SELECT CAN_BE_MARKED_DOWN
+            FROM MARKDOWN_RULES
+            WHERE subcommodity_number = :SUBCOMMODITY_NUMBER;
+            """;
+
+    private static final String SQL_QUERY_PRODUCT_BASIC_INFO_SUBCOMMODITY_NUMBER = "SELECT subcommodity_number FROM PRODUCT_BASIC_INFO WHERE upc_number = :UPC_NUMBER";
 
     private static final String SQL_GET_BOH = "SELECT (qod_number + qom_number) " +
             "FROM PRODUCT_BOH_INFO " +
             "WHERE store_number = :STORE_NUMBER AND division_number = :DIVISION_NUMBER AND upc_number = :UPC_NUMBER;";
+
     private static final String SQL_GET_TOTAL_QUANTITY = """
             SELECT
                 COALESCE(SUM(pii.quantity), 0) AS total_active_quantity
@@ -223,6 +215,37 @@ public class PdmAlertGenerationRepositoryImpl implements PdmAlertGenerationRepos
             throw new MockSimsCustomException(500, "Failed to set inventory as inactive. Some rows were not set to inactive");
         }
 
+    }
+
+    @Override
+    public boolean getWhetherItemCanBeMarkedDown(String upcNumber){
+        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
+
+        String subcommodityNumber = getSubcommodityNumber(upcNumber);
+
+        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource().addValue(SUBCOMMODITY_NUMBER, subcommodityNumber);
+
+        try {
+            return Boolean.TRUE.equals(namedParameterJdbcTemplate.queryForObject(SQL_GET_MARKDOWN_ELIGIBILITY, mapSqlParameterSource, Boolean.class));
+        } catch (DataAccessException e){
+            LOG.error("Failed to get whether UPC {} can be marked down.", upcNumber,e);
+            throw new MockSimsCustomException(500, "Failed to get whether UPC can be marked down");
+        }
+    }
+
+    @Override
+    public String getSubcommodityNumber(String upcNumber) {
+        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource().addValue(UPC_NUMBER, upcNumber);
+        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
+        String subcommodityNumber = "";
+
+        try {
+            subcommodityNumber = namedParameterJdbcTemplate.queryForObject(SQL_QUERY_PRODUCT_BASIC_INFO_SUBCOMMODITY_NUMBER, mapSqlParameterSource, String.class);
+        } catch (DataAccessException e){
+            throw new MockSimsCustomException(500, "Failed to get subcommodity for upc " + upcNumber + ". " + e.getMessage());
+        }
+
+        return subcommodityNumber;
     }
 
 }
