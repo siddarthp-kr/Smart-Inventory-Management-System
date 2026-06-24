@@ -88,3 +88,16 @@ VALUES ( '014', '00045', '2033', 0, 0 );
 INSERT INTO PRODUCT_BOH_INFO (division_number, store_number, upc_number,qod_number, qom_number)
 VALUES ( '014', '00045', '2044', 0, 0 );
 
+-- Mock Markdown Transactions
+INSERT INTO MD_TRANSACTIONS (user_euid,store_number,division_number,upc_number,qod_before_transaction,qom_before_transaction,action_time,quantity_marked_down,original_price,new_price)
+VALUES ('AB12345','00045','014','4011',20,0,TIMESTAMP '2026-06-22 10:30:00',3,0.75,0.50);
+
+INSERT INTO MD_TRANSACTIONS (user_euid,store_number,division_number,upc_number,qod_before_transaction,qom_before_transaction,action_time,quantity_marked_down,original_price,new_price)
+VALUES ('AB12345','00045','014','3011',10,0,TIMESTAMP '2026-06-22 12:15:00',2,4.79,3.79);
+
+-- Mock RFI Transactions
+INSERT INTO RFI_TRANSACTIONS (user_euid,store_number,division_number,upc_number,qod_before_transaction,qom_before_transaction,action_time,quantity_removed,reason_code)
+VALUES ('AB12345','00045','014','4011',17,3,TIMESTAMP '2026-06-23 08:10:00',2,'OD');
+
+INSERT INTO RFI_TRANSACTIONS (user_euid,store_number,division_number,upc_number,qod_before_transaction,qom_before_transaction,action_time,quantity_removed,reason_code)
+VALUES ('AB12345','00045','014','1011',8,0,TIMESTAMP '2026-06-23 09:45:00',1,'OD');
