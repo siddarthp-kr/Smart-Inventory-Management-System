@@ -43,7 +43,7 @@ public class PdmAlertGenerationRepositoryImpl implements PdmAlertGenerationRepos
 
     private static final String SQL_INSERT_ALERTS = """
             INSERT INTO PRODUCT_INVENTORY_INFO (store_number, division_number, department_number, upc_number, quantity, expiration_date, markdown_after_date, rfi_after_date, first_markdown_percent, is_active)
-            VALUES (:STORE_NUMBER, :DIVISION_NUMBER, :DEPARTMENT_NUMBER, :UPC_NUMBER, :QUANTITY, :EXPIRATION_DATE, :MARKDOWN_AFTER_DATE, :RFI_AFTER_DATE, :FIRST_MARKDOWN_PERCENT, :IS_ACTIVE)
+            VALUES (:STORE_NUMBER, :DIVISION_NUMBER, :DEPARTMENT_NUMBER, :UPC_NUMBER, :QUANTITY, :EXPIRATION_DATE, :MARKDOWN_AFTER_DATE, :RFI_AFTER_DATE, :FIRST_MARKDOWN_PERCENT, :IS_ACTIVE);
             """;
 
 
@@ -91,6 +91,7 @@ public class PdmAlertGenerationRepositoryImpl implements PdmAlertGenerationRepos
             "    pii.product_order_id,\n" +
             "    pii.upc_number,\n" +
             "    pii.expiration_date,\n" +
+            "    pii.quantity,\n" +
             "    oti.store_number,\n" +
             "    oti.division_number,\n" +
             "    pbi.department_number,\n" +
@@ -148,19 +149,33 @@ public class PdmAlertGenerationRepositoryImpl implements PdmAlertGenerationRepos
         //generate alerts and mark the corresponding inventory rows as inactive
         NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
         List<MapSqlParameterSource> batchArgs = new ArrayList<>();
+        List<Integer> orderIdsToSetInactive = new ArrayList<>();
 
         for(PdmAlertInfoRecord alert: alerts){
             MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
-                    .addValue();
+                    .addValue(STORE_NUMBER, alert.getStoreNumber())
+                    .addValue(DIVISION_NUMBER, alert.getDivisionNumber())
+                    .addValue(DEPARTMENT_NUMBER, alert.getDepartmentNumber())
+                    .addValue(UPC_NUMBER, alert.getUpcNumber())
+                    .addValue(QUANTITY, alert.getQuantity())
+                    .addValue(EXPIRATION_DATE, alert.getExpirationDate())
+                    .addValue(MARKDOWN_AFTER_DATE, alert.getExpirationDate().minusDays(alert.getDaysBeforeExpToMD()))
+                    .addValue(RFI_AFTER_DATE, alert.getExpirationDate().minusDays(alert.getDaysBeforeExpToRFI()))
+                    .addValue(FIRST_MARKDOWN_PERCENT, alert.getFirstMarkdownPercent())
+                    .addValue(IS_ACTIVE, true);
 
             batchArgs.add(mapSqlParameterSource);
+            orderIdsToSetInactive.add(alert.getProductOrderId());
         }
 
         try {
-            namedParameterJdbcTemplate.batchUpdate( , batchArgs.toArray(new MapSqlParameterSource[0]));
+            namedParameterJdbcTemplate.batchUpdate(SQL_INSERT_ALERTS , batchArgs.toArray(new MapSqlParameterSource[0]));
         } catch (DataAccessException e){
-
+            LOG.error("Failed to insert new alerts into alerts table.", e);
+            throw new MockSimsCustomException(500, "Failed to insert new alerts into alerts table.");
         }
+
+        markInventoryAsInactive(orderIdsToSetInactive);
 
     }
 

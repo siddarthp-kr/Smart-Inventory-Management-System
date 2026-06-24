@@ -101,7 +101,7 @@ public class PdmAlertGenerationServiceImpl implements PdmAlertGenerationService{
         Integer bohAmount = potentialAlert.getQodNumber() + potentialAlert.getQomNumber(); //pdmAlertGenerationRepository.getItemTotalBoh(potentialAlert);
         Integer totalQuantity = pdmAlertGenerationRepository.getItemTotalQuantity(potentialAlert);
 
-        return totalQuantity - potentialAlert.getQuantity() > bohAmount;
+        return totalQuantity  >= bohAmount - potentialAlert.getQuantity();
     }
 
     private boolean validateDateIsEligible(PdmAlertInfoRecord potentialAlert) {
