@@ -97,6 +97,11 @@ public class PdmAlertGenerationServiceImpl implements PdmAlertGenerationService{
         return filteredAlerts;
     }
 
+    //IMPLEMENT THIS METHOD
+    private boolean validateItemCanBeMarkedDown(PdmAlertInfoRecord potentialAlert){
+        return false;
+    }
+
     private boolean validateItemsStillOnShelf(PdmAlertInfoRecord potentialAlert) {
         Integer bohAmount = potentialAlert.getQodNumber() + potentialAlert.getQomNumber(); //pdmAlertGenerationRepository.getItemTotalBoh(potentialAlert);
         Integer totalQuantity = pdmAlertGenerationRepository.getItemTotalQuantity(potentialAlert);

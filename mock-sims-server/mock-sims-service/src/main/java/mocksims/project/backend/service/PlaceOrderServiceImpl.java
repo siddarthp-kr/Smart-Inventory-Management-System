@@ -54,7 +54,7 @@ public class PlaceOrderServiceImpl implements PlaceOrderService{
 
             LocalDate expirationDate;
 
-            //maybe move this logic into the getNumberOfDaysBeforeExpiration
+            //UPDATE THIS TO ALSO CHECK WHETHER THE ITEM CAN BE MARKED DOWN
             if(numberOfDaysBeforeExpiration != null){
                 item.setExpirationDate(timeOrderReceived.toLocalDate().plusDays(numberOfDaysBeforeExpiration));
                 item.setIsActive(true);

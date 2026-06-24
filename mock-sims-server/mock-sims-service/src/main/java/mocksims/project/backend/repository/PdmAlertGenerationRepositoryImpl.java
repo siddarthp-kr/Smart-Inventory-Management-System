@@ -152,7 +152,6 @@ public class PdmAlertGenerationRepositoryImpl implements PdmAlertGenerationRepos
         List<Integer> orderIdsToSetInactive = new ArrayList<>();
 
         for(PdmAlertInfoRecord alert: alerts){
-            System.out.println(alert.getStoreNumber());
             MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
                     .addValue(STORE_NUMBER, alert.getStoreNumber())
                     .addValue(DIVISION_NUMBER, alert.getDivisionNumber())
@@ -173,7 +172,6 @@ public class PdmAlertGenerationRepositoryImpl implements PdmAlertGenerationRepos
             namedParameterJdbcTemplate.batchUpdate(SQL_INSERT_ALERTS , batchArgs.toArray(new MapSqlParameterSource[0]));
         } catch (DataAccessException e){
             LOG.error("Failed to insert new alerts into alerts table.", e);
-            System.out.println(e.getMostSpecificCause().getMessage());
             throw new MockSimsCustomException(500, "Failed to insert new alerts into alerts table.");
         }
 
