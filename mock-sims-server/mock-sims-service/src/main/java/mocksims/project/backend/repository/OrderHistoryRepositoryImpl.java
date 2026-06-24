@@ -50,8 +50,6 @@ public class OrderHistoryRepositoryImpl implements OrderHistoryRepository {
         try {
             orders = namedParameterJdbcTemplate.query(SQL_GET_ORDER_HISTORY, mapSqlParameterSource, orderHistoryMapper);
         } catch (DataAccessException e){
-            System.out.println(e.getMostSpecificCause().getMessage());
-            System.out.println(e.getCause().getMessage());
             throw new MockSimsCustomException(500, "Failed to get order history for division " + orderHistoryRequest.getDivisionNumber() + " store " + orderHistoryRequest.getStoreNumber() + ". " + e.getMessage());
         }
 

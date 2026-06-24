@@ -9,8 +9,6 @@ import java.util.List;
 
 public interface PlaceOrderRepository {
 
-    //change this so that it will return a ResponseEntity or SuccessResponse or something
-
     /**
      * Updates the QOD_NUMBER number in the PRODUCT_BOH_INFO table when an item order is placed.
      * @param storeNumber

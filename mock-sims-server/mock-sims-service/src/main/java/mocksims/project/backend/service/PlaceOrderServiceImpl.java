@@ -39,9 +39,7 @@ public class PlaceOrderServiceImpl implements PlaceOrderService{
 
         boolean alertIsActive;
 
-        //change this order ID to be the general order ID - this will be a FK in th product_inventory_info table that references the order transaction table
         long orderId = placeOrderRepository.insertOrderTransactionInfo(placeOrderRequest.getStoreNumber(), placeOrderRequest.getDivisionNumber(), placeOrderRequest.getUserEuid(), timeOrderPlaced, timeOrderReceived);
-
 
         placeOrderRepository.updateBohInfo(placeOrderRequest.getStoreNumber(), placeOrderRequest.getDivisionNumber(), placeOrderRequest.getItems());
 
@@ -52,9 +50,6 @@ public class PlaceOrderServiceImpl implements PlaceOrderService{
             //this will return null if the subcommodity is not eligible for markdown
             Integer numberOfDaysBeforeExpiration = placeOrderRepository.getNumberOfDaysBeforeExpiration(subcommodityNumber);
 
-            LocalDate expirationDate;
-
-            //maybe move this logic into the getNumberOfDaysBeforeExpiration
             if(numberOfDaysBeforeExpiration != null){
                 item.setExpirationDate(timeOrderReceived.toLocalDate().plusDays(numberOfDaysBeforeExpiration));
                 item.setIsActive(true);
