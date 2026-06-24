@@ -6,6 +6,7 @@ import { BohPage } from './components/BohPage';
 import { AlertsPage } from './components/AlertsPage';
 import { AddItemPage } from './components/AddItemPage';
 import { OrderHistoryPage } from './components/OrderHistoryPage';
+import {MovementPage} from './components/MovementPage';
 
 
 export const routes: Routes = [
@@ -48,5 +49,10 @@ export const routes: Routes = [
     path: 'OrderHistoryPage',
     title: "Order History",
     component: OrderHistoryPage
+  },
+  {
+    path: 'MovementPage',
+    title: "Movement",
+    component: MovementPage
   }
 ];

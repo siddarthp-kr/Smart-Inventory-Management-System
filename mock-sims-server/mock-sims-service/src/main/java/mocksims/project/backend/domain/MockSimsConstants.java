@@ -8,5 +8,6 @@ public class MockSimsConstants {
     public static final String GET_PRODUCTS_ENDPOINT = "/products";
     public static final String GET_BOH_ENDPOINT = "/get-boh-count";
     public static final String GET_DEPARTMENT_INFO_ENDPOINT = "/department-info";
+    public static final String GET_MOVEMENT_INFO_ENDPOINT = "/movement-info";
     public static final int THREAD_POOL_SIZE_10 = 10;
 }
