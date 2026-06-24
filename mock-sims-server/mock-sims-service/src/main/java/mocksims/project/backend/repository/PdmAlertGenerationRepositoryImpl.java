@@ -11,7 +11,10 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.IntStream;
 
 @Repository
 public class PdmAlertGenerationRepositoryImpl implements PdmAlertGenerationRepository{
@@ -27,6 +30,22 @@ public class PdmAlertGenerationRepositoryImpl implements PdmAlertGenerationRepos
     private static final String DIVISION_NUMBER = "DIVISION_NUMBER";
     private static final String STORE_NUMBER = "STORE_NUMBER";
     private static final String UPC_NUMBER = "UPC_NUMBER";
+
+    private static final String PRODUCT_ORDER_ID = "PRODUCT_ORDER_ID";
+
+    private static final String DEPARTMENT_NUMBER = "DEPARTMENT_NUMBER";
+    private static final String QUANTITY = "QUANTITY";
+    private static final String EXPIRATION_DATE = "EXPIRATION_DATE";
+    private static final String MARKDOWN_AFTER_DATE = "MARKDOWN_AFTER_DATE";
+    private static final String RFI_AFTER_DATE = "RFI_AFTER_DATE";
+    private static final String FIRST_MARKDOWN_PERCENT = "FIRST_MARKDOWN_PERCENT";
+    private static final String IS_ACTIVE = "IS_ACTIVE";
+
+    private static final String SQL_INSERT_ALERTS = """
+            INSERT INTO PRODUCT_INVENTORY_INFO (store_number, division_number, department_number, upc_number, quantity, expiration_date, markdown_after_date, rfi_after_date, first_markdown_percent, is_active)
+            VALUES (:STORE_NUMBER, :DIVISION_NUMBER, :DEPARTMENT_NUMBER, :UPC_NUMBER, :QUANTITY, :EXPIRATION_DATE, :MARKDOWN_AFTER_DATE, :RFI_AFTER_DATE, :FIRST_MARKDOWN_PERCENT, :IS_ACTIVE)
+            """;
+
 
     private static final String SQL_GET_QUANTITY_INFO = "" +
             "SELECT\n" +
@@ -59,6 +78,12 @@ public class PdmAlertGenerationRepositoryImpl implements PdmAlertGenerationRepos
               AND oti.store_number = :STORE_NUMBER
               AND oti.division_number = :DIVISION_NUMBER
               AND pii.is_active = TRUE;
+            """;
+
+    private static final String SQL_SET_INVENTORY_INACTIVE = """
+            UPDATE PRODUCT_INVENTORY_INFO
+            SET is_active = FALSE
+            WHERE product_order_id = :PRODUCT_ORDER_ID;
             """;
 
     private static final String SQL_GET_ALERTS_INFO = "" +
@@ -118,12 +143,28 @@ public class PdmAlertGenerationRepositoryImpl implements PdmAlertGenerationRepos
         return alertsInfo;
     }
 
+    @Override
     public void insertNewAlerts(List<PdmAlertInfoRecord> alerts){
         //generate alerts and mark the corresponding inventory rows as inactive
+        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
+        List<MapSqlParameterSource> batchArgs = new ArrayList<>();
 
+        for(PdmAlertInfoRecord alert: alerts){
+            MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+                    .addValue();
+
+            batchArgs.add(mapSqlParameterSource);
+        }
+
+        try {
+            namedParameterJdbcTemplate.batchUpdate( , batchArgs.toArray(new MapSqlParameterSource[0]));
+        } catch (DataAccessException e){
+
+        }
 
     }
 
+    @Override
     public Integer getItemTotalBoh(PdmAlertInfoRecord alert){
         NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
         MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
@@ -134,6 +175,7 @@ public class PdmAlertGenerationRepositoryImpl implements PdmAlertGenerationRepos
         return namedParameterJdbcTemplate.queryForObject(SQL_GET_BOH, mapSqlParameterSource, Integer.class);
     }
 
+    @Override
     public Integer getItemTotalQuantity(PdmAlertInfoRecord alert){
         NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
         MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
@@ -142,6 +184,30 @@ public class PdmAlertGenerationRepositoryImpl implements PdmAlertGenerationRepos
                 .addValue(UPC_NUMBER, alert.getUpcNumber());
 
         return namedParameterJdbcTemplate.queryForObject(SQL_GET_TOTAL_QUANTITY, mapSqlParameterSource, Integer.class);
+    }
+
+    @Override
+    public void markInventoryAsInactive(List<Integer> orderIds){
+        List<MapSqlParameterSource> batchArgs = new ArrayList<>();
+        int[] retVals;
+        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
+
+        for(Integer orderId: orderIds){
+            MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource().addValue(PRODUCT_ORDER_ID, orderId);
+            batchArgs.add(mapSqlParameterSource);
+        }
+
+        try {
+            retVals = namedParameterJdbcTemplate.batchUpdate(SQL_SET_INVENTORY_INACTIVE, batchArgs.toArray(new MapSqlParameterSource[0]));
+        } catch (DataAccessException e){
+            LOG.error("Failed to set order inventory as inactive", e);
+            throw new MockSimsCustomException(500, e.getMessage());
+        }
+
+        if(IntStream.of(retVals).sum() != orderIds.size()){
+            throw new MockSimsCustomException(500, "Failed to set inventory as inactive. Some rows were not set to inactive");
+        }
+
     }
 
 }

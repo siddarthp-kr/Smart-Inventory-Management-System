@@ -92,14 +92,15 @@ public class PdmAlertGenerationServiceImpl implements PdmAlertGenerationService{
             }
         }
 
-        //MAKE METHOD CALL HERE to use list of order ids to mark inactive orders
+        pdmAlertGenerationRepository.markInventoryAsInactive(orderIdsToSetInactive);
 
         return filteredAlerts;
     }
 
     private boolean validateItemsStillOnShelf(PdmAlertInfoRecord potentialAlert) {
-        Integer bohAmount = pdmAlertGenerationRepository.getItemTotalBoh(potentialAlert);
+        Integer bohAmount = potentialAlert.getQodNumber() + potentialAlert.getQomNumber(); //pdmAlertGenerationRepository.getItemTotalBoh(potentialAlert);
         Integer totalQuantity = pdmAlertGenerationRepository.getItemTotalQuantity(potentialAlert);
+
         return totalQuantity - potentialAlert.getQuantity() > bohAmount;
     }
 

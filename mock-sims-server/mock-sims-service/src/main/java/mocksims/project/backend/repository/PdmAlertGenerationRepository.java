@@ -13,4 +13,6 @@ public interface PdmAlertGenerationRepository {
     public Integer getItemTotalQuantity(PdmAlertInfoRecord alert);
 
     public Integer getItemTotalBoh(PdmAlertInfoRecord alert);
+
+    public void markInventoryAsInactive(List<Integer> orderIds);
 }
