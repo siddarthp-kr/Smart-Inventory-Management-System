@@ -51,6 +51,27 @@ export interface OrderHistoryResponse {
   orders: Array<OrderHistoryRecord>
 }
 
+export interface MovementInfoRecord{
+  upcNumber: string;
+  productName: string;
+  movementType: string;
+  transactionId: number;
+  userEuid: string;
+  qodBeforeTransaction: number;
+  qomBeforeTransaction: number;
+  actionTime: string;
+  quantityChanged: number;
+  reasonCode: string | null;
+  originalPrice: number | null;
+  newPrice: number | null;
+}
+
+export interface MovementInfoResponse{
+  responseCode: number;
+  responseMessage: string;
+  movements: MovementInfoRecord[];
+}
+
 export interface AddItemResponse{
   responseCode: number;
   responseMessage: string;
@@ -148,5 +169,13 @@ export class Api {
       this.http.get<any>(`http://localhost:8080/api/boh/get-boh-count?storeNumber=${storeNumber}&divisionNumber=${divisionNumber}`)
     )
     return result
+  }
+
+  async getMovementInfo(storeNumber: string, divisionNumber: string, upcNumber: string,): Promise<MovementInfoResponse> {
+    const result: MovementInfoResponse = await firstValueFrom(
+
+      this.http.get<MovementInfoResponse>(`http://localhost:8080/api/boh/movement-info?storeNumber=${storeNumber}&divisionNumber=${divisionNumber}&upcNumber=${upcNumber}`)
+    );
+    return result;
   }
 }
