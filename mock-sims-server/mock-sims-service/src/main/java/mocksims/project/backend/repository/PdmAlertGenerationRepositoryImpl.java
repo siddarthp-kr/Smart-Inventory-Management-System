@@ -42,7 +42,7 @@ public class PdmAlertGenerationRepositoryImpl implements PdmAlertGenerationRepos
     private static final String IS_ACTIVE = "IS_ACTIVE";
 
     private static final String SQL_INSERT_ALERTS = """
-            INSERT INTO PRODUCT_INVENTORY_INFO (store_number, division_number, department_number, upc_number, quantity, expiration_date, markdown_after_date, rfi_after_date, first_markdown_percent, is_active)
+            INSERT INTO PDM_ALERTS (store_number, division_number, department_number, upc_number, quantity, expiration_date, markdown_after_date, rfi_after_date, first_markdown_percent, is_active)
             VALUES (:STORE_NUMBER, :DIVISION_NUMBER, :DEPARTMENT_NUMBER, :UPC_NUMBER, :QUANTITY, :EXPIRATION_DATE, :MARKDOWN_AFTER_DATE, :RFI_AFTER_DATE, :FIRST_MARKDOWN_PERCENT, :IS_ACTIVE);
             """;
 
@@ -152,6 +152,7 @@ public class PdmAlertGenerationRepositoryImpl implements PdmAlertGenerationRepos
         List<Integer> orderIdsToSetInactive = new ArrayList<>();
 
         for(PdmAlertInfoRecord alert: alerts){
+            System.out.println(alert.getStoreNumber());
             MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
                     .addValue(STORE_NUMBER, alert.getStoreNumber())
                     .addValue(DIVISION_NUMBER, alert.getDivisionNumber())
@@ -172,6 +173,7 @@ public class PdmAlertGenerationRepositoryImpl implements PdmAlertGenerationRepos
             namedParameterJdbcTemplate.batchUpdate(SQL_INSERT_ALERTS , batchArgs.toArray(new MapSqlParameterSource[0]));
         } catch (DataAccessException e){
             LOG.error("Failed to insert new alerts into alerts table.", e);
+            System.out.println(e.getMostSpecificCause().getMessage());
             throw new MockSimsCustomException(500, "Failed to insert new alerts into alerts table.");
         }
 
