@@ -34,7 +34,7 @@ public class MarkdownItemServiceImpl implements MarkdownItemService {
         Integer firstMarkdownPercent = markdownItemRepository.getFirstMarkdownPercent(markdownItemRequest.getAlertId());
         Double newPrice = originalPrice * (1.0 - firstMarkdownPercent/100.0);
 
-        markdownItemRepository.updateQodAndQom(markdownItemRequest.getStoreNumber(), markdownItemRequest.getDivisionNumber(), markdownItemRequest.getDivisionNumber(), markdownItemRequest.getQuantity());
+        markdownItemRepository.updateQodAndQom(markdownItemRequest.getStoreNumber(), markdownItemRequest.getDivisionNumber(), markdownItemRequest.getUpcNumber(), markdownItemRequest.getQuantity());
 
         markdownItemRepository.updatePdmAlert(markdownItemRequest.getAlertId(),currentTime, markdownItemRequest.getUserEuid());
 

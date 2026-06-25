@@ -51,7 +51,7 @@ public class MarkdownItemRepositoryImpl implements MarkdownItemRepository {
             """;
 
     private final String SQL_INSERT_MD_TRANSACTION_INFO = """
-            INSERT INTO PDM_ALERT (user_euid, store_number, division_number, upc_number, qod_before_transaction, qom_before_transaction, action_time, quantity_marked_down, original_price, new_price)
+            INSERT INTO MD_TRANSACTIONS (user_euid, store_number, division_number, upc_number, qod_before_transaction, qom_before_transaction, action_time, quantity_marked_down, original_price, new_price)
             VALUES(:USER_EUID, :STORE_NUMBER, :DIVISION_NUMBER, :UPC_NUMBER, :QOD_BEFORE_TRANSACTION, :QOM_BEFORE_TRANSACTION, :ACTION_TIME, :QUANTITY_MARKED_DOWN, :ORIGINAL_PRICE, :NEW_PRICE);
             """;
 
@@ -168,7 +168,7 @@ public class MarkdownItemRepositoryImpl implements MarkdownItemRepository {
         }
 
         if(numRowsUpdated != 1){
-            LOG.error("Failed to update PDM Alert ID = {}. Did not update only row.", alertId);
+            LOG.error("Failed to update PDM Alert ID = {}. Did not update exactly row.", alertId);
             throw new MockSimsCustomException(500, "Failed to update PDM alert.");
         }
     }

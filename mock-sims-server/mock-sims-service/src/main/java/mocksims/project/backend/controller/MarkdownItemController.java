@@ -32,7 +32,8 @@ public class MarkdownItemController {
         if(markdownItemRequest.getQuantity() > 0
             && ValidationHelper.validateUserEuid(markdownItemRequest.getUserEuid())
             && ValidationHelper.validateStoreNumber(markdownItemRequest.getStoreNumber())
-            && ValidationHelper.validateDivisionNumber(markdownItemRequest.getDivisionNumber()))
+            && ValidationHelper.validateDivisionNumber(markdownItemRequest.getDivisionNumber())
+            && ValidationHelper.validateUpcNumber(markdownItemRequest.getUpcNumber()))
         {
             try {
                 markdownItemService.markdownItem(markdownItemRequest);
