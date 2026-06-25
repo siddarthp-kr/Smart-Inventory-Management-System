@@ -6,6 +6,8 @@ import mocksims.project.backend.repository.MarkdownItemRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 public class MarkdownItemServiceImpl implements MarkdownItemService {
 
@@ -19,6 +21,8 @@ public class MarkdownItemServiceImpl implements MarkdownItemService {
     @Transactional
     public void markdownItem(MarkdownItemRequest markdownItemRequest) {
 
+        LocalDateTime currentTime = LocalDateTime.now();
+
         Integer qodNumber = markdownItemRepository.getQodNumber(markdownItemRequest.getStoreNumber(), markdownItemRequest.getDivisionNumber(), markdownItemRequest.getUpcNumber());
         Integer qomNumber = markdownItemRepository.getQomNumber(markdownItemRequest.getStoreNumber(), markdownItemRequest.getDivisionNumber(), markdownItemRequest.getUpcNumber());
 
@@ -31,6 +35,11 @@ public class MarkdownItemServiceImpl implements MarkdownItemService {
         Double newPrice = originalPrice * (1.0 - firstMarkdownPercent/100.0);
 
         markdownItemRepository.updateQodAndQom(markdownItemRequest.getStoreNumber(), markdownItemRequest.getDivisionNumber(), markdownItemRequest.getDivisionNumber(), markdownItemRequest.getQuantity());
+
+        markdownItemRepository.updatePdmAlert(markdownItemRequest.getAlertId(),currentTime, markdownItemRequest.getUserEuid());
+
+        markdownItemRepository.insertMarkdownTransactionInfo(markdownItemRequest, originalPrice, newPrice, currentTime, qodNumber, qomNumber);
+
         /*
          - Get the QOD and QOM before the transaction - DONE
             If quantity is greater than QOD, throw an error in service layer
