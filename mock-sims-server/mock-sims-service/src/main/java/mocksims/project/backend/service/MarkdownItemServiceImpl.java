@@ -1,5 +1,6 @@
 package mocksims.project.backend.service;
 
+import mocksims.project.backend.api.domain.MarkdownInformationResponse;
 import mocksims.project.backend.api.domain.MarkdownItemRequest;
 import mocksims.project.backend.exception.MockSimsCustomException;
 import mocksims.project.backend.repository.MarkdownItemRepository;
@@ -57,5 +58,20 @@ public class MarkdownItemServiceImpl implements MarkdownItemService {
             - Already gets QOD and QOM
 
          */
+    }
+
+    @Override
+    public MarkdownInformationResponse getMarkdownInfo(String upcNumber, Integer alertId) {
+        MarkdownInformationResponse markdownInformationResponse = new MarkdownInformationResponse();
+        Double originalPrice = markdownItemRepository.getStandardPrice(upcNumber);
+        markdownInformationResponse.setOriginalPrice(originalPrice);
+
+        Integer firstMarkdownPercent = markdownItemRepository.getFirstMarkdownPercent(alertId);
+        Double newPrice = originalPrice * (1.0 - firstMarkdownPercent/100.0);
+
+        markdownInformationResponse.setNewPrice(Math.round(newPrice * 100) / 100.);
+
+
+        return markdownInformationResponse;
     }
 }

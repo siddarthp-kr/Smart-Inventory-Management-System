@@ -11,5 +11,6 @@ public class MockSimsConstants {
     public static final String GET_MOVEMENT_INFO_ENDPOINT = "/movement-info";
     public static final String GET_PDM_ALERTS_ENDPOINT = "/get-pdm-alerts";
     public static final String MARKDOWN_ITEM_ENDPOINT = "/markdown-item";
+    public static final String MARKDOWN_ITEM_INFORMATION_ENDPOINT = "/markdown-info";
     public static final int THREAD_POOL_SIZE_10 = 10;
 }

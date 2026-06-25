@@ -1,5 +1,6 @@
 package mocksims.project.backend.controller;
 
+import mocksims.project.backend.api.domain.MarkdownInformationResponse;
 import mocksims.project.backend.api.domain.MarkdownItemRequest;
 import mocksims.project.backend.api.domain.MarkdownItemResponse;
 import mocksims.project.backend.domain.MockSimsConstants;
@@ -50,6 +51,21 @@ public class MarkdownItemController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(markdownItemResponse);
         }
 
+    }
+
+    @GetMapping(value = MockSimsConstants.MARKDOWN_ITEM_INFORMATION_ENDPOINT)
+    public ResponseEntity<MarkdownInformationResponse> getMarkdownInformation(@RequestParam String upcNumber, @RequestParam Integer alertId){
+
+        MarkdownInformationResponse markdownInformationResponse = new MarkdownInformationResponse();
+
+        try {
+            markdownInformationResponse = markdownItemService.getMarkdownInfo(upcNumber, alertId);
+            markdownInformationResponse.setResponseMessage("Successfully retrieved markdown information for alert " + upcNumber + ".");
+            return ResponseEntity.ok(markdownInformationResponse);
+        } catch (MockSimsCustomException e){
+            markdownInformationResponse.setResponseMessage("Failed to get markdown information for alert " + upcNumber + ".");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(markdownInformationResponse);
+        }
     }
 
 
