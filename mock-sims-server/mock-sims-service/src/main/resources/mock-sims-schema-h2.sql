@@ -5,9 +5,11 @@ CREATE TABLE ORDER_TRANSACTION_INFO
     general_order_id int AUTO_INCREMENT PRIMARY KEY,
     store_number varchar(5) NOT NULL,
     division_number varchar(3) NOT NULL,
-    user_euid varchar(10),
+    placed_by_user_euid varchar(10),
     order_placed_time timestamp NOT NULL,
-    order_received_time timestamp
+    received_by_user_euid varchar(10),
+    order_received boolean NOT NULL DEFAULT FALSE,
+    order_received_time timestamp NOT NULL
 );
 
 
@@ -61,7 +63,7 @@ CREATE TABLE PRODUCT_INVENTORY_INFO
     product_order_id int AUTO_INCREMENT PRIMARY KEY,
     general_order_id int NOT NULL,
     upc_number varchar(15) NOT NULL,
-    quantity int,
+    quantity int NOT NULL,
     expiration_date date,
     order_date date,
     is_active boolean,
@@ -75,6 +77,27 @@ CREATE TABLE PRODUCT_INVENTORY_INFO
 
 ALTER TABLE PRODUCT_INVENTORY_INFO
     ADD CONSTRAINT CHECK_PRODUCT_INVENTORY_QUANTITY CHECK (quantity >= 0);
+
+CREATE TABLE ORDER_MOVEMENT_TRANSACTIONS(
+    general_order_id int NOT NULL,
+    upc_number varchar(15) NOT NULL,
+    quantity int NOT NULL,
+    qod_before_transaction int,
+
+    CONSTRAINT PK_ORDER_MOVEMENT_ORDER
+        PRIMARY KEY (general_order_id, upc_number),
+
+    CONSTRAINT FK_ORDER_MOVEMENT_ORDER
+        FOREIGN KEY (general_order_id)
+            REFERENCES ORDER_TRANSACTION_INFO(general_order_id),
+
+    CONSTRAINT FK_ORDER_MOVEMENT_UPC
+        FOREIGN KEY (upc_number)
+            REFERENCES PRODUCT_BASIC_INFO(upc_number),
+
+    CONSTRAINT CHECK_ORDER_MOVEMENT_QUANTITY
+        CHECK (quantity >= 0)
+);
 
 CREATE TABLE PDM_ALERTS
 (

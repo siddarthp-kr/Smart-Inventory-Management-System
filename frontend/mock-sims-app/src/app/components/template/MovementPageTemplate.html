@@ -4,7 +4,7 @@
     <h2>Movements</h2>
     <div class="header-actions">
       <button class="secondary-btn" (click)="goBack()">Back to Alerts</button>
-      <button class="primary-btn" (click)="refresh()">Refresh</button>
+      <button class="primary-btn" (click)="refresh()" [disabled]="isLoading">Refresh</button>
     </div>
   </div>
 
@@ -16,8 +16,16 @@
       type="text"
       [(ngModel)]="upcSearch"
       placeholder="Enter UPC..."
+      (keyup.enter)="searchMovements()"
     />
-    <button class="primary-btn" (click)="searchMovements()">Search</button>
+
+    <button class="primary-btn" (click)="searchMovements()" [disabled]="isLoading">
+      @if (isLoading) {
+        Loading...
+      } @else {
+        Search
+      }
+    </button>
   </div>
 
   <!-- Only show AFTER data is loaded -->
@@ -28,7 +36,7 @@
         type="text"
         [(ngModel)]="search"
         (ngModelChange)="applySearch()"
-        placeholder="Search by product, action, or user..."
+        placeholder="Search by action, or user..."
       />
     </div>
   }
@@ -46,10 +54,15 @@
     </div>
   }
 
+
   <div class="history-content-area">
-    @if (filteredRecords.length === 0) {
-      @if (statusIsSuccess) {
+    @if (isLoading) {
+      <p class="empty-message">Loading movement history...</p>
+    } @else if (filteredRecords.length === 0) {
+      @if (statusIsSuccess && hasSearched) {
         <p class="empty-message">No movement history found</p>
+      } @else if (statusIsSuccess && !hasSearched) {
+        <p class="empty-message">Enter a UPC above to load movement history</p>
       }
     } @else {
 
@@ -67,7 +80,7 @@
         </thead>
 
         <tbody>
-          @for (record of pagedRecords; track record.transactionId) {
+          @for (record of pagedRecords; track record.movementType + '-' + record.movementType + '-' + record.actionTime) {
             <tr>
               <td class="upc">{{ record.upcNumber }}</td>
 
@@ -83,7 +96,7 @@
 
               <td>{{ record.userEuid }}</td>
 
-              <td>{{ record.actionTime }}</td>
+              <td>{{ formatDateTime(record.actionTime) }}</td>
             </tr>
           }
         </tbody>
@@ -158,8 +171,13 @@
     transition: 0.2s ease;
   }
 
-  .primary-btn:hover {
+  .primary-btn:hover:not(:disabled) {
     background: darkblue;
+  }
+
+  .primary-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 
   .secondary-btn {
@@ -326,6 +344,21 @@
   .action-badge.rfi {
     background: #fee2e2;
     color: #991b1b;
+  }
+
+  .action-badge.ordered {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+
+  .action-badge.shipped {
+    background: #e0e7ff;
+    color: gray;
+  }
+
+  .action-badge.received {
+    background: #dcfce7;
+    color: #166534;
   }
 
   /* Pagination */
