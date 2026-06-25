@@ -51,16 +51,16 @@ export interface OrderHistoryResponse {
   orders: Array<OrderHistoryRecord>
 }
 
-export interface MovementInfoRecord{
+export interface MovementInfoRecord {
   upcNumber: string;
   productName: string;
   movementType: string;
-  transactionId: number;
   userEuid: string;
-  qodBeforeTransaction: number;
-  qomBeforeTransaction: number;
+  qodBeforeTransaction: number | null;
+  qomBeforeTransaction: number | null;
   actionTime: string;
   quantityChanged: number;
+  sourceBucket: string | null;
   reasonCode: string | null;
   originalPrice: number | null;
   newPrice: number | null;

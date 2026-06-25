@@ -1,6 +1,5 @@
 package mocksims.project.backend.controller;
 
-import mocksims.project.backend.api.domain.MovementInfoRecord;
 import mocksims.project.backend.api.domain.MovementInfoRequest;
 import mocksims.project.backend.api.domain.MovementInfoResponse;
 import mocksims.project.backend.domain.MockSimsConstants;
