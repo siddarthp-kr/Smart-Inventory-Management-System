@@ -43,14 +43,14 @@ public class BohRepositoryImpl implements BohRepository{
             """;
 
     /**
-     * Retirive  all BOH info
+     * Retrieve  all BOH info
      * @param storeNumber used to filter BOH results
      * @param divisionNumber used to filer BOH results
      * @return list of BOH objects details
      */
     @Override
     public List<BohItem> getBohInfo(String storeNumber, String divisionNumber){
-        LOG.info("Retrieving BOH information for store {} abd division {}", storeNumber, divisionNumber);
+        LOG.info("Retrieving BOH information for store {} and division {}", storeNumber, divisionNumber);
 
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("storeNumber", storeNumber)
