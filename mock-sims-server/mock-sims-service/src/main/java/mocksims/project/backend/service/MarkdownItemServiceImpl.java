@@ -63,6 +63,7 @@ public class MarkdownItemServiceImpl implements MarkdownItemService {
     @Override
     public MarkdownInformationResponse getMarkdownInfo(String upcNumber, Integer alertId) {
         MarkdownInformationResponse markdownInformationResponse = new MarkdownInformationResponse();
+
         Double originalPrice = markdownItemRepository.getStandardPrice(upcNumber);
         markdownInformationResponse.setOriginalPrice(originalPrice);
 
@@ -70,7 +71,6 @@ public class MarkdownItemServiceImpl implements MarkdownItemService {
         Double newPrice = originalPrice * (1.0 - firstMarkdownPercent/100.0);
 
         markdownInformationResponse.setNewPrice(Math.round(newPrice * 100) / 100.);
-
 
         return markdownInformationResponse;
     }
