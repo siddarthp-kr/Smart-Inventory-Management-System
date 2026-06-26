@@ -1,24 +1,24 @@
 --For Mark Down
 INSERT INTO MARKDOWN_RULES
-VALUES ('62000', 20, TRUE, 1, 2, 3);
+VALUES ('62000', 20, TRUE, 2, 1, 3);
 INSERT INTO MARKDOWN_RULES
-VALUES ('64307', 20, TRUE, 1, 2, 3);
+VALUES ('64307', 20, TRUE, 2, 1, 3);
 INSERT INTO MARKDOWN_RULES
-VALUES ('44805', 20, TRUE, 1, 2, 3);
+VALUES ('44805', 20, TRUE, 2, 1, 3);
 INSERT INTO MARKDOWN_RULES
-VALUES ('40610', 20, TRUE, 1, 2, 3);
+VALUES ('40610', 20, TRUE, 2, 1, 3);
 INSERT INTO MARKDOWN_RULES
-VALUES ('53000', 20, TRUE, 1, 2, 3);
+VALUES ('53000', 20, TRUE, 2, 1, 3);
 INSERT INTO MARKDOWN_RULES
-VALUES ('56005', 20, TRUE, 1, 2, 3);
+VALUES ('56005', 20, TRUE, 2, 1, 3);
 INSERT INTO MARKDOWN_RULES
-VALUES ('04703', 20, TRUE, 1, 2, 3);
+VALUES ('04703', 20, TRUE, 2, 1, 3);
 INSERT INTO MARKDOWN_RULES
-VALUES ('98418', 20, TRUE, 1, 2, 3);
+VALUES ('98418', 20, TRUE, 2, 1, 3);
 INSERT INTO MARKDOWN_RULES
-VALUES ('27602', 20, TRUE, 1, 2, 3);
+VALUES ('27602', 20, TRUE, 2, 1, 3);
 INSERT INTO MARKDOWN_RULES
-VALUES ('29465', 20, TRUE, 1, 2, 3);
+VALUES ('29465', 20, TRUE, 2, 1, 3);
 
 --For Department Info
 
@@ -88,6 +88,8 @@ VALUES ( '014', '00045', '2033', 0, 0 );
 INSERT INTO PRODUCT_BOH_INFO (division_number, store_number, upc_number,qod_number, qom_number)
 VALUES ( '014', '00045', '2044', 0, 0 );
 
+
+
 -- Mock Markdown Transactions
 INSERT INTO MD_TRANSACTIONS (user_euid,store_number,division_number,upc_number,qod_before_transaction,qom_before_transaction,action_time,quantity_marked_down,original_price,new_price)
 VALUES ('AB12345','00045','014','4011',20,0,TIMESTAMP '2026-06-22 10:30:00',3,0.75,0.50);
@@ -112,3 +114,13 @@ VALUES (1001, '00045', '014', 'AB12345', TIMESTAMP '2026-06-21 09:00:00', 'AB123
 INSERT INTO ORDER_MOVEMENT_TRANSACTIONS (general_order_id, upc_number, quantity, qod_before_transaction)
 VALUES (1001, '4011', 10, 0);
 
+
+INSERT INTO ORDER_TRANSACTION_INFO (general_order_id, store_number, division_number, placed_by_user_euid, order_placed_time, received_by_user_euid, order_received, order_received_time)
+VALUES (1234, '00045', '014', 'JS58323', '2026-06-25 09:00:00', 'JS58323', TRUE, '2026-06-25 09:00:00');
+
+INSERT INTO PRODUCT_INVENTORY_INFO (general_order_id, upc_number, quantity, expiration_date, order_date, is_active)
+VALUES (1234, '3011', 10, '2026-06-28', '2026-06-25', TRUE);
+
+UPDATE PRODUCT_BOH_INFO
+SET QOD_NUMBER = 10
+WHERE UPC_NUMBER = 3011 AND STORE_NUMBER = '00045' AND DIVISION_NUMBER = '014';
