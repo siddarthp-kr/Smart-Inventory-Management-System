@@ -126,4 +126,8 @@ SET QOD_NUMBER = 10
 WHERE UPC_NUMBER = 3011 AND STORE_NUMBER = '00045' AND DIVISION_NUMBER = '014';
 
 INSERT INTO PDM_ALERTS (store_number, division_number, department_number, upc_number, quantity, expiration_date, markdown_after_date, rfi_after_date, first_markdown_percent, is_active)
+VALUES('00045','014','07','4011',5, '2026-06-28','2026-06-26','2026-06-27',20,TRUE);
+
+
+INSERT INTO PDM_ALERTS (store_number, division_number, department_number, upc_number, quantity, expiration_date, markdown_after_date, rfi_after_date, first_markdown_percent, is_active)
                 VALUES('00045','014','01','3011',5, '2026-06-28','2026-06-26','2026-06-27',20,TRUE);
