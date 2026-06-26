@@ -9,7 +9,7 @@ CREATE TABLE ORDER_TRANSACTION_INFO
     order_placed_time timestamp NOT NULL,
     received_by_user_euid varchar(10),
     order_received boolean NOT NULL DEFAULT FALSE,
-    order_received_time timestamp NOT NULL
+    order_received_time timestamp
 );
 
 

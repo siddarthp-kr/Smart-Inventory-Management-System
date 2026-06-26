@@ -1,7 +1,6 @@
 package mocksims.project.backend.repository;
 
 import mocksims.project.backend.api.domain.PlaceOrderItem;
-import mocksims.project.backend.api.domain.ProductItem;
 import mocksims.project.backend.exception.MockSimsCustomException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,13 +12,11 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.awt.event.MouseAdapter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.IntStream;
 
 @Repository
 public class PlaceOrderRepositoryImpl implements PlaceOrderRepository {
@@ -33,7 +30,6 @@ public class PlaceOrderRepositoryImpl implements PlaceOrderRepository {
 
     private static final String USER_EUID = "USER_EUID";
     private static final String ORDER_PLACED_TIME = "ORDER_PLACED_TIME";
-    private static final String ORDER_RECEIVED_TIME = "ORDER_RECEIVED_TIME";
 
     private static final String GENERAL_ORDER_ID = "GENERAL_ORDER_ID";
     private static final String EXPIRATION_DATE = "EXPIRATION_DATE";
@@ -41,14 +37,18 @@ public class PlaceOrderRepositoryImpl implements PlaceOrderRepository {
     private static final String IS_ACTIVE = "IS_ACTIVE";
 
     private static final String SUBCOMMODITY_NUMBER = "SUBCOMMODITY_NUMBER";
+    private static final String QOD_BEFORE_TRANSACTION = "QOD_BEFORE_TRANSACTION";
 
-    private static final String SQL_UPDATE_BOH_INFO = "UPDATE PRODUCT_BOH_INFO  SET qod_number = qod_number + :QUANTITY  WHERE upc_number = :UPC_NUMBER AND store_number = :STORE_NUMBER AND division_number = :DIVISION_NUMBER";
-    private static final String SQL_INSERT_ORDER_TRANSACTION_INFO = "INSERT INTO ORDER_TRANSACTION_INFO (store_number, division_number, user_euid, order_placed_time, order_received_time) VALUES (:STORE_NUMBER, :DIVISION_NUMBER, :USER_EUID, :ORDER_PLACED_TIME, :ORDER_RECEIVED_TIME)";
+
+    private static final String SQL_INSERT_ORDER_TRANSACTION_INFO = "INSERT INTO ORDER_TRANSACTION_INFO (store_number, division_number, placed_by_user_euid, order_placed_time, order_received) VALUES (:STORE_NUMBER, :DIVISION_NUMBER, :USER_EUID, :ORDER_PLACED_TIME, FALSE)";
     private static final String SQL_QUERY_PRODUCT_BASIC_INFO_SUBCOMMODITY_NUMBER = "SELECT subcommodity_number FROM PRODUCT_BASIC_INFO WHERE upc_number = :UPC_NUMBER";
 
     private static final String SQL_QUERY_MD_RULES_EXPIRATION_DATE = "SELECT days_after_order_to_set_exp FROM MARKDOWN_RULES WHERE subcommodity_number = :SUBCOMMODITY_NUMBER";
 
     private static final String SQL_INSERT_PRODUCT_INVENTORY_INFO = "INSERT INTO PRODUCT_INVENTORY_INFO (general_order_id, upc_number, quantity, expiration_date, order_date, is_active) VALUES (:GENERAL_ORDER_ID, :UPC_NUMBER, :QUANTITY, :EXPIRATION_DATE, :ORDER_DATE, :IS_ACTIVE)";
+
+    private static final String SQL_INSERT_ORDER_MOVEMENT_TRANSACTIONS = "INSERT INTO ORDER_MOVEMENT_TRANSACTIONS (general_order_id,upc_number,quantity,qod_before_transaction) VALUES (:GENERAL_ORDER_ID,:UPC_NUMBER,:QUANTITY,:QOD_BEFORE_TRANSACTION)";
+
 
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -58,44 +58,13 @@ public class PlaceOrderRepositoryImpl implements PlaceOrderRepository {
     }
 
     @Override
-    public void updateBohInfo(String storeNumber, String divisionNumber, List<PlaceOrderItem> items) throws DataAccessException{
-
-        int[] retVals;
-
-        try {
-            List<MapSqlParameterSource> batchArgs = new ArrayList<>();
-
-            for(PlaceOrderItem item: items){
-                MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
-                        .addValue(QUANTITY, item.getQuantity())
-                        .addValue(UPC_NUMBER, item.getUpcNumber())
-                        .addValue(STORE_NUMBER, storeNumber)
-                        .addValue(DIVISION_NUMBER, divisionNumber);
-
-                batchArgs.add(mapSqlParameterSource);
-            }
-
-
-
-            retVals = namedParameterJdbcTemplate.batchUpdate(SQL_UPDATE_BOH_INFO, batchArgs.toArray(new MapSqlParameterSource[batchArgs.size()]));
-        } catch (DataAccessException e) {
-            throw new MockSimsCustomException(500, e.getMessage());
-        }
-
-        if(IntStream.of(retVals).sum() != items.size()){
-            throw new MockSimsCustomException(404, "Row Not Found: BOH information records are missing at store " + storeNumber + " in division " + divisionNumber);
-        }
-    }
-
-    @Override
-    public Long insertOrderTransactionInfo(String storeNumber, String divisionNumber, String userEuid, LocalDateTime timeOrderPlaced, LocalDateTime timeOrderReceived) throws DataAccessException{
+    public Long insertOrderTransactionInfo(String storeNumber, String divisionNumber, String userEuid, LocalDateTime timeOrderPlaced) throws DataAccessException{
 
         MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
                 .addValue(STORE_NUMBER, storeNumber)
                 .addValue(DIVISION_NUMBER, divisionNumber)
                 .addValue(USER_EUID, userEuid)
-                .addValue(ORDER_PLACED_TIME, timeOrderPlaced)
-                .addValue(ORDER_RECEIVED_TIME, timeOrderReceived);
+                .addValue(ORDER_PLACED_TIME, timeOrderPlaced);
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -137,6 +106,28 @@ public class PlaceOrderRepositoryImpl implements PlaceOrderRepository {
             namedParameterJdbcTemplate.batchUpdate(SQL_INSERT_PRODUCT_INVENTORY_INFO, batchArgs.toArray(new MapSqlParameterSource[batchArgs.size()]));
         } catch (DataAccessException e){
             throw new MockSimsCustomException(500, "Failed to insert product inventory info for order " + orderId + ". " + e.getMessage());
+        }
+    }
+
+
+    @Override
+    public void insertOrderMovementTransactions(long orderId, List<PlaceOrderItem> items) throws DataAccessException {
+        try {
+            List<MapSqlParameterSource> batchArgs = new ArrayList<>();
+
+            for (PlaceOrderItem item : items) {
+                MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+                        .addValue(GENERAL_ORDER_ID, orderId)
+                        .addValue(UPC_NUMBER, item.getUpcNumber())
+                        .addValue(QUANTITY, item.getQuantity())
+                        .addValue(QOD_BEFORE_TRANSACTION, null);
+
+                batchArgs.add(mapSqlParameterSource);
+            }
+
+            namedParameterJdbcTemplate.batchUpdate(SQL_INSERT_ORDER_MOVEMENT_TRANSACTIONS, batchArgs.toArray(new MapSqlParameterSource[0]));
+        } catch (DataAccessException error) {
+            throw new MockSimsCustomException(500, "Failed to insert order movement transactions for order " + orderId + ". " + error.getMessage());
         }
     }
 
