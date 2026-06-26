@@ -226,7 +226,7 @@ export class BohPage implements OnInit {
       );
 
       if (response.responseCode === 200) {
-        this.showMessage('Order placed successfully and has been shipped.', true);
+        this.showMessage('Order placed successfully and is pending reception.', true);
         this.clearCart();
         await this.getBohInfo();
       } else {

@@ -1,6 +1,5 @@
 package mocksims.project.backend.service;
 
-import mocksims.project.backend.api.domain.PlaceOrderItem;
 import mocksims.project.backend.api.domain.PlaceOrderRequest;
 import mocksims.project.backend.api.domain.PlaceOrderResponse;
 import mocksims.project.backend.repository.PlaceOrderRepository;
@@ -32,18 +31,6 @@ public class PlaceOrderServiceImpl implements PlaceOrderService{
 
         //These methods store the information they are getting within the placeOrderRequest items list
 
-        for (PlaceOrderItem item: placeOrderRequest.getItems()){
-            String subcommodityNumber = placeOrderRepository.getSubcommodityNumber(item.getUpcNumber());
-            item.setSubcommodityNumber(subcommodityNumber);
-            //this will store product data needed later when the order is received.
-            item.setExpirationDate(null);
-            item.setIsActive(false);
-        }
-
-        placeOrderRepository.insertProductInventoryInfo(orderId,
-                timeOrderPlaced.toLocalDate(),
-                placeOrderRequest.getItems()
-        );
         //Store one movement row per UPC
         placeOrderRepository.insertOrderMovementTransactions(
                 orderId,
