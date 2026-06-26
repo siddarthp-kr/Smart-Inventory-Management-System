@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Api, OrderHistoryRecord, OrderHistoryResponse } from '../services/api';
 import { AuthService } from '../services/auth';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 
 interface GroupedOrder {
   orderId: number;

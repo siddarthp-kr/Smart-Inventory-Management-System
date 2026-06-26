@@ -26,7 +26,7 @@ public class OrderHistoryRepositoryImpl implements OrderHistoryRepository {
             "    inv.quantity, " +
             "    prod.product_name " +
             "FROM ORDER_TRANSACTION_INFO ord " +
-            "INNER JOIN PRODUCT_INVENTORY_INFO inv ON ord.general_order_id = inv.general_order_id " +
+            "INNER JOIN ORDER_MOVEMENT_TRANSACTIONS inv ON ord.general_order_id = inv.general_order_id " +
             "INNER JOIN PRODUCT_BASIC_INFO prod ON inv.upc_number = prod.upc_number " +
             "WHERE ord.store_number = :STORE_NUMBER AND ord.division_number = :DIVISION_NUMBER " +
             "ORDER BY ord.general_order_id DESC " +

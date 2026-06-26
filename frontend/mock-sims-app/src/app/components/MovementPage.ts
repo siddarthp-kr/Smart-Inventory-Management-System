@@ -145,10 +145,6 @@ export class MovementPage{
       return `${record.quantityChanged} units removed (${reason})`;
     }
 
-    if (record.movementType === 'ORDERED') {
-      return `${record.quantityChanged} units ordered`;
-    }
-
     if (record.movementType === 'RECEIVED') {
       if (
         record.qodBeforeTransaction !== null &&

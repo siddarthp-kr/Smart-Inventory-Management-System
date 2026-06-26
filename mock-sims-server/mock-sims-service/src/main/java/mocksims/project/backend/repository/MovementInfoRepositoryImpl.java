@@ -69,30 +69,6 @@ public class MovementInfoRepositoryImpl implements MovementInfoRepository{
         SELECT
             omt.upc_number AS upc_number,
             prod.product_name AS product_name,
-            'ORDERED' AS movement_type,
-            oti.placed_by_user_euid AS user_euid,
-            CAST(NULL AS INTEGER) AS qod_before_transaction,
-            CAST(NULL AS INTEGER) AS qom_before_transaction,
-            oti.order_placed_time AS action_time,
-            omt.quantity AS quantity_changed,
-            'ORDER' AS source_bucket,
-            CAST(NULL AS CHAR) AS reason_code,
-            CAST(NULL AS DECIMAL(10,2)) AS original_price,
-            CAST(NULL AS DECIMAL(10,2)) AS new_price
-        FROM ORDER_MOVEMENT_TRANSACTIONS omt
-        INNER JOIN ORDER_TRANSACTION_INFO oti
-            ON omt.general_order_id = oti.general_order_id
-        INNER JOIN PRODUCT_BASIC_INFO prod
-            ON omt.upc_number = prod.upc_number
-        WHERE oti.store_number = :storeNumber
-          AND oti.division_number = :divisionNumber
-          AND omt.upc_number = :upcNumber
-
-        UNION ALL
-
-        SELECT
-            omt.upc_number AS upc_number,
-            prod.product_name AS product_name,
             'RECEIVED' AS movement_type,
             oti.received_by_user_euid AS user_euid,
             omt.qod_before_transaction AS qod_before_transaction,
