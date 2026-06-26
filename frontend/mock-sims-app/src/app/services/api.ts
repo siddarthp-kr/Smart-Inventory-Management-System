@@ -37,12 +37,15 @@ export interface DepartmentInfoResponse {
 }
 
 export interface OrderHistoryRecord {
-  orderId: number,
-  userEuid: string,
-  orderPlacedDate: string,
-  upcNumber: string,
-  productName: string,
-  quantity: number
+  orderId: number;
+  placedByUserEuid: string;
+  orderPlacedTime: string;
+  orderReceived: boolean;
+  receivedByUserEuid: string | null;
+  orderReceivedTime: string | null;
+  upcNumber: string;
+  productName: string;
+  quantity: number;
 }
 
 export interface OrderHistoryResponse {

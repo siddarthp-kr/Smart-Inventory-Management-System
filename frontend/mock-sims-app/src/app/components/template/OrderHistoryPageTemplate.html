@@ -14,7 +14,7 @@
       type="text"
       [(ngModel)]="search"
       (ngModelChange)="applySearch()"
-      placeholder="Search by product name/UPC..."
+      placeholder="Search by product,UPC,euid,status..."
     />
   </div>
 
@@ -44,8 +44,9 @@
         <thead>
         <tr>
           <th>Order ID</th>
-          <th>Order Date</th>
-          <th>User</th>
+          <th>Placed Time</th>
+          <th>Placed By</th>
+          <th>Status</th>
           <th>Items</th>
           <th>View Order</th>
         </tr>
@@ -55,8 +56,10 @@
           @for (record of pagedRecords; track record.orderId) {
             <tr>
               <td>{{ record.orderId }}</td>
-              <td>{{ record.orderPlacedDate }}</td>
-              <td>{{ record.userEuid }}</td>
+              <td>{{ formatDateTime(record.orderPlacedTime) }}</td>
+              <td>{{ record.placedByUserEuid }}</td>
+              <td><span class="status-badge" [ngClass]="record.orderReceived ? 'received' : 'pending'">{{ getStatusText(record) }}</span>
+              </td>
               <td>{{ record.items.length }}</td>
               <td>
                 <button class = "view-btn" (click) = "toggleOrder(record.orderId)">{{ record.expanded ? 'Hide Order' : 'View Order' }}</button>
@@ -65,8 +68,37 @@
 
             @if (record.expanded) {
               <tr class="details-row">
-                <td colspan="5">
+                <td colspan="6">
                   <div class="order-details">
+                    <div class="order-summary">
+                      <div>
+                        <span class="summary-label">Placed By:</span>
+                        <span>{{ record.placedByUserEuid }}</span>
+                      </div>
+
+                      <div>
+                        <span class="summary-label">Placed Time:</span>
+                        <span>{{ formatDateTime(record.orderPlacedTime) }}</span>
+                      </div>
+
+                      @if (record.orderReceived) {
+                        <div>
+                          <span class="summary-label">Received By:</span>
+                          <span>{{ record.receivedByUserEuid || 'N/A' }}</span>
+                        </div>
+
+                        <div>
+                          <span class="summary-label">Received Time:</span>
+                          <span>{{ formatDateTime(record.orderReceivedTime) }}</span>
+                        </div>
+                      } @else {
+                        <div>
+                          <span class="summary-label">Receive Status:</span>
+                          <span>Pending receipt</span>
+                        </div>
+                      }
+                    </div>
+
                     <table class="details-table">
                       <thead>
                       <tr>
@@ -85,7 +117,7 @@
                         }
                       </tbody>
                     </table>
-                  </div>
+                    </div>
                 </td>
               </tr>
             }
@@ -292,6 +324,26 @@
     background: #f9fafb;
   }
 
+  /* Status badges */
+  .status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .status-badge.pending {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+
+  .status-badge.received {
+    background: #dcfce7;
+    color: #166534;
+  }
+
   /* Strong product name */
   .product-name {
     font-weight: 600;
@@ -312,6 +364,25 @@
 
   .order-details {
     padding: 16px;
+  }
+
+  .order-summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 20px;
+    margin-bottom: 16px;
+    padding: 12px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 13px;
+    color: #374151;
+  }
+
+  .summary-label {
+    font-weight: 700;
+    color: #111827;
+    margin-right: 6px;
   }
 
   .details-table {

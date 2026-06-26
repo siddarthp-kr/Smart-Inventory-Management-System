@@ -184,6 +184,7 @@ export class MovementPage{
     return `$${value.toFixed(2)}`;
   }
 
+  // For testing purposes
   formatDateTime(value: string | null): string {
     if (!value) {
       return '';
