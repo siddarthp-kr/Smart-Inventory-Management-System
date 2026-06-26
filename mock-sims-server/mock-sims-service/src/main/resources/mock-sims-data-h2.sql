@@ -105,7 +105,7 @@ VALUES ('AB12345','00045','014','1011',8,0,TIMESTAMP '2026-06-23 09:45:00',1,'OD
 
 -- Mock Order Header for Bananas UPC 4011
 INSERT INTO ORDER_TRANSACTION_INFO (general_order_id, store_number, division_number, placed_by_user_euid, order_placed_time, received_by_user_euid, order_received, order_received_time)
-VALUES (1001, '00045', '014', 'AB12345', TIMESTAMP '2026-06-21 09:00:00', 'AB12345', TRUE, TIMESTAMP '2026-06-23 11:00:00');
+VALUES (1001, '00045', '014', 'AB12345', TIMESTAMP '2026-06-21 09:00:00', 'AB12345', True, TIMESTAMP '2026-06-23 11:00:00');
 
 
 -- Mock Order Movement Transactions for Bananas UPC 4011

@@ -137,9 +137,9 @@
         @for (item of cartItems; track item.upcNumber) {
           <div class = "cart-item">
             <div class = "cart-item-info">
-              <div class = cart-item-name> {{item.productName}}</div>
+              <div class = "cart-item-name"> {{item.productName}}</div>
               <div class = "cart-item-upc">UPC: {{item.upcNumber}}</div>
-              <div class = "cart_item-qty">Qty: {{item.quantity}}</div>
+              <div class = "cart-item-qty">Qty: {{item.quantity}}</div>
             </div>
 
             <button class = "remove-btn" (click) = "removeFromCart(item.upcNumber)">Remove</button>

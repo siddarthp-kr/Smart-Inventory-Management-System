@@ -3,12 +3,15 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Api, OrderHistoryRecord, OrderHistoryResponse } from '../services/api';
 import { AuthService } from '../services/auth';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 
-interface GroupedOrder{
+interface GroupedOrder {
   orderId: number;
-  orderPlacedDate: string
-  userEuid: string;
+  placedByUserEuid: string;
+  orderPlacedTime: string;
+  orderReceived: boolean;
+  receivedByUserEuid: string | null;
+  orderReceivedTime: string | null;
   items: OrderHistoryRecord[];
   expanded: boolean;
 }
@@ -16,7 +19,7 @@ interface GroupedOrder{
 @Component({
   templateUrl: `./template/OrderHistoryPageTemplate.html`,
   selector: ``,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule],
   standalone: true
 })
 export class OrderHistoryPage implements OnInit {
@@ -104,14 +107,16 @@ export class OrderHistoryPage implements OnInit {
       } else{
         groupedMap.set(record.orderId, {
           orderId:record.orderId,
-          orderPlacedDate:record.orderPlacedDate,
-          userEuid: record.userEuid,
+          placedByUserEuid: record.placedByUserEuid,
+          orderPlacedTime: record.orderPlacedTime,
+          orderReceived: record.orderReceived,
+          receivedByUserEuid: record.receivedByUserEuid,
+          orderReceivedTime: record.orderReceivedTime,
           items: [record],
           expanded: false
         });
       }
     }
-
 
     this.groupedOrders = Array.from(groupedMap.values()).sort((a, b) => b.orderId - a.orderId);
   }
@@ -128,8 +133,9 @@ export class OrderHistoryPage implements OnInit {
       this.filteredGroupedOrders = this.groupedOrders.slice();
     } else {
       this.filteredGroupedOrders = this.groupedOrders.filter(order =>
-        order.orderId.toString().includes(term) ||
-        order.userEuid?.toLowerCase().includes(term) ||
+        order.placedByUserEuid?.toLowerCase().includes(term) ||
+        order.receivedByUserEuid?.toLowerCase().includes(term) ||
+        this.getStatusText(order).toLowerCase().includes(term) ||
         order.items.some(item =>
           item.productName?.toLowerCase().includes(term) ||
           item.upcNumber?.includes(term)
@@ -140,7 +146,6 @@ export class OrderHistoryPage implements OnInit {
     this.currentPage = 1
   }
 
-
   toggleOrder(orderId: number) {
     const order = this.filteredGroupedOrders.find(o => o.orderId === orderId);
     if (order) {
@@ -148,8 +153,38 @@ export class OrderHistoryPage implements OnInit {
     }
   }
 
+  getStatusText(order: GroupedOrder): string{
+    return order.orderReceived ? 'Received' : 'Pending';
+  }
 
-  // Pagination handlers
+  // For testing purposes
+  formatDateTime(value: string | null): string {
+    if (!value) {
+      return '';
+    }
+
+    const date = new Date(value);
+
+    if (isNaN(date.getTime())) {
+      return value;
+    }
+
+    const formattedDate = date.toLocaleDateString('en-US', {
+      month: '2-digit',
+      day: '2-digit',
+      year: 'numeric'
+    });
+
+    const formattedTime = date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+
+    return `${formattedDate} ${formattedTime}`;
+  }
+
+    // Pagination handlers
   onPageSizeChange() {
     this.currentPage = 1
   }

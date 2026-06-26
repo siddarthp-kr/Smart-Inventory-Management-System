@@ -17,13 +17,16 @@ import java.util.Objects;
 public class OrderHistoryRepositoryImpl implements OrderHistoryRepository {
     private static final String SQL_GET_ORDER_HISTORY = "SELECT " +
             "    ord.general_order_id, " +
-            "    ord.user_euid, " +
+            "    ord.placed_by_user_euid, " +
+            "    ord.order_placed_time," +
+            "    ord.order_received," +
+            "    ord.received_by_user_euid," +
+            "    ord.order_received_time," +
             "    inv.upc_number, " +
             "    inv.quantity, " +
-            "    inv.order_date, " +
             "    prod.product_name " +
             "FROM ORDER_TRANSACTION_INFO ord " +
-            "INNER JOIN PRODUCT_INVENTORY_INFO inv ON ord.general_order_id = inv.general_order_id " +
+            "INNER JOIN ORDER_MOVEMENT_TRANSACTIONS inv ON ord.general_order_id = inv.general_order_id " +
             "INNER JOIN PRODUCT_BASIC_INFO prod ON inv.upc_number = prod.upc_number " +
             "WHERE ord.store_number = :STORE_NUMBER AND ord.division_number = :DIVISION_NUMBER " +
             "ORDER BY ord.general_order_id DESC " +
@@ -38,6 +41,7 @@ public class OrderHistoryRepositoryImpl implements OrderHistoryRepository {
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(Objects.requireNonNull(jdbcTemplate.getDataSource()));
     }
 
+    @Override
     public List<OrderHistoryRecord> getOrderHistory(OrderHistoryRequest orderHistoryRequest) throws MockSimsCustomException {
 
         OrderHistoryMapper orderHistoryMapper = new OrderHistoryMapper();

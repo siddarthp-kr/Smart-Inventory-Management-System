@@ -145,10 +145,6 @@ export class MovementPage{
       return `${record.quantityChanged} units removed (${reason})`;
     }
 
-    if (record.movementType === 'ORDERED') {
-      return `${record.quantityChanged} units ordered`;
-    }
-
     if (record.movementType === 'RECEIVED') {
       if (
         record.qodBeforeTransaction !== null &&
@@ -184,6 +180,7 @@ export class MovementPage{
     return `$${value.toFixed(2)}`;
   }
 
+  // For testing purposes
   formatDateTime(value: string | null): string {
     if (!value) {
       return '';
