@@ -63,7 +63,7 @@ public class MarkdownItemController {
             markdownInformationResponse.setResponseMessage("Successfully retrieved markdown information for alert " + upcNumber + ".");
             return ResponseEntity.ok(markdownInformationResponse);
         } catch (MockSimsCustomException e){
-            markdownInformationResponse.setResponseMessage("Failed to get markdown information for alert " + upcNumber + ".");
+            markdownInformationResponse.setResponseMessage("Failed to get markdown information for alert " + alertId + ".");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(markdownInformationResponse);
         }
     }

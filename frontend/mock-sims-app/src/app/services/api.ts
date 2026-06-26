@@ -86,11 +86,35 @@ export interface ProductItem{
 export interface ProductsResponse{
   products: ProductItem[];
 }
+
+export interface GetPdmAlertRecord {
+  alertId: number;
+  departmentNumber: string;
+  upcNumber: string;
+  expirationDate: string;
+  mdAfterDate: string;
+  rfiAfterDate: string;
+}
+
+export interface GetPdmAlertsResponse {
+  responseMessage: string;
+  pdmAlerts: GetPdmAlertRecord[];
+}
+
+
 @Injectable({ providedIn: 'root' })
 export class Api {
   private http = inject(HttpClient);
 
+  async getPdmAlerts(storeNumber: string, divisionNumber: string): Promise<GetPdmAlertsResponse> {
+    const result: GetPdmAlertsResponse = await firstValueFrom(
+      this.http.get<GetPdmAlertsResponse>(
+        `http://localhost:8080/api/pdm/get-pdm-alerts?storeNumber=${storeNumber}&divisionNumber=${divisionNumber}`
+      )
+    );
 
+    return result;
+  }
 
   async placeOrder(
     storeNumber: string,
