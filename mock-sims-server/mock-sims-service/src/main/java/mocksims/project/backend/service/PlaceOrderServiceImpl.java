@@ -32,16 +32,15 @@ public class PlaceOrderServiceImpl implements PlaceOrderService{
 
         //These methods store the information they are getting within the placeOrderRequest items list
 
-        for (PlaceOrderItem item : placeOrderRequest.getItems()) {
+        for (PlaceOrderItem item: placeOrderRequest.getItems()){
             String subcommodityNumber = placeOrderRepository.getSubcommodityNumber(item.getUpcNumber());
             item.setSubcommodityNumber(subcommodityNumber);
-            //this will return null if the subcommodity is not eligible for markdown
+            //this will store product data needed later when the order is received.
             item.setExpirationDate(null);
             item.setIsActive(false);
         }
 
-        placeOrderRepository.insertProductInventoryInfo(
-                orderId,
+        placeOrderRepository.insertProductInventoryInfo(orderId,
                 timeOrderPlaced.toLocalDate(),
                 placeOrderRequest.getItems()
         );
