@@ -36,21 +36,11 @@ public class RfiItemServiceImpl implements RfiItemService {
             throw new MockSimsCustomException(400, String.format("Cannot remove items from inventory because user is requesting to remove more items than are in QOD. User: %s. UPC: %s.", rfiItemRequest.getUserEuid(), rfiItemRequest.getUpcNumber()));
         }
 
+        rfiItemRepository.decrementQod(rfiItemRequest.getStoreNumber(), rfiItemRequest.getDivisionNumber(), rfiItemRequest.getUpcNumber(), rfiItemRequest.getQuantity());
+
         rfiItemRepository.updatePdmAlert(rfiItemRequest.getAlertId(), currentTime, rfiItemRequest.getUserEuid());
 
         rfiItemRepository.insertRfiTransactionInfo(rfiItemRequest, qodNumber, qomNumber, currentTime);
-
-        /*
-        Find original qod and qom (reuse md function)
-        Decrement QOD using quantity
-            - Check that they are not removing more items than are on the inventory
-        Update PDM Alert
-        Inserts a row in RFI Transactions:
-             - user euid, store, division, upc, quantity comes from request
-             - qod and qom found prior in this service layer
-             - reason code hard coded to "OD"
-             - action time calculated in the service layer
-         */
 
     }
 }
