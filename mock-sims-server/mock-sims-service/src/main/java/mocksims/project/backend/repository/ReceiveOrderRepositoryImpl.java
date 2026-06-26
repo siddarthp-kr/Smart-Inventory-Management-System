@@ -82,7 +82,7 @@ public class ReceiveOrderRepositoryImpl implements ReceiveOrderRepository {
     private static final String SQL_GET_DAYS_BEFORE_EXPIRATION = """
             SELECT days_after_order_to_set_exp
             FROM MARKDOWN_RULES
-            WHERE subcommodity_number = :SUBCOMMODITY_NUMBER
+            WHERE subcommodity_number = :SUBCOMMODITY_NUMBER AND can_be_marked_down = TRUE
             """;
 
     private static final String SQL_INSERT_PRODUCT_INVENTORY_INFO = """
@@ -247,6 +247,7 @@ public class ReceiveOrderRepositoryImpl implements ReceiveOrderRepository {
         }
     }
 
+
     @Override
     public Integer getNumberOfDaysBeforeExpiration(String subcommodityNumber) {
         MapSqlParameterSource params = new MapSqlParameterSource()
@@ -258,6 +259,8 @@ public class ReceiveOrderRepositoryImpl implements ReceiveOrderRepository {
                     params,
                     Integer.class
             );
+        } catch (EmptyResultDataAccessException error) {
+            return null;
         } catch (DataAccessException error) {
             LOG.error("Failed to get expiration rule for subcommodity {}", subcommodityNumber, error);
             throw new MockSimsCustomException(
