@@ -104,17 +104,6 @@ VALUES ('AB12345','00045','014','4011',17,3,TIMESTAMP '2026-06-23 08:10:00',2,'O
 INSERT INTO RFI_TRANSACTIONS (user_euid,store_number,division_number,upc_number,qod_before_transaction,qom_before_transaction,action_time,quantity_removed,reason_code)
 VALUES ('AB12345','00045','014','1011',8,0,TIMESTAMP '2026-06-23 09:45:00',1,'OD');
 
-
--- Mock Order Header for Bananas UPC 4011
-INSERT INTO ORDER_TRANSACTION_INFO (general_order_id, store_number, division_number, placed_by_user_euid, order_placed_time, received_by_user_euid, order_received, order_received_time)
-VALUES (1001, '00045', '014', 'AB12345', TIMESTAMP '2026-06-21 09:00:00', 'AB12345', True, TIMESTAMP '2026-06-23 11:00:00');
-
-
--- Mock Order Movement Transactions for Bananas UPC 4011
-INSERT INTO ORDER_MOVEMENT_TRANSACTIONS (general_order_id, upc_number, quantity, qod_before_transaction)
-VALUES (1001, '4011', 10, 0);
-
-
 INSERT INTO ORDER_TRANSACTION_INFO (general_order_id, store_number, division_number, placed_by_user_euid, order_placed_time, received_by_user_euid, order_received, order_received_time)
 VALUES (1234, '00045', '014', 'JS58323', '2026-06-25 09:00:00', 'JS58323', TRUE, '2026-06-25 09:00:00');
 
@@ -130,4 +119,4 @@ VALUES('00045','014','07','4011',5, '2026-06-28','2026-06-26','2026-06-27',20,TR
 
 
 INSERT INTO PDM_ALERTS (store_number, division_number, department_number, upc_number, quantity, expiration_date, markdown_after_date, rfi_after_date, first_markdown_percent, is_active)
-                VALUES('00045','014','01','3011',5, '2026-06-28','2026-06-26','2026-06-27',20,TRUE);
+VALUES('00045','014','01','3011',5, '2026-06-28','2026-06-26','2026-06-27',20,TRUE);
