@@ -105,6 +105,6 @@ export class LoginButton {
 
   handleLogout() {
     this.auth.logout();
-    this.router.navigate(['/Dashboard']);
+    this.router.navigate(['']);
   }
 }

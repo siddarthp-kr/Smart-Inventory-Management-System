@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router} from '@angular/router';
 import { AuthService } from '../services/auth';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component ({
   selector: `login-page`,
@@ -14,6 +15,7 @@ import { AuthService } from '../services/auth';
 export class LoginPage {
   private auth = inject(AuthService)
   private router = inject(Router)
+  constructor(private cd: ChangeDetectorRef) {}
 
   euid = ''
   storeNumber = ''

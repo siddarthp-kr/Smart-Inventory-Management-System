@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import {AuthService} from '../services/auth';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: "app-dashboard",
@@ -8,4 +9,5 @@ import {AuthService} from '../services/auth';
 })
 export class Dashboard{
   protected auth = inject(AuthService);
+  constructor(private cd: ChangeDetectorRef) {}
 }
