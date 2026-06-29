@@ -153,6 +153,51 @@ export class OrderHistoryPage implements OnInit {
     }
   }
 
+  async receiveOrder(order: GroupedOrder) {
+    const user = this.auth.user();
+
+    if (!user) {
+      this.showMessage('Failed to receive order. You must be logged in.', false);
+      return;
+    }
+
+    if (order.orderReceived) {
+      this.showMessage('This order has already been received.', false);
+      return;
+    }
+
+    try {
+      const response = await this.api.receiveOrder(
+        user.storeNumber,
+        user.divisionNumber,
+        user.userEuid,
+        order.orderId
+      );
+
+      if (response.responseCode === 200) {
+        this.showMessage(response.responseMessage, true);
+
+        await this.orderHistoryAction();
+      } else {
+        this.showMessage(response.responseMessage, false);
+      }
+
+    } catch (error: any) {
+      console.error('Failed to receive order:', error);
+
+      if (error?.error?.responseCode && error?.error?.responseMessage) {
+        this.showMessage(
+          `Error: ${error.error.responseCode} ${error.error.responseMessage}`,
+          false
+        );
+      } else {
+        this.showMessage('Failed to receive order.', false);
+      }
+    }
+
+    this.cd.detectChanges();
+  }
+
   getStatusText(order: GroupedOrder): string{
     return order.orderReceived ? 'Received' : 'Pending';
   }

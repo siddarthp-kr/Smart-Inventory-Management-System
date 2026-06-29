@@ -49,6 +49,7 @@
           <th>Status</th>
           <th>Items</th>
           <th>View Order</th>
+          <th>Action</th>
         </tr>
         </thead>
 
@@ -63,6 +64,16 @@
               <td>{{ record.items.length }}</td>
               <td>
                 <button class = "view-btn" (click) = "toggleOrder(record.orderId)">{{ record.expanded ? 'Hide Order' : 'View Order' }}</button>
+              </td>
+
+              <td>
+              @if (!record.orderReceived) {
+                <button class="receive-btn" (click)="receiveOrder(record)">
+                  Receive
+                </button>
+              } @else {
+                <span class="received-text">Received</span>
+              }
               </td>
             </tr>
 
@@ -94,7 +105,7 @@
                       } @else {
                         <div>
                           <span class="summary-label">Receive Status:</span>
-                          <span>Pending reception</span>
+                          <span>Sent</span>
                         </div>
                       }
                     </div>
@@ -404,6 +415,27 @@
     border-bottom: 1px solid #f1f5f9;
   }
 
+  .receive-btn {
+    background: #16a34a;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+  }
+
+  .receive-btn:hover {
+    background: #15803d;
+  }
+
+  .received-text {
+    color: #166534;
+    font-weight: 600;
+    font-size: 13px;
+  }
+  
   /* Pagination */
   .pagination-bar {
     display: flex;
