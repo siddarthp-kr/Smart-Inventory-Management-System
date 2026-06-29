@@ -7,13 +7,14 @@ import { AlertsPage } from './components/AlertsPage';
 import { AddItemPage } from './components/AddItemPage';
 import { OrderHistoryPage } from './components/OrderHistoryPage';
 import {MovementPage} from './components/MovementPage';
+import {LandingPage} from './components/LandingPage';
 
 
 export const routes: Routes = [
   {
     path: '',
-    title: 'SIMS Login',
-    component: LoginPage,
+    title: 'SIMS',
+    component: LandingPage,
   },
   {
     path: 'LoginPage',

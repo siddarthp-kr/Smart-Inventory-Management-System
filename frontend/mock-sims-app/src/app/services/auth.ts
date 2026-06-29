@@ -5,7 +5,6 @@ export interface User {
   userEuid: string;
   storeNumber: string;
   divisionNumber: string;
-  // add whatever fields you need
 }
 
 @Injectable({ providedIn: 'root' })
