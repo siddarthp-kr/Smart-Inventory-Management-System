@@ -65,6 +65,24 @@ export class BohPage implements OnInit {
     }, 3000);
   }
 
+  clampQuantity(event: Event, upcNumber: string) {
+    const input = event.target as HTMLInputElement;
+
+    // Strip any non-digit characters (e.g. minus sign, decimal point)
+    let raw = input.value.replace(/\D/g, '')
+
+    // Truncate to 3 characters max
+    if (raw.length > 3) {
+      raw = raw.substring(0, 3)
+    }
+
+    const clamped = raw === '' ? 0 : parseInt(raw, 10)
+
+    // Update both the DOM input and the model to the clamped value
+    input.value = raw === '' ? '' : String(clamped)
+    this.pendingQuantities[upcNumber] = clamped
+  }
+
   private getCartStorageKey(): string {
     const user = this.auth.user();
     if (!user){
