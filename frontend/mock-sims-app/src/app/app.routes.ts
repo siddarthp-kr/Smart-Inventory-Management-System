@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 import {LoginPage} from './components/LoginPage';
 import { Dashboard } from './pages/Dashboard';
-import { OrderPage } from './components/OrderPage';
 import { BohPage } from './components/BohPage';
 import { AlertsPage } from './components/AlertsPage';
 import { AddItemPage } from './components/AddItemPage';
@@ -24,11 +23,6 @@ export const routes: Routes = [
     path: 'Dashboard',
     title: 'SIMS Dashboard',
     component: Dashboard
-  },
-  {
-    path: 'OrderPage',
-    title: "SIMS Ordering",
-    component: OrderPage
   },
   {
     path: 'AddItemPage',
