@@ -9,6 +9,7 @@ import {
   ProductsResponse
 } from '../services/api';
 import { AuthService } from '../services/auth';
+import {Router} from '@angular/router';
 
 
 interface PdmAlertDisplayRecord extends GetPdmAlertRecord {
@@ -25,6 +26,7 @@ interface PdmAlertDisplayRecord extends GetPdmAlertRecord {
 export class AlertsPage implements OnInit {
   private api = inject(Api)
   private auth = inject(AuthService)
+  private router = inject(Router);
 
   constructor(private cd: ChangeDetectorRef) {}
 
@@ -151,8 +153,15 @@ export class AlertsPage implements OnInit {
   takeAction(alert: PdmAlertDisplayRecord) {
     console.log('Taking action on alert:', alert)
 
-    // TODO: Navigate to action page or open action modal
-    // Example:
-    // this.router.navigate(['/PdmAlertActionPage', alert.alertId])
+    this.router.navigate(['/AlertActionPage'], {
+      state: {
+        alertId: alert.alertId,
+        upcNumber: alert.upcNumber,
+        productName: alert.productName,
+        mdAfterDate: alert.mdAfterDate,
+        rfiAfterDate: alert.rfiAfterDate,
+        expirationDate: alert.expirationDate
+      }
+    })
   }
 }

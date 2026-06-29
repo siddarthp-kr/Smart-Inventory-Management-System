@@ -1,0 +1,344 @@
+<div class="action-container">
+
+  <!-- Missing state fallback -->
+  @if (missingState) {
+    <div class="missing-state-card">
+      <p>No alert data found. Please navigate here from the Alerts page.</p>
+      <button class="primary-btn" (click)="goBack()">Back to Alerts</button>
+    </div>
+  } @else {
+
+    <!-- Header -->
+    <div class="header-bar">
+      <h2>Take Action</h2>
+      <div class="header-actions">
+        <button class="secondary-btn" (click)="goBack()">Back to Alerts</button>
+      </div>
+    </div>
+
+    <!-- Status messages -->
+    @if (statusMessage !== '' && statusIsSuccess) {
+      <div class="message-box success">{{ statusMessage }}</div>
+    }
+    @if (statusMessage !== '' && !statusIsSuccess) {
+      <div class="message-box invalid">{{ statusMessage }}</div>
+    }
+
+    <!-- Alert info summary card -->
+    <div class="info-card">
+      <div class="info-card-header">
+        <span class="info-card-title">Alert Details</span>
+        <span class="alert-id-badge">Alert #{{ alertId }}</span>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-row">
+          <span class="info-label">Product</span>
+          <span class="info-value product-name">{{ productName }}</span>
+        </div>
+
+        <div class="info-row">
+          <span class="info-label">UPC</span>
+          <span class="info-value upc">{{ upcNumber }}</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Action area — add action components here -->
+    <div class="action-area">
+      <h3 class="action-area-title">Available Actions</h3>
+
+      <div class="action-list">
+
+        <!-- Markdown -->
+        <div class="action-card" [ngClass]="canMarkdown ? 'action-card-active' : 'action-card-inactive'">
+          <div class="action-card-left">
+            <div class="action-icon">🏷️</div>
+            <div class="action-text">
+              <div class="action-title">Markdown Item</div>
+              <div class="action-condition">
+                @if (canMarkdown) {
+                  <span class="condition-met">
+                    ✅ Markdown if expiration date is on or before markdown date
+                    — expiration (<strong>{{ formatDate(expirationDate) }}</strong>)
+                    is on or before markdown date (<strong>{{ formatDate(mdAfterDate) }}</strong>).
+                  </span>
+                } @else {
+                  <span class="condition-not-met">
+                    ⏳ Markdown if expiration date is on or before markdown date
+                    — expiration (<strong>{{ formatDate(expirationDate) }}</strong>)
+                    has not yet reached the markdown date (<strong>{{ formatDate(mdAfterDate) }}</strong>).
+                  </span>
+                }
+              </div>
+            </div>
+          </div>
+
+          <button
+            class="action-btn markdown-btn"
+            [disabled]="!canMarkdown"
+            (click)="markdownItem()"
+          >
+            Markdown Item
+          </button>
+        </div>
+
+        <!-- Remove from Inventory -->
+        <div class="action-card" [ngClass]="canRemoveFromInventory ? 'action-card-active' : 'action-card-inactive'">
+          <div class="action-card-left">
+            <div class="action-icon">🗑️</div>
+            <div class="action-text">
+              <div class="action-title">Remove from Inventory</div>
+              <div class="action-condition">
+                @if (canRemoveFromInventory) {
+                  <span class="condition-met">
+                    ✅ Remove from inventory if expiration date is on or before RFI date
+                    — expiration (<strong>{{ formatDate(expirationDate) }}</strong>)
+                    is on or before RFI date (<strong>{{ formatDate(rfiAfterDate) }}</strong>).
+                  </span>
+                } @else {
+                  <span class="condition-not-met">
+                    ⏳ Remove from inventory if expiration date is on or before RFI date
+                    — expiration (<strong>{{ formatDate(expirationDate) }}</strong>)
+                    has not yet reached the RFI date (<strong>{{ formatDate(rfiAfterDate) }}</strong>).
+                  </span>
+                }
+              </div>
+            </div>
+          </div>
+
+          <button
+            class="action-btn rfi-btn"
+            [disabled]="!canRemoveFromInventory"
+            (click)="removeFromInventory()"
+          >
+            Remove from Inventory
+          </button>
+        </div>
+
+        <!-- Push Back Expiration -->
+        <div class="action-card action-card-active">
+          <div class="action-card-left">
+            <div class="action-icon">📅</div>
+            <div class="action-text">
+              <div class="action-title">Push Back Expiration Date</div>
+              <div class="action-condition">
+                <span class="condition-met">
+                  The current oldest expiration date on record is
+<!--                  <strong>{{ formatDate(expirationDate) }}</strong>.-->
+                  If this is inaccurate, push back the expiration date.
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <button
+            class="action-btn pushback-btn"
+            (click)="pushBackExpirationDate()"
+          >
+            Push Back Expiration Date
+          </button>
+        </div>
+
+      </div>
+
+  }
+</div>
+
+<style>
+  .action-container {
+    max-width: 900px;
+    margin: 30px auto;
+    background: white;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+  }
+
+  /* Header */
+  .header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  .header-bar h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  /* Buttons */
+  .primary-btn {
+    background: dodgerblue;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+  }
+
+  .primary-btn:hover:not(:disabled) {
+    background: darkblue;
+  }
+
+  .primary-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .secondary-btn {
+    background: white;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s ease;
+  }
+
+  .secondary-btn:hover {
+    background: #f3f4f6;
+  }
+
+  /* Messages */
+  .message-box {
+    margin-bottom: 15px;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .success {
+    background-color: #ecfdf5;
+    border: 1px solid #10b981;
+    color: #065f46;
+  }
+
+  .invalid {
+    background-color: #fef2f2;
+    border: 1px solid #ef4444;
+    color: #7f1d1d;
+  }
+
+  /* Alert info card */
+  .info-card {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+
+  .info-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .info-card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  .alert-id-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    background: #dbeafe;
+    color: #1e40af;
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 20px;
+  }
+
+  .info-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .info-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .info-value {
+    font-size: 15px;
+    color: #111827;
+    font-weight: 500;
+  }
+
+  .product-name {
+    font-weight: 700;
+  }
+
+  .upc {
+    font-family: monospace;
+    color: #6b7280;
+  }
+
+  /* Action area */
+  .action-area {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 24px;
+    min-height: 200px;
+  }
+
+  .action-placeholder {
+    color: #6b7280;
+    font-style: italic;
+    text-align: center;
+    padding: 40px 0;
+  }
+
+  /* Missing state */
+  .missing-state-card {
+    text-align: center;
+    padding: 40px;
+    color: #6b7280;
+    font-style: italic;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  @media (max-width: 600px) {
+    .info-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .header-bar {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 14px;
+    }
+  }
+</style>
