@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 
 public interface PushBackExpirationRepository {
 
+    public Boolean getAlertActiveStatus(Integer alertId);
     public String getSubcommodityNumber(Integer alertId);
     public LocalDate getOriginalExpirationDate(Integer alertId);
     public MarkdownRulesRecord getMarkdownRules(String subcommodityNumber);

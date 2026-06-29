@@ -72,6 +72,34 @@ public class PushBackExpirationRepositoryImpl implements PushBackExpirationRepos
             WHERE alert_id = :ALERT_ID;
             """;
 
+    private final String SQL_GET_ALERT_ACTIVE_STATUS = """
+        SELECT is_active 
+        FROM PDM_ALERTS
+        WHERE alert_id = :ALERT_ID;
+    """;
+
+    private static final String SQL_GET_ORIGINAL_EXPIRATION = """
+        SELECT expiration_date 
+        FROM PDM_ALERTS
+        WHERE alert_id = :ALERT_ID;
+    """;
+
+
+    @Override
+    public Boolean getAlertActiveStatus(Integer alertId) {
+        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource().addValue(ALERT_ID, alertId);
+
+        try {
+            return namedParameterJdbcTemplate.queryForObject(SQL_GET_ALERT_ACTIVE_STATUS, mapSqlParameterSource, Boolean.class);
+        } catch (EmptyResultDataAccessException e){
+            LOG.error("Failed to get active status for alert {}. Alert does not exist", alertId, e);
+            throw new MockSimsCustomException(404, String.format("Failed to get active status for alert %d. Alert does not exist", alertId));
+        } catch (DataAccessException e) {
+            LOG.error("Failed to get active status for alert {}.", alertId, e);
+            throw new MockSimsCustomException(500, "Failed to get active status number for alert " + alertId + ".");
+        }
+    }
+
 
     @Override
     public String getSubcommodityNumber(Integer alertId) {
@@ -88,11 +116,6 @@ public class PushBackExpirationRepositoryImpl implements PushBackExpirationRepos
         }
     }
 
-    private static final String SQL_GET_ORIGINAL_EXPIRATION = """
-        SELECT expiration_date 
-        FROM PDM_ALERTS
-        WHERE alert_id = :ALERT_ID;
-    """;
 
     @Override
     public LocalDate getOriginalExpirationDate(Integer alertId){
@@ -154,7 +177,6 @@ public class PushBackExpirationRepositoryImpl implements PushBackExpirationRepos
         }
 
     }
-
 
 
     @Override

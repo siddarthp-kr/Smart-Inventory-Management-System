@@ -111,7 +111,7 @@ CREATE TABLE PDM_ALERTS
     markdown_after_date date,
     rfi_after_date date,
     first_markdown_percent int,
-    is_active BOOLEAN,
+    is_active BOOLEAN NOT NULL,
     alert_actioned_time timestamp,
     alert_actioned_user_euid varchar(10),
     alert_actioned_code varchar(4),

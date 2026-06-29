@@ -20,7 +20,7 @@ import java.time.LocalDate;
 @RequestMapping("/api/pdm")
 public class PushBackExpirationController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ProductsController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PushBackExpirationController.class);
 
     private final PushBackExpirationService pushBackExpirationService;
 

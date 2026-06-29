@@ -12,8 +12,8 @@ public class MarkdownRulesRecordMapper implements RowMapper<MarkdownRulesRecord>
     public MarkdownRulesRecord mapRow(ResultSet rs, int index) throws SQLException {
         MarkdownRulesRecord markdownRulesRecord = new MarkdownRulesRecord();
 
-        markdownRulesRecord.setDaysBeforeExpToMd(rs.getInt("days_before_exp_to_markdown_number"));
-        markdownRulesRecord.setDaysBeforeExpToRfi(rs.getInt("days_before_exp_to_rfi_number"));
+        markdownRulesRecord.setDaysBeforeExpToMd(rs.getObject("days_before_exp_to_markdown_number", Integer.class));
+        markdownRulesRecord.setDaysBeforeExpToRfi(rs.getObject("days_before_exp_to_rfi_number", Integer.class));
 
         return markdownRulesRecord;
     }

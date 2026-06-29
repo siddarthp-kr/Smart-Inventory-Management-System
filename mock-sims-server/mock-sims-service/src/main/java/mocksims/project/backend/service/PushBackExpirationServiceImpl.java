@@ -35,6 +35,12 @@ public class PushBackExpirationServiceImpl implements PushBackExpirationService 
         deactivate the old row
          */
 
+        boolean isActive = pushBackExpirationRepository.getAlertActiveStatus(pushBackExpirationRequest.getAlertId());
+
+        if(!isActive){
+            throw new MockSimsCustomException(400, String.format("Failed to push back expiration date for alert %d. An inactive alert cannot be pushed back.", pushBackExpirationRequest.getAlertId()));
+        }
+
         LocalDate originalExpiration = pushBackExpirationRepository.getOriginalExpirationDate(pushBackExpirationRequest.getAlertId());
 
         if(originalExpiration.isAfter(pushBackExpirationRequest.getNewExpirationDate()) || originalExpiration.isEqual(pushBackExpirationRequest.getNewExpirationDate())){
