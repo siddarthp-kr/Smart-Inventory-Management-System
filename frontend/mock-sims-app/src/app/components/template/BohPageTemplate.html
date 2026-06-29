@@ -85,7 +85,11 @@
                     class = "qty-input"
                     type = "number"
                     min = "1"
-                    [(ngModel)] = "pendingQuantities[record.upcNumber]"
+                    max = "999"
+                    value = "{{pendingQuantities[record.upcNumber]}}"
+                    (change) = "handleQuantityChange(record.upcNumber)"
+
+
                     placeholder = "Qty"
                   />
                 </td>

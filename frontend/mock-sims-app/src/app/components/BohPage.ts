@@ -65,6 +65,15 @@ export class BohPage implements OnInit {
     }, 3000);
   }
 
+  handleQuantityChange(upcNumber: string){
+    
+    if(this.pendingQuantities[upcNumber] > 999){
+      this.pendingQuantities[upcNumber] = Number(this.pendingQuantities[upcNumber].toString().substring(0,3));
+      //this.pendingQuantities[upcNumber] = Math.floor(this.pendingQuantities[upcNumber] / 10)
+      this.cd.detectChanges()
+    }
+  }
+
   private getCartStorageKey(): string {
     const user = this.auth.user();
     if (!user){
