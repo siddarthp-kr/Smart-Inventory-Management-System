@@ -27,6 +27,11 @@ export interface PlaceOrderResponse {
   orderId: number
 }
 
+export interface ReceiveOrderResponse {
+  responseCode: number;
+  responseMessage: string;
+}
+
 export interface DepartmentInfoRecord {
   departmentNumber: string,
   departmentName: string
@@ -116,12 +121,7 @@ export class Api {
     return result;
   }
 
-  async placeOrder(
-    storeNumber: string,
-    divisionNumber: string,
-    userEuid: string,
-    products: PlaceOrderProduct[]
-  ): Promise<PlaceOrderResponse> {
+  async placeOrder(storeNumber: string, divisionNumber: string, userEuid: string, products: PlaceOrderProduct[]): Promise<PlaceOrderResponse> {
     const requestBody = {
       storeNumber,
       divisionNumber,
@@ -133,6 +133,22 @@ export class Api {
     //do validation to make sure that the request is valid
     let result: PlaceOrderResponse = await firstValueFrom(
       this.http.post<PlaceOrderResponse>('http://localhost:8080/api/order/place-order', requestBody)
+    )
+
+    return result;
+  }
+
+  async receiveOrder(storeNumber: string, divisionNumber: string, userEuid: string, orderId: number): Promise<ReceiveOrderResponse> {
+    const requestBody = {
+      storeNumber,
+      divisionNumber,
+      userEuid,
+      orderId
+    };
+
+    const result: ReceiveOrderResponse = await firstValueFrom(
+      this.http.post<ReceiveOrderResponse>(
+        'http://localhost:8080/api/order/receive-order', requestBody)
     )
 
     return result;
