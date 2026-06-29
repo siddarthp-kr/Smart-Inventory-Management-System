@@ -1,9 +1,9 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {Api, AddItemResponse, DepartmentInfoRecord} from '../services/api';
+import {Api, AddItemResponse, DepartmentInfoRecord, GetMarkdownRuleRecord} from '../services/api';
 import {ChangeDetectorRef} from '@angular/core';
 import {AuthService} from '../services/auth';
-import {Router, RouterLink} from '@angular/router';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-add-item-page',
@@ -12,10 +12,12 @@ import {Router, RouterLink} from '@angular/router';
   templateUrl: './template/AddItemPageTemplate.html'
 })
 
-export class AddItemPage{
+export class AddItemPage implements OnInit{
   private api = inject(Api);
   private auth = inject(AuthService);
-  constructor(private cd: ChangeDetectorRef) {}
+
+  constructor(private cd: ChangeDetectorRef) {
+  }
 
   upcNumber: string = '';
   subcommodityNumber: string = '';
@@ -32,6 +34,11 @@ export class AddItemPage{
   message: string = '';
   isSuccess: boolean = false;
 
+  markdownRules: GetMarkdownRuleRecord[] = [];
+  matchingSubcommodities: GetMarkdownRuleRecord[] = [];
+  selectedExistingRule: GetMarkdownRuleRecord | null = null;
+  isExistingSubcommodityRule: boolean = false;
+
   invalidUpcNumber: boolean = false;
   invalidSubcommodityNumber: boolean = false;
   invalidDepartmentNumber: boolean = false;
@@ -47,9 +54,10 @@ export class AddItemPage{
 
   ngOnInit() {
     this.getDepartmentInfo();
+    this.getMarkdownRules();
   }
 
-  async getDepartmentInfo(){
+  async getDepartmentInfo() {
 
     try {
       const response = await this.api.getDepartmentInfo();
@@ -61,16 +69,31 @@ export class AddItemPage{
     this.cd.detectChanges();
   }
 
-  showMessage(text: string, success: boolean){
+  async getMarkdownRules() {
+    try {
+      const response = await this.api.getMarkdownRules();
+      this.markdownRules = response.markdownRules || [];
+      console.log(this.markdownRules);
+    } catch (error) {
+      this.markdownRules = [];
+      this.showMessage('Failed to load markdown rules. Error 503: Failed to contact server', false);
+    }
+
+    this.cd.detectChanges();
+  }
+
+  showMessage(text: string, success: boolean) {
     this.message = text;
     this.isSuccess = success;
 
     setTimeout(() => {
       this.message = '';
+      this.cd.detectChanges();
     }, 3000);
   }
+
   // Clear the validation flags after form submission
-  resetValidationFlags(){
+  resetValidationFlags() {
     this.invalidUpcNumber = false;
     this.invalidSubcommodityNumber = false;
     this.invalidDepartmentNumber = false;
@@ -82,24 +105,94 @@ export class AddItemPage{
     this.invalidDaysBeforeExpToRFI = false;
     this.invalidDaysAfterOrderToSetExp = false;
     this.invalidMarkdownOrder = false;
+  }
 
+  resetMarkdownValidationFlags() {
+    this.invalidFirstMarkdownPercent = false;
+    this.invalidDaysBeforeExpToMD = false;
+    this.invalidDaysBeforeExpToRFI = false;
+    this.invalidDaysAfterOrderToSetExp = false;
+    this.invalidMarkdownOrder = false;
+  }
+
+
+  onSubcommodityInput() {
+    const term = this.subcommodityNumber.trim();
+    const previousWasExistingRule = this.isExistingSubcommodityRule;
+
+    this.selectedExistingRule = null;
+    this.isExistingSubcommodityRule = false;
+
+    if (term === '') {
+      this.matchingSubcommodities = [];
+      this.clearMarkdownRuleFields();
+      return;
+    }
+
+    this.matchingSubcommodities = this.markdownRules
+      .filter(rule => rule.subcommodityNumber.includes(term))
+      .slice(0, 10);
+
+    const exactMatch = this.markdownRules.find(
+      rule => rule.subcommodityNumber === term
+    );
+
+    if (exactMatch) {
+      this.applyExistingMarkdownRule(exactMatch);
+      this.matchingSubcommodities = [];
+    } else if (previousWasExistingRule) {
+      this.clearMarkdownRuleFields();
+    }
+
+    this.cd.detectChanges();
+  }
+
+  selectSubcommodityRule(rule: GetMarkdownRuleRecord) {
+    this.subcommodityNumber = rule.subcommodityNumber;
+    this.applyExistingMarkdownRule(rule);
+    this.matchingSubcommodities = [];
+    this.cd.detectChanges();
+  }
+
+  applyExistingMarkdownRule(rule: GetMarkdownRuleRecord) {
+    this.selectedExistingRule = rule;
+    this.isExistingSubcommodityRule = true;
+
+    this.canBeMarkedDown = rule.canBeMarkedDown;
+    this.firstMarkdownPercent = rule.firstMarkdownPercent;
+    this.daysBeforeExpToMD = rule.daysBeforeExpToMD;
+    this.daysBeforeExpToRFI = rule.daysBeforeExpToRFI;
+    this.daysAfterOrderToSetExp = rule.daysAfterOrderToSetExp;
+
+    this.resetMarkdownValidationFlags();
+  }
+
+  clearMarkdownRuleFields() {
+    this.selectedExistingRule = null;
+    this.isExistingSubcommodityRule = false;
+
+    this.canBeMarkedDown = false;
+    this.firstMarkdownPercent = null;
+    this.daysBeforeExpToMD = null;
+    this.daysBeforeExpToRFI = null;
+    this.daysAfterOrderToSetExp = null;
+
+    this.resetMarkdownValidationFlags();
   }
 
   // Clears the mark-down related fields if the item cannot be marked down
-  onCanBeMarkedDownChange(){
-    if (!this.canBeMarkedDown){
+  onCanBeMarkedDownChange() {
+    if (this.isExistingSubcommodityRule) {
+      return;
+    }
+
+    if (!this.canBeMarkedDown) {
       this.firstMarkdownPercent = null;
       this.daysBeforeExpToMD = null;
       this.daysBeforeExpToRFI = null;
       this.daysAfterOrderToSetExp = null;
 
-      this.invalidFirstMarkdownPercent = false;
-      this.invalidDaysBeforeExpToMD = false;
-      this.invalidDaysBeforeExpToRFI = false;
-      this.invalidDaysAfterOrderToSetExp = false;
-      this.invalidMarkdownOrder = false;
-
-
+      this.resetMarkdownValidationFlags();
     }
   }
 
@@ -177,18 +270,16 @@ export class AddItemPage{
     return isValid;
   }
 
-
   async addItemAction() {
     let addItemResponse: AddItemResponse;
     const user = this.auth.user();
 
-    if (!user){
+    if (!user) {
       this.showMessage('Failed to add item. You must be logged in to add an item.', false);
       return;
     }
 
     // Frontend validation
-
     if (!this.validateForm()) {
       if (this.invalidMarkdownOrder) {
         this.showMessage(
@@ -210,8 +301,7 @@ export class AddItemPage{
       return;
     }
 
-
-    try{
+    try {
       addItemResponse = await this.api.addItem(
         user.storeNumber,
         user.divisionNumber,
@@ -226,16 +316,15 @@ export class AddItemPage{
         this.daysBeforeExpToRFI,
         this.daysAfterOrderToSetExp
       );
-    } catch (error: any){
+    } catch (error: any) {
       console.error('Add Item error:', error);
 
-      if (error?.error?.responseCode && error?.error?.responseMessage){
+      if (error?.error?.responseCode && error?.error?.responseMessage) {
         addItemResponse = {
           responseCode: error.error.responseCode,
           responseMessage: error.error.responseMessage
         };
-      }
-      else{
+      } else {
         addItemResponse = {
           responseCode: 503,
           responseMessage: 'Failed to contact server'
@@ -243,27 +332,33 @@ export class AddItemPage{
       }
     }
 
-    if (addItemResponse.responseCode === 200){
+    if (addItemResponse.responseCode === 200) {
       this.showMessage(addItemResponse.responseMessage, true);
+      this.clearFormAfterSuccess();
+      await this.getMarkdownRules();
+      this.resetValidationFlags();
 
-      // Clears the form fields after success
-      this.upcNumber = '';
-      this.subcommodityNumber = '';
-      this.departmentNumber = '';
-      this.productName = '';
-      this.standardPrice = null;
-      this.firstMarkdownPercent = null;
-      this.canBeMarkedDown = false;
-      this.daysBeforeExpToMD = null;
-      this.daysBeforeExpToRFI = null;
-      this.daysAfterOrderToSetExp = null;
-
-      this.resetValidationFlags()
+    } else {
+      this.showMessage(addItemResponse.responseMessage, false);
     }
-    else {
-      this.showMessage( addItemResponse.responseMessage, false);
-    }
-
     this.cd.detectChanges();
+  }
+
+
+  clearFormAfterSuccess() {
+    // Clears the form fields after success
+    this.upcNumber = '';
+    this.subcommodityNumber = '';
+    this.departmentNumber = '';
+    this.productName = '';
+    this.standardPrice = null;
+    this.firstMarkdownPercent = null;
+    this.canBeMarkedDown = false;
+    this.daysBeforeExpToMD = null;
+    this.daysBeforeExpToRFI = null;
+    this.daysAfterOrderToSetExp = null;
+    this.matchingSubcommodities = [];
+    this.selectedExistingRule = null;
+    this.isExistingSubcommodityRule = false;
   }
 }
