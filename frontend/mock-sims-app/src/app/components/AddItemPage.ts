@@ -12,7 +12,7 @@ import {RouterLink} from '@angular/router';
   templateUrl: './template/AddItemPageTemplate.html'
 })
 
-export class AddItemPage {
+export class AddItemPage{
   private api = inject(Api);
   private auth = inject(AuthService);
 
