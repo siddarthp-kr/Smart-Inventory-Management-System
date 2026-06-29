@@ -21,9 +21,26 @@
       <input type = "text" [(ngModel)] = "upcNumber" placeholder="Enter UPC Number" [class.invalid-field] = "invalidUpcNumber" />
     </div>
 
-    <div class = "form-group">
+
+    <div class="form-group subcommodity-group">
       <label>Subcommodity Number</label>
-      <input type = "text" [(ngModel)] = "subcommodityNumber" placeholder="Enter Subcommodity Number" [class.invalid-field] = "invalidSubcommodityNumber" />
+      <input type="text" [(ngModel)]="subcommodityNumber" (ngModelChange)="onSubcommodityInput()" placeholder="Enter or search Subcommodity Number" [class.invalid-field]="invalidSubcommodityNumber"/>
+
+      @if (matchingSubcommodities.length > 0) {
+        <div class="subcommodity-dropdown">
+          @for (rule of matchingSubcommodities; track rule.subcommodityNumber) {
+            <button type="button" class="subcommodity-option" (click)="selectSubcommodityRule(rule)">
+              <span class="subcommodity-code">{{ rule.subcommodityNumber }}</span>
+
+              @if (rule.canBeMarkedDown) {
+                <span class="rule-pill eligible">Markdown Eligible</span>
+              } @else {
+                <span class="rule-pill not-eligible">Not Markdown Eligible</span>
+              }
+            </button>
+          }
+        </div>
+      }
     </div>
 
     <div class="form-group">
@@ -56,6 +73,8 @@
       <select
         [(ngModel)]="canBeMarkedDown"
         (ngModelChange)="onCanBeMarkedDownChange()"
+        [disabled]="isExistingSubcommodityRule"
+        [class.disabled-field]="isExistingSubcommodityRule"
       >
         <option [ngValue]="false">No</option>
         <option [ngValue]="true">Yes</option>
@@ -64,23 +83,23 @@
 
     <div class = "form-group">
       <label>First Markdown Percent</label>
-      <input type = "number" [(ngModel)] = "firstMarkdownPercent" placeholder="Enter Markdown Percent" [disabled]="!canBeMarkedDown" [class.disabled-field] = "!canBeMarkedDown" [class.invalid-field]="invalidFirstMarkdownPercent"/>
+      <input type = "number" [(ngModel)] = "firstMarkdownPercent" placeholder="Enter Markdown Percent" [disabled]="isExistingSubcommodityRule || !canBeMarkedDown" [class.disabled-field]="isExistingSubcommodityRule || !canBeMarkedDown" [class.invalid-field]="invalidFirstMarkdownPercent"/>
     </div>
 
 
     <div class = "form-group">
       <label>Days Before Expiration To Markdown</label>
-      <input type = "number" [(ngModel)] = "daysBeforeExpToMD" placeholder="Enter days" [disabled]="!canBeMarkedDown" [class.disabled-field] = "!canBeMarkedDown" [class.invalid-field]="invalidDaysBeforeExpToMD" />
+      <input type = "number" [(ngModel)] = "daysBeforeExpToMD" placeholder="Enter days" [disabled]="isExistingSubcommodityRule || !canBeMarkedDown" [class.disabled-field]="isExistingSubcommodityRule || !canBeMarkedDown" [class.invalid-field]="invalidDaysBeforeExpToMD" />
     </div>
 
     <div class = "form-group">
       <label>Days Before Expiration To RFI</label>
-      <input type = "number" [(ngModel)] = "daysBeforeExpToRFI" placeholder="Enter days" [disabled]="!canBeMarkedDown" [class.disabled-field] = "!canBeMarkedDown" [class.invalid-field]="invalidDaysBeforeExpToRFI" />
+      <input type = "number" [(ngModel)] = "daysBeforeExpToRFI" placeholder="Enter days" [disabled]="isExistingSubcommodityRule || !canBeMarkedDown" [class.disabled-field]="isExistingSubcommodityRule || !canBeMarkedDown" [class.invalid-field]="invalidDaysBeforeExpToRFI" />
     </div>
 
     <div class = "form-group">
       <label>Days After Order To Set Expiration</label>
-      <input type = "number" [(ngModel)] = "daysAfterOrderToSetExp" placeholder="Enter days" [disabled]="!canBeMarkedDown" [class.disabled-field] = "!canBeMarkedDown" [class.invalid-field]="invalidDaysAfterOrderToSetExp"/>
+      <input type = "number" [(ngModel)] = "daysAfterOrderToSetExp" placeholder="Enter days" [disabled]="isExistingSubcommodityRule || !canBeMarkedDown" [class.disabled-field]="isExistingSubcommodityRule || !canBeMarkedDown" [class.invalid-field]="invalidDaysAfterOrderToSetExp"/>
     </div>
   </div>
 
@@ -178,8 +197,8 @@
 
   /* Disabled */
   .disabled-field {
-    background-color: #f9fafb;
-    color: #9ca3af;
+    background-color: #f9fafb !important;
+    color: #9ca3af !important;
     cursor: not-allowed;
   }
 
@@ -187,6 +206,76 @@
   .invalid-field {
     border-color: #ef4444 !important;
     box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1);
+  }
+
+  .subcommodity-dropdown {
+    position: absolute;
+    top: 72px;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+  }
+
+  .subcommodity-option {
+    width: 100%;
+    background: white;
+    border: none;
+    border-bottom: 1px solid #f3f4f6;
+    padding: 10px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .subcommodity-option:hover {
+    background: #f9fafb;
+  }
+
+  .subcommodity-code {
+    font-family: monospace;
+    font-weight: 700;
+    color: #111827;
+  }
+  .subcommodity-group {
+    position: relative;
+  }
+
+  .rule-pill {
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 999px;
+    padding: 4px 8px;
+  }
+
+  .rule-pill.eligible {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  .rule-pill.not-eligible {
+    background: #f3f4f6;
+    color: #4b5563;
+  }
+
+  .helper-text {
+    margin: 6px 0 0;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .existing-rule-text {
+    color: #166534;
+  }
+
+  .new-rule-text {
+    color: #6b7280;
   }
 
   /* Action Button */
@@ -234,6 +323,5 @@
     border: 1px solid #ef4444;
     color: #7f1d1d;
   }
-
 
 </style>

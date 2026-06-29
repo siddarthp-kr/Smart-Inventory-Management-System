@@ -106,6 +106,19 @@ export interface GetPdmAlertsResponse {
   pdmAlerts: GetPdmAlertRecord[];
 }
 
+export interface GetMarkdownRuleRecord {
+  subcommodityNumber: string;
+  firstMarkdownPercent: number | null;
+  canBeMarkedDown: boolean;
+  daysBeforeExpToMD: number | null;
+  daysBeforeExpToRFI: number | null;
+  daysAfterOrderToSetExp: number | null;
+}
+
+export interface GetMarkdownRulesResponse {
+  responseMessage: string;
+  markdownRules: GetMarkdownRuleRecord[];
+}
 
 @Injectable({ providedIn: 'root' })
 export class Api {
@@ -218,6 +231,13 @@ export class Api {
     const result: MovementInfoResponse = await firstValueFrom(
 
       this.http.get<MovementInfoResponse>(`http://localhost:8080/api/boh/movement-info?storeNumber=${storeNumber}&divisionNumber=${divisionNumber}&upcNumber=${upcNumber}`)
+    );
+    return result;
+  }
+
+  async getMarkdownRules(): Promise<GetMarkdownRulesResponse> {
+    const result: GetMarkdownRulesResponse = await firstValueFrom(
+      this.http.get<GetMarkdownRulesResponse>('http://localhost:8080/api/order/markdown-rules')
     );
     return result;
   }
