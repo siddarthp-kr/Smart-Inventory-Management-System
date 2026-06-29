@@ -65,13 +65,22 @@ export class BohPage implements OnInit {
     }, 3000);
   }
 
-  handleQuantityChange(upcNumber: string){
-    
-    if(this.pendingQuantities[upcNumber] > 999){
-      this.pendingQuantities[upcNumber] = Number(this.pendingQuantities[upcNumber].toString().substring(0,3));
-      //this.pendingQuantities[upcNumber] = Math.floor(this.pendingQuantities[upcNumber] / 10)
-      this.cd.detectChanges()
+  clampQuantity(event: Event, upcNumber: string) {
+    const input = event.target as HTMLInputElement;
+
+    // Strip any non-digit characters (e.g. minus sign, decimal point)
+    let raw = input.value.replace(/\D/g, '')
+
+    // Truncate to 3 characters max
+    if (raw.length > 3) {
+      raw = raw.substring(0, 3)
     }
+
+    const clamped = raw === '' ? 0 : parseInt(raw, 10)
+
+    // Update both the DOM input and the model to the clamped value
+    input.value = raw === '' ? '' : String(clamped)
+    this.pendingQuantities[upcNumber] = clamped
   }
 
   private getCartStorageKey(): string {

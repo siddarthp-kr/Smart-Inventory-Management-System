@@ -82,15 +82,13 @@
                 <td>{{ record.qomNumber }}</td>
                 <td>
                   <input
-                    class = "qty-input"
-                    type = "number"
-                    min = "1"
-                    max = "999"
-                    value = "{{pendingQuantities[record.upcNumber]}}"
-                    (change) = "handleQuantityChange(record.upcNumber)"
-
-
-                    placeholder = "Qty"
+                    class="qty-input"
+                    type="number"
+                    min="1"
+                    max="999"
+                    [(ngModel)]="pendingQuantities[record.upcNumber]"
+                    (input)="clampQuantity($event, record.upcNumber)"
+                    placeholder="Qty"
                   />
                 </td>
                 <td>
