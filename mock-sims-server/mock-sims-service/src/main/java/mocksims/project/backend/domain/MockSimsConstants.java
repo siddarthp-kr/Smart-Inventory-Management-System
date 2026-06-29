@@ -15,5 +15,6 @@ public class MockSimsConstants {
     public static final String MARKDOWN_ITEM_INFORMATION_ENDPOINT = "/markdown-info";
     public static final String RFI_ITEM_ENDPOINT = "/rfi-item";
     public static final String PUSH_BACK_EXPIRATION_ENDPOINT = "/push-back-exp";
+    public static final String GET_MARKDOWN_RULES_ENDPOINT = "/markdown-rules";
     public static final int THREAD_POOL_SIZE_10 = 10;
 }
