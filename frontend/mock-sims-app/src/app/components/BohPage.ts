@@ -53,6 +53,7 @@ export class BohPage implements OnInit {
   ngOnInit() {
     this.getDepartmentInfo()
     this.getBohInfo()
+    this.loadCart();
   }
 
   showMessage(text: string, success: boolean) {
@@ -62,6 +63,37 @@ export class BohPage implements OnInit {
     setTimeout(() => {
       this.statusMessage = '';
     }, 3000);
+  }
+
+  private getCartStorageKey(): string {
+    const user = this.auth.user();
+    if (!user){
+      return 'orderCart_guest';
+    }
+  return `orderCart_${user.storeNumber}_${user.divisionNumber}_${user.userEuid}`;
+  }
+
+  private loadCart() {
+    const savedCart = localStorage.getItem(this.getCartStorageKey());
+
+    if (!savedCart) {
+      return;
+    }
+
+    try {
+      const parsedCart = JSON.parse(savedCart);
+
+      if (Array.isArray(parsedCart)) {
+        this.cartItems = parsedCart;
+      }
+    } catch (error) {
+      console.error('Failed to load saved order cart:', error);
+      localStorage.removeItem(this.getCartStorageKey());
+    }
+  }
+
+  private saveCart() {
+    localStorage.setItem(this.getCartStorageKey(), JSON.stringify(this.cartItems));
   }
 
   async getDepartmentInfo() {
@@ -188,16 +220,19 @@ export class BohPage implements OnInit {
     }
 
     delete this.pendingQuantities[record.upcNumber];
+    this.saveCart();
     this.showMessage(`${record.productName} added to order.`, true);
   }
 
   removeFromCart(upcNumber: string){
     this.cartItems = this.cartItems.filter(item => item.upcNumber !== upcNumber);
+    this.saveCart();
   }
 
   clearCart(){
     this.cartItems = [];
     this.pendingQuantities = {};
+    localStorage.removeItem(this.getCartStorageKey());
   }
 
   async placeCartOrder(){
