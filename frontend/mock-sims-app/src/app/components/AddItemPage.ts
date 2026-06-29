@@ -274,7 +274,7 @@ export class AddItemPage{
     let addItemResponse: AddItemResponse;
     const user = this.auth.user();
 
-    if (!user) {
+    if (!user){
       this.showMessage('Failed to add item. You must be logged in to add an item.', false);
       return;
     }
@@ -316,10 +316,10 @@ export class AddItemPage{
         this.daysBeforeExpToRFI,
         this.daysAfterOrderToSetExp
       );
-    } catch (error: any) {
+    } catch (error: any){
       console.error('Add Item error:', error);
 
-      if (error?.error?.responseCode && error?.error?.responseMessage) {
+      if (error?.error?.responseCode && error?.error?.responseMessage){
         addItemResponse = {
           responseCode: error.error.responseCode,
           responseMessage: error.error.responseMessage
@@ -332,7 +332,7 @@ export class AddItemPage{
       }
     }
 
-    if (addItemResponse.responseCode === 200) {
+    if (addItemResponse.responseCode === 200){
       this.showMessage(addItemResponse.responseMessage, true);
       this.clearFormAfterSuccess();
       await this.getMarkdownRules();
