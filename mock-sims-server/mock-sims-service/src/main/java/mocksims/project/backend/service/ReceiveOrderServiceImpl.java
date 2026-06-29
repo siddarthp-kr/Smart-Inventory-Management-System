@@ -12,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ReceiveOrderServiceImpl implements ReceiveOrderService {
@@ -45,51 +47,23 @@ public class ReceiveOrderServiceImpl implements ReceiveOrderService {
         List<ReceiveOrderItemRecord> orderItems = receiveOrderRepository.getOrderItems(receiveOrderRequest.getOrderId());
 
         if (orderItems.isEmpty()) {
-            throw new MockSimsCustomException(
-                    404,
-                    "No ordered items found for order " + receiveOrderRequest.getOrderId()
-            );
+            throw new MockSimsCustomException(404, "No ordered items found for order " + receiveOrderRequest.getOrderId());
         }
 
-        for (ReceiveOrderItemRecord item : orderItems) {
-            Integer qodBeforeTransaction = receiveOrderRepository.getQodNumber(
-                    receiveOrderRequest.getStoreNumber(),
-                    receiveOrderRequest.getDivisionNumber(),
-                    item.getUpcNumber()
-            );
+        List<String> upcNumbers = orderItems.stream().map(ReceiveOrderItemRecord::getUpcNumber).distinct().toList();
 
-            receiveOrderRepository.incrementQod(
-                    receiveOrderRequest.getStoreNumber(),
-                    receiveOrderRequest.getDivisionNumber(),
-                    item.getUpcNumber(),
-                    item.getQuantity()
-            );
-
-            receiveOrderRepository.updateQodBeforeTransaction(
-                    receiveOrderRequest.getOrderId(),
-                    item.getUpcNumber(),
-                    qodBeforeTransaction
-            );
-
-            String subcommodityNumber = receiveOrderRepository.getSubcommodityNumber(item.getUpcNumber());
-
-            Integer daysAfterOrderToSetExp = receiveOrderRepository.getNumberOfDaysBeforeExpiration(subcommodityNumber);
-
-            LocalDate expirationDate = null;
-
-            if (daysAfterOrderToSetExp != null) {
-                expirationDate = orderReceivedTime.toLocalDate().plusDays(daysAfterOrderToSetExp);
-            }
-
-            receiveOrderRepository.insertProductInventoryInfo(
-                    receiveOrderRequest.getOrderId(),
-                    item.getUpcNumber(),
-                    item.getQuantity(),
-                    expirationDate,
-                    orderReceivedTime.toLocalDate(),
-                    true
-            );
-        }
+        Map<String, Integer> qodBeforeTransactionByUpc = receiveOrderRepository.getQodNumbersByUpc(receiveOrderRequest.getStoreNumber(), receiveOrderRequest.getDivisionNumber(), upcNumbers);
+        validateAllItemsHaveBohRecords(orderItems, qodBeforeTransactionByUpc);
+        Map<String, Integer> daysAfterOrderToSetExpByUpc = receiveOrderRepository.getDaysAfterOrderToSetExpByUpc(upcNumbers);
+        Map<String, LocalDate> expirationDateByUpc = buildExpirationDateByUpc(orderItems, daysAfterOrderToSetExpByUpc, orderReceivedTime.toLocalDate());
+        receiveOrderRepository.batchUpdateQodBeforeTransaction(receiveOrderRequest.getOrderId(), qodBeforeTransactionByUpc);
+        receiveOrderRepository.batchIncrementQod(receiveOrderRequest.getStoreNumber(), receiveOrderRequest.getDivisionNumber(), orderItems);
+        receiveOrderRepository.batchInsertProductInventoryInfo(
+                receiveOrderRequest.getOrderId(),
+                orderItems,
+                expirationDateByUpc,
+                orderReceivedTime.toLocalDate()
+        );
 
         receiveOrderRepository.updateOrderReceived(
                 receiveOrderRequest.getStoreNumber(),
@@ -102,11 +76,38 @@ public class ReceiveOrderServiceImpl implements ReceiveOrderService {
         receiveOrderResponse.setResponseCode(200);
         receiveOrderResponse.setResponseMessage("Order received successfully");
 
-        LOG.info("Order {} received successfully by user {}",
-                receiveOrderRequest.getOrderId(),
-                receiveOrderRequest.getUserEuid()
-        );
+        LOG.info("Order {} received successfully by user {}", receiveOrderRequest.getOrderId(), receiveOrderRequest.getUserEuid());
 
         return receiveOrderResponse;
+    }
+
+    private void validateAllItemsHaveBohRecords(List<ReceiveOrderItemRecord> orderItems, Map<String, Integer> qodBeforeTransactionByUpc) {
+        for (ReceiveOrderItemRecord item : orderItems) {
+            if (!qodBeforeTransactionByUpc.containsKey(item.getUpcNumber())) {
+                throw new MockSimsCustomException(404, "BOH record not found for UPC " + item.getUpcNumber());
+            }
+        }
+    }
+
+    private Map<String, LocalDate> buildExpirationDateByUpc(
+            List<ReceiveOrderItemRecord> orderItems,
+            Map<String, Integer> daysAfterOrderToSetExpByUpc,
+            LocalDate orderReceivedDate
+    ) {
+        Map<String, LocalDate> expirationDateByUpc = new HashMap<>();
+
+        for (ReceiveOrderItemRecord item : orderItems) {
+            Integer daysAfterOrderToSetExp = daysAfterOrderToSetExpByUpc.get(item.getUpcNumber());
+
+            LocalDate expirationDate = null;
+
+            if (daysAfterOrderToSetExp != null) {
+                expirationDate = orderReceivedDate.plusDays(daysAfterOrderToSetExp);
+            }
+
+            expirationDateByUpc.put(item.getUpcNumber(), expirationDate);
+        }
+
+        return expirationDateByUpc;
     }
 }

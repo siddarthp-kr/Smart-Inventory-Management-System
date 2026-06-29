@@ -5,24 +5,30 @@ import mocksims.project.backend.api.domain.ReceiveOrderItemRecord;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 public interface ReceiveOrderRepository {
 
-    Boolean getOrderReceivedStatus(String storeNumber, String divisionNumber, Long orderId);
+    public Boolean getOrderReceivedStatus(String storeNumber, String divisionNumber, Long orderId
+    );
 
-    List<ReceiveOrderItemRecord> getOrderItems(Long orderId);
+    public List<ReceiveOrderItemRecord> getOrderItems(Long orderId);
 
-    Integer getQodNumber(String storeNumber, String divisionNumber, String upcNumber);
+    public Map<String, Integer> getQodNumbersByUpc(String storeNumber, String divisionNumber, List<String> upcNumbers
+    );
 
-    void incrementQod(String storeNumber, String divisionNumber, String upcNumber, Integer quantity);
+    public Map<String, Integer> getDaysAfterOrderToSetExpByUpc(List<String> upcNumbers
+    );
 
-    void updateQodBeforeTransaction(Long orderId, String upcNumber, Integer qodBeforeTransaction);
+    public void batchUpdateQodBeforeTransaction(Long orderId, Map<String, Integer> qodBeforeTransactionByUpc
+    );
 
-    String getSubcommodityNumber(String upcNumber);
+    public void batchIncrementQod(String storeNumber, String divisionNumber, List<ReceiveOrderItemRecord> orderItems
+    );
 
-    Integer getNumberOfDaysBeforeExpiration(String subcommodityNumber);
+    public void batchInsertProductInventoryInfo(Long orderId, List<ReceiveOrderItemRecord> orderItems, Map<String, LocalDate> expirationDateByUpc, LocalDate orderDate
+    );
 
-    void insertProductInventoryInfo(Long orderId, String upcNumber, Integer quantity, LocalDate expirationDate, LocalDate orderDate, Boolean isActive);
-
-    void updateOrderReceived(String storeNumber, String divisionNumber, Long orderId, String receivedByUserEuid, LocalDateTime orderReceivedTime);
+    public void updateOrderReceived(String storeNumber, String divisionNumber, Long orderId, String receivedByUserEuid, LocalDateTime orderReceivedTime
+    );
 }

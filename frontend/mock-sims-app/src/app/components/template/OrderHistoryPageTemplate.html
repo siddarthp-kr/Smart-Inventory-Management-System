@@ -72,11 +72,11 @@
                   Receive
                 </button>
               } @else {
-                <span class="received-text">Received</span>
+                <span class="received-text"></span>
               }
               </td>
             </tr>
-
+  
             @if (record.expanded) {
               <tr class="details-row">
                 <td colspan="6">
@@ -435,7 +435,7 @@
     font-weight: 600;
     font-size: 13px;
   }
-  
+
   /* Pagination */
   .pagination-bar {
     display: flex;
