@@ -1,6 +1,9 @@
 spring:
   application:
     name: mock-sims-backend
+  devtools:
+    restart:
+      enabled: false
 
   datasource:
     url: jdbc:h2:mem:testdb;

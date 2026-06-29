@@ -33,6 +33,7 @@ public class PushBackExpirationController {
         PushBackExpirationResponse pushBackExpirationResponse = new PushBackExpirationResponse();
         if(pushBackExpirationRequest.getNewExpirationDate().isBefore(LocalDate.now())){
             pushBackExpirationResponse.setResponseMessage("Failed to push back expiration date for alert " + pushBackExpirationRequest.getAlertId() +". Invalid request parameters.");
+            LOG.error("Failed to push back expiration date for alert {}. Invalid request parameters.", pushBackExpirationRequest.getAlertId());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(pushBackExpirationResponse);
         } else {
             try {
@@ -40,8 +41,8 @@ public class PushBackExpirationController {
                 pushBackExpirationResponse.setResponseMessage("Successfully expiration date for alert " + pushBackExpirationRequest.getAlertId() +".");
                 return ResponseEntity.ok(pushBackExpirationResponse);
             } catch (MockSimsCustomException e){
-                pushBackExpirationResponse.setResponseMessage("Failed to push back expiration date for alert " + pushBackExpirationRequest.getAlertId() +" due to internal server error.");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(pushBackExpirationResponse);
+                pushBackExpirationResponse.setResponseMessage("Failed to push back expiration date for alert " + pushBackExpirationRequest.getAlertId() +" due to internal server error. Details: " + e.getMessage());
+                return ResponseEntity.status(e.getErrorCode()).body(pushBackExpirationResponse);
             }
         }
 

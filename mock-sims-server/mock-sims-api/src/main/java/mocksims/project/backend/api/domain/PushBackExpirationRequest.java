@@ -12,4 +12,5 @@ import java.time.LocalDate;
 public class PushBackExpirationRequest {
     Integer alertId;
     LocalDate newExpirationDate;
+    String userEuid;
 }

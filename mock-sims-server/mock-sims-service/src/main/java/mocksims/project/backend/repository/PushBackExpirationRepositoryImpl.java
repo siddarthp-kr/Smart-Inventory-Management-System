@@ -6,12 +6,14 @@ import mocksims.project.backend.exception.MockSimsCustomException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Repository
 public class PushBackExpirationRepositoryImpl implements PushBackExpirationRepository {
@@ -32,9 +34,14 @@ public class PushBackExpirationRepositoryImpl implements PushBackExpirationRepos
     private static final String NEW_RFI_DATE = "NEW_RFI_DATE";
     private static final String NEW_EXPIRATION_DATE = "NEW_EXPIRATION_DATE";
 
+    private final String ACTIONED_TIME = "ACTIONED_TIME";
+    private final String ACTION_CODE = "ACTION_CODE";
+    private final String IS_ACTIVE = "IS_ACTIVE";
+    private final String USER_EUID = "USER_EUID";
+
     private static final String SQL_CREATE_NEW_ALERT = """
             INSERT INTO PDM_ALERTS (store_number, division_number, department_number, upc_number, quantity, expiration_date, markdown_after_date, rfi_after_date, first_markdown_percent, is_active)
-            SELECT store_number, division_number, department_number, upc_number, quantity, :NEW_EXPIRATION_DATE, :NEW_MARKDOWN_DATE, :NEW_RFI_DATE, first_markdown_percent, is_active
+            SELECT store_number, division_number, department_number, upc_number, quantity, :NEW_EXPIRATION_DATE, :NEW_MD_DATE, :NEW_RFI_DATE, first_markdown_percent, is_active
             FROM PDM_ALERTS
             WHERE alert_id = :ALERT_ID;
             """;
@@ -59,15 +66,46 @@ public class PushBackExpirationRepositoryImpl implements PushBackExpirationRepos
             WHERE alert_id = :ALERT_ID;
             """;
 
+    private final String SQL_UPDATE_ALERT_ACTION_INFO = """
+            UPDATE PDM_ALERTS
+            SET is_active = :IS_ACTIVE, alert_actioned_time = :ACTIONED_TIME, alert_actioned_user_euid = :USER_EUID, alert_actioned_code = :ACTION_CODE
+            WHERE alert_id = :ALERT_ID;
+            """;
+
+
     @Override
     public String getSubcommodityNumber(Integer alertId) {
         MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource().addValue(ALERT_ID, alertId);
 
         try {
             return namedParameterJdbcTemplate.queryForObject(SQL_GET_SUBCOMMODITY_NUMBER, mapSqlParameterSource, String.class);
+        } catch (EmptyResultDataAccessException e){
+            LOG.error("Failed to get subcommodity number for alert {}. Alert does not exist", alertId, e);
+            throw new MockSimsCustomException(404, String.format("Failed to get subcommodity number for alert %d. Alert does not exist", alertId));
         } catch (DataAccessException e) {
             LOG.error("Failed to get subcommodity number for alert {}.", alertId, e);
             throw new MockSimsCustomException(500, "Failed to get subcommodity number for alert " + alertId + ".");
+        }
+    }
+
+    private static final String SQL_GET_ORIGINAL_EXPIRATION = """
+        SELECT expiration_date 
+        FROM PDM_ALERTS
+        WHERE alert_id = :ALERT_ID;
+    """;
+
+    @Override
+    public LocalDate getOriginalExpirationDate(Integer alertId){
+        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource().addValue(ALERT_ID, alertId);
+
+        try {
+            return namedParameterJdbcTemplate.queryForObject(SQL_GET_ORIGINAL_EXPIRATION, mapSqlParameterSource, LocalDate.class);
+        } catch (EmptyResultDataAccessException e){
+            LOG.error("Failed to get original expiration date for alert {}. Alert does not exist", alertId, e);
+            throw new MockSimsCustomException(404, String.format("Failed to get original expiration date for alert %d. Alert does not exist.", alertId));
+        } catch (DataAccessException e) {
+            LOG.error("Failed to get original expiration date for alert {}.", alertId, e);
+            throw new MockSimsCustomException(500, "Failed to get original expiration date for alert " + alertId + ".");
         }
     }
 
@@ -115,5 +153,31 @@ public class PushBackExpirationRepositoryImpl implements PushBackExpirationRepos
             throw new MockSimsCustomException(500, "Failed to deactivate alert " + alertId + ". More or less than one row was updated");
         }
 
+    }
+
+
+
+    @Override
+    public void updatePdmAlert(Integer alertId, LocalDateTime actionedTime, String userEuid) {
+        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+                .addValue(ALERT_ID, alertId)
+                .addValue(ACTIONED_TIME, actionedTime)
+                .addValue(IS_ACTIVE, false)
+                .addValue(USER_EUID, userEuid)
+                .addValue(ACTION_CODE, "PB");
+
+        int numRowsUpdated;
+
+        try {
+            numRowsUpdated = namedParameterJdbcTemplate.update(SQL_UPDATE_ALERT_ACTION_INFO, mapSqlParameterSource);
+        } catch (DataAccessException e){
+            LOG.error("Failed to update PDM Alert.", e);
+            throw new MockSimsCustomException(500, "Failed to update PDM alert.");
+        }
+
+        if(numRowsUpdated != 1){
+            LOG.error("Failed to update PDM Alert ID = {}. Did not update exactly row.", alertId);
+            throw new MockSimsCustomException(500, "Failed to update PDM alert.");
+        }
     }
 }
