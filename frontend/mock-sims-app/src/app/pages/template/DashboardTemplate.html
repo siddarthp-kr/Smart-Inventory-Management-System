@@ -1,43 +1,256 @@
+<div class="dashboard-home">
 
-<!--Mock Data for ui starter-->
-<div class = "dashboard-home">
-  @if (auth.user()){
-    <h1 class = "center-title">
-      Welcome, {{auth.user()?.userEuid}}
-    </h1>
+  <div class="dashboard-shell">
 
-    <p class = "center-subtitle">
-      Store: {{auth.user()?.storeNumber}} | Division: {{auth.user()?.divisionNumber}}
-    </p>
-  }
-    @else {
-      <h1 class="center-title">
-        Welcome, to Smart Inventory Management Dashboard (SIMS)
-      </h1>
-      <p>You must be logged in!</p>
-    }
+    <!-- HERO BANNER -->
+    <div class="dashboard-banner">
+      <div class="banner-content">
+        @if (auth.user()) {
+          <p class="eyebrow">Smart Inventory Management System</p>
 
+          <h1>
+            Welcome, <span class="highlight">{{auth.user()?.userEuid}}</span>
+          </h1>
+
+          <div class="banner-meta">
+            <div class="meta-pill">
+              📍 Division {{auth.user()?.divisionNumber}}
+            </div>
+
+            <div class="meta-pill">
+              🏬 Store {{auth.user()?.storeNumber}}
+            </div>
+          </div>
+        } @else {
+          <p class="eyebrow">Smart Inventory Management System</p>
+          <h1>Welcome to SIMS</h1>
+          <p class="banner-subtitle">You must be logged in to access dashboard tools.</p>
+        }
+      </div>
+    </div>
+
+    <!-- Navigation Cards -->
+    <div class="card-grid">
+
+      <button routerLink="/BohPage" class="dashboard-card">
+        <div class="icon icon-blue">📦</div>
+        <h3>BOH / Ordering</h3>
+        <p>View inventory and place orders</p>
+      </button>
+
+      <button routerLink="/OrderHistoryPage" class="dashboard-card">
+        <div class="icon icon-purple">🧾</div>
+        <h3>View Orders</h3>
+        <p>View all placed and received orders</p>
+      </button>
+
+      <button routerLink="/MovementPage" class="dashboard-card">
+        <div class="icon icon-green">📊</div>
+        <h3>Movement History</h3>
+        <p>Track QOD/QOM and inventory movement</p>
+      </button>
+
+      <button routerLink="/AlertsPage" class="dashboard-card">
+        <div class="icon icon-yellow">⚠️</div>
+        <h3>PDM Alerts</h3>
+        <p>View expiration alerts and take action</p>
+      </button>
+
+      <button routerLink="/AddItemPage" class="dashboard-card">
+        <div class="icon icon-gray">➕</div>
+        <h3>Add Item</h3>
+        <p>Create new products and rules</p>
+      </button>
+
+    </div>
+
+  </div>
 </div>
-
 
 <style>
   .dashboard-home {
+    padding: 30px;
+    background: #f8fafc;
+    min-height: calc(100vh - 70px);
+  }
+
+  .dashboard-shell {
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+
+  /* HERO BANNER */
+  .dashboard-banner {
+    position: relative;
+    overflow: hidden;
+    border-radius: 22px;
+    padding: 34px 36px;
+    margin-bottom: 32px;
+    background:
+      radial-gradient(circle at top right, rgba(255,255,255,0.22), transparent 36%),
+      linear-gradient(135deg, #4338ca 0%, #2563eb 55%, #38bdf8 100%);
+    color: white;
+    box-shadow: 0 18px 45px rgba(37, 99, 235, 0.22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
-    padding: 20px;
+
   }
 
-  .center-title {
-    margin-bottom: 8px;
+  .banner-content {
+    position: relative;
+    z-index: 2;
+    max-width: 720px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
   }
 
-  .center-subtitle {
-    font-size: 16px;
-    color: #6b7280;
+  .eyebrow {
+    margin: 0 0 8px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.76);
+  }
+
+  .banner-content h1 {
+    margin: 0;
+    font-size: 36px;
+    line-height: 1.1;
+    font-weight: 800;
+    color: white;
+  }
+
+  .highlight {
+    color: aliceblue;
+  }
+
+  .banner-subtitle {
+    margin: 12px 0 0;
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 15px;
+    max-width: 620px;
+  }
+
+  .banner-meta {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+  }
+
+  .meta-pill {
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    backdrop-filter: blur(8px);
+  }
+
+  .visual-card span {
+    font-size: 34px;
+    margin-bottom: 10px;
+  }
+
+  .visual-card strong {
+    color: white;
+    font-size: 15px;
+  }
+
+  /* CARD GRID */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(190px, 1fr));
+    gap: 18px;
+  }
+
+  /* CARDS */
+  .dashboard-card {
+    background: white;
+    border-radius: 16px;
+    padding: 22px;
+    border: 1px solid #e5e7eb;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 170px;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.03);
+  }
+
+  .dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 14px 32px rgba(15, 23, 42, 0.10);
+    border-color: #c7d2fe;
+  }
+
+  .icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
     margin-bottom: 16px;
   }
 
-  .dashboard-text {
-    font-size: 15px;
+  .icon-blue {
+    background: #dbeafe;
   }
-</style>
 
+  .icon-purple {
+    background: #ede9fe;
+  }
+
+  .icon-green {
+    background: #dcfce7;
+  }
+
+  .icon-yellow {
+    background: #fef3c7;
+  }
+
+  .icon-gray {
+    background: #f3f4f6;
+  }
+
+  .dashboard-card h3 {
+    margin: 0 0 8px;
+    font-size: 17px;
+    font-weight: 750;
+    color: #111827;
+  }
+
+  .dashboard-card p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.45;
+    color: #6b7280;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 1200px) {
+    .card-grid {
+      grid-template-columns: repeat(3, minmax(220px, 1fr));
+    }
+  }
+
+  @media (max-width: 800px) {
+    .dashboard-banner {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .card-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+</style>
