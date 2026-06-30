@@ -16,6 +16,7 @@ interface MarkdownItemState {
     mdBeforeDate: string;
     rfiBeforeDate: string;
     expirationDate: string;
+    departmentNumber: string;
   }
 
 }

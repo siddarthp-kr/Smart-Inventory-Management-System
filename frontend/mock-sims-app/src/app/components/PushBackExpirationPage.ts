@@ -17,6 +17,7 @@ interface PushBackExpirationState {
     mdAfterDate: string;
     rfiAfterDate: string;
     expirationDate: string;
+    departmentNumber: string;
   }
 }
 

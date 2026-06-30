@@ -16,6 +16,7 @@ interface RfiItemState {
     mdBeforeDate: string;
     rfiBeforeDate: string;
     expirationDate: string;
+    departmentNumber: string;
   }
 }
 

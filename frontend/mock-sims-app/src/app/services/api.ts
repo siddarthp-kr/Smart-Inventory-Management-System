@@ -292,7 +292,6 @@ export class Api {
       this.http.get<ProductsResponse>(`http://localhost:8080/api/order/products?storeNumber=${storeNumber}&divisionNumber=${divisionNumber}`)
     );
 
-    console.log(result);
     return result;
   }
 

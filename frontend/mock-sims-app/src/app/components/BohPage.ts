@@ -133,7 +133,6 @@ export class BohPage implements OnInit {
 
     try {
       const response = await this.api.getBohInfo(user.storeNumber, user.divisionNumber)
-      console.log(response)
       this.allBohRecords = response.products
     } catch (error) {
       this.allBohRecords = []

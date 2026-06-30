@@ -12,6 +12,7 @@ interface AlertActionState {
   mdBeforeDate: string;
   rfiBeforeDate: string;
   expirationDate: string;
+  departmentNumber: string;
 }
 
 @Component({
@@ -39,8 +40,8 @@ export class AlertActionPage implements OnInit {
     this.mdBeforeDate = state.mdBeforeDate
     this.rfiBeforeDate = state.rfiBeforeDate
     this.expirationDate = state.expirationDate
+    this.departmentNumber = state.departmentNumber
 
-    console.log(this.expirationDate);
   }
 
   // Alert info carried over from PDM Alerts page
@@ -50,6 +51,7 @@ export class AlertActionPage implements OnInit {
   mdBeforeDate: string = ''
   rfiBeforeDate: string = ''
   expirationDate: string = ''
+  departmentNumber: string = ''
 
   // Status message
   statusMessage: string = ''
@@ -74,7 +76,11 @@ export class AlertActionPage implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/AlertsPage'])
+    this.router.navigate(['/AlertsPage'], {
+      state: {
+        departmentNumber: this.departmentNumber
+      }
+    })
   }
 
 
@@ -96,7 +102,8 @@ export class AlertActionPage implements OnInit {
           productName: this.productName,
           mdBeforeDate: this.mdBeforeDate,
           rfiBeforeDate: this.rfiBeforeDate,
-          expirationDate: this.expirationDate
+          expirationDate: this.expirationDate,
+          departmentNumber: this.departmentNumber
         }
       }
     })
@@ -122,7 +129,8 @@ export class AlertActionPage implements OnInit {
           productName: this.productName,
           mdBeforeDate: this.mdBeforeDate,
           rfiBeforeDate: this.rfiBeforeDate,
-          expirationDate: this.expirationDate
+          expirationDate: this.expirationDate,
+          departmentNumber: this.departmentNumber
         }
       }
     })
@@ -149,7 +157,8 @@ export class AlertActionPage implements OnInit {
           productName: this.productName,
           mdBeforeDate: this.mdBeforeDate,
           rfiBeforeDate: this.rfiBeforeDate,
-          expirationDate: this.expirationDate
+          expirationDate: this.expirationDate,
+          departmentNumber: this.departmentNumber
         }
       }
     })
