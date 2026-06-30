@@ -26,6 +26,7 @@ public class PdmAlertGenerationServiceImpl implements PdmAlertGenerationService{
         List<PdmAlertInfoRecord> eligibleAlertsInfo = filterForEligibleAlerts(potentialAlertsInfo);
 
         pdmAlertGenerationRepository.insertNewAlerts(eligibleAlertsInfo);
+        pdmAlertGenerationRepository.deactivateDuplicateActiveAlerts();
 
     }
 
