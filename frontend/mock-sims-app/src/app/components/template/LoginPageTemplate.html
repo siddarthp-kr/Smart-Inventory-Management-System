@@ -1,62 +1,118 @@
 <style>
+  /* PAGE BACKGROUND */
+  body {
+    background: linear-gradient(135deg, #eff6ff, #f8fafc);
+  }
+
+  /* LOGIN CARD */
   .login-page {
-    width: 300px;
-    padding: 20px;
-    margin: 50px auto;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    font-family: Arial, sans-serif;
+    width: 360px;
+    padding: 28px 26px;
+    margin: 80px auto;
+
+    background: white;
+    border-radius: 16px;
+
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 12px 35px rgba(15, 23, 42, 0.08);
+
+    font-family: "Inter", "Segoe UI", Arial, sans-serif;
   }
 
+  /* TITLE */
   .login-page h2 {
-    margin-top: 0;
+    margin: 0 0 6px;
     text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: #111827;
   }
 
+  /* SUBTEXT */
+  .login-page::after {
+    display: block;
+    text-align: center;
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 18px;
+  }
+
+  /* FORM FIELDS */
   .form-field {
-    margin-bottom: 15px;
+    margin-bottom: 18px;
     display: flex;
     flex-direction: column;
   }
 
   .form-field label {
-    margin-bottom: 5px;
-    font-weight: bold;
-  }
-
-  .form-field input {
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-
-  .readonly-field {
-    background-color: #f0f0f0;
-    color: #666;
-  }
-
-  .error-message {
-    color: red;
+    margin-bottom: 6px;
     font-size: 13px;
-    margin-top: 10px;
-    text-align: center;
+    font-weight: 600;
+    color: #374151;
   }
 
+  /* INPUTS */
+  .form-field input {
+    padding: 12px 12px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+
+    font-size: 14px;
+
+    transition: all 0.2s ease;
+  }
+
+  /* HOVER */
+  .form-field input:hover {
+    border-color: #9ca3af;
+  }
+
+  /* FOCUS */
+  .form-field input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    outline: none;
+  }
+
+  /* ERROR */
+  .error-message {
+    color: #dc2626;
+    font-size: 13px;
+    margin-bottom: 12px;
+    text-align: center;
+    font-weight: 500;
+  }
+
+  /* BUTTON */
   button {
     width: 100%;
-    padding: 10px;
-    background-color: #007bff;
+    padding: 12px;
+
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
     color: white;
+
     border: none;
-    border-radius: 4px;
-    font-size: 16px;
+    border-radius: 10px;
+
+    font-size: 15px;
+    font-weight: 600;
+
     cursor: pointer;
+    transition: all 0.2s ease;
+
+    box-shadow: 0 6px 15px rgba(37, 99, 235, 0.25);
   }
 
+  /* BUTTON HOVER */
   button:hover {
-    background-color: #0056b3;
+    background: linear-gradient(135deg, #1e40af, #2563eb);
+    transform: translateY(-1px);
+  }
+
+  /* OPTIONAL: subtle input placeholder styling */
+  input::placeholder {
+    color: #9ca3af;
   }
 
 </style>
