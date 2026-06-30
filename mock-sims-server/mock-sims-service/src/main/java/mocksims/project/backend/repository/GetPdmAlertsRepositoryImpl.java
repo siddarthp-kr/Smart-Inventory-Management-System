@@ -1,7 +1,6 @@
 package mocksims.project.backend.repository;
 
 import mocksims.project.backend.api.domain.GetPdmAlertRecord;
-import mocksims.project.backend.controller.GetPdmAlertsController;
 import mocksims.project.backend.domain.mapper.GetPdmAlertsMapper;
 import mocksims.project.backend.exception.MockSimsCustomException;
 import org.slf4j.Logger;
@@ -11,8 +10,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
-
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -25,9 +22,14 @@ public class GetPdmAlertsRepositoryImpl implements GetPdmAlertsRepository {
 
     private final String SQL_GET_PDM_ALERTS = """
             SELECT alert_id, upc_number, department_number, expiration_date, markdown_after_date, rfi_after_date
-            FROM PDM_ALERTS
-            WHERE division_number = :DIVISION_NUMBER AND store_number = :STORE_NUMBER AND is_active = TRUE AND markdown_after_date <= CURRENT_DATE;
+            FROM (
+                SELECT alert_id,upc_number,department_number,expiration_date,markdown_after_date,rfi_after_date,
+                    ROW_NUMBER() OVER (PARTITION BY upc_number ORDER BY expiration_date ASC, alert_id ASC) AS row_num
+                FROM PDM_ALERTS
+                WHERE division_number = :DIVISION_NUMBER AND store_number = :STORE_NUMBER AND is_active = TRUE AND markdown_after_date <= CURRENT_DATE) ranked_alerts
+            WHERE row_num = 1 ORDER BY expiration_date ASC
             """;
+
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
