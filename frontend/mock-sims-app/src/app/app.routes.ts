@@ -9,6 +9,7 @@ import {MovementPage} from './components/MovementPage';
 import {LandingPage} from './components/LandingPage';
 import {AlertActionPage} from './components/AlertActionPage';
 import {MarkdownItemPage} from './components/MarkdownItemPage';
+import {RfiItemPage} from './components/RfiItemPage';
 
 
 export const routes: Routes = [
@@ -61,5 +62,10 @@ export const routes: Routes = [
     path: 'MarkdownItemPage',
     title: "Markdown Item",
     component: MarkdownItemPage
+  },
+  {
+    path: 'RfiItemPage',
+    title: "Remove Inventory",
+    component: RfiItemPage
   }
 ];

@@ -127,6 +127,7 @@ export interface MarkdownItemResponse {
 
 export interface RfiItemResponse {
   responseMessage: string
+  responseCode: number
 }
 
 export interface PushBackExpirationResponse {

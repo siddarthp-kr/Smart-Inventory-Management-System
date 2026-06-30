@@ -102,10 +102,11 @@ export class AlertActionPage implements OnInit {
       return
     }
 
-    this.router.navigate([''], {
+    this.router.navigate(['/RfiItemPage'], {
       state: {
         alertId: this.alertId,
-        upcNumber: this.upcNumber
+        upcNumber: this.upcNumber,
+        productName: this.productName
       }
     })
 
