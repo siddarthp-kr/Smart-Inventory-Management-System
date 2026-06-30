@@ -3,17 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth';
-import {Api, RfiItemResponse} from '../services/api';
+import {Api} from '../services/api';
 
 interface RfiItemState {
   alertId: number;
   upcNumber: string;
   productName: string;
-
-  mdBeforeDate: string;
-  rfiBeforeDate: string;
-  expirationDate: string;
-
   returnState: {
     alertId: number;
     upcNumber: string;
@@ -47,15 +42,7 @@ export class RfiItemPage implements OnInit {
     this.alertId = state.alertId;
     this.upcNumber = state.upcNumber;
     this.productName = state.productName;
-
-    this.returnState = {
-      alertId: this.alertId,
-      upcNumber: this.upcNumber,
-      productName: this.productName,
-      mdBeforeDate: state.mdBeforeDate,
-      rfiBeforeDate: state.rfiBeforeDate,
-      expirationDate: state.expirationDate
-    };
+    this.returnState = state.returnState;
   }
 
   // Data from router state

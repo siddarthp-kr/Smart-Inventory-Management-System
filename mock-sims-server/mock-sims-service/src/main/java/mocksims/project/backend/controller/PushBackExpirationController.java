@@ -29,20 +29,23 @@ public class PushBackExpirationController {
     }
 
     @PostMapping(value = MockSimsConstants.PUSH_BACK_EXPIRATION_ENDPOINT)
-    public ResponseEntity<PushBackExpirationResponse> pushBackExpirationDate(@RequestBody PushBackExpirationRequest pushBackExpirationRequest){
+    public PushBackExpirationResponse pushBackExpirationDate(@RequestBody PushBackExpirationRequest pushBackExpirationRequest){
         PushBackExpirationResponse pushBackExpirationResponse = new PushBackExpirationResponse();
         if(pushBackExpirationRequest.getNewExpirationDate().isBefore(LocalDate.now())){
             pushBackExpirationResponse.setResponseMessage("Failed to push back expiration date for alert " + pushBackExpirationRequest.getAlertId() +". Invalid request parameters.");
+            pushBackExpirationResponse.setResponseCode(400);
             LOG.error("Failed to push back expiration date for alert {}. Invalid request parameters.", pushBackExpirationRequest.getAlertId());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(pushBackExpirationResponse);
+            return pushBackExpirationResponse;
         } else {
             try {
                 pushBackExpirationService.pushBackExpirationDate(pushBackExpirationRequest);
                 pushBackExpirationResponse.setResponseMessage("Successfully expiration date for alert " + pushBackExpirationRequest.getAlertId() +".");
-                return ResponseEntity.ok(pushBackExpirationResponse);
+                pushBackExpirationResponse.setResponseCode(200);
+                return pushBackExpirationResponse;
             } catch (MockSimsCustomException e){
                 pushBackExpirationResponse.setResponseMessage("Failed to push back expiration date for alert " + pushBackExpirationRequest.getAlertId() +" due to internal server error. Details: " + e.getMessage());
-                return ResponseEntity.status(e.getErrorCode()).body(pushBackExpirationResponse);
+                pushBackExpirationResponse.setResponseCode(e.getErrorCode());
+                return pushBackExpirationResponse;
             }
         }
 

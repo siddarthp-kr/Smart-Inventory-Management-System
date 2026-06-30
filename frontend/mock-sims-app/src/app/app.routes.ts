@@ -10,6 +10,7 @@ import {LandingPage} from './components/LandingPage';
 import {AlertActionPage} from './components/AlertActionPage';
 import {MarkdownItemPage} from './components/MarkdownItemPage';
 import {RfiItemPage} from './components/RfiItemPage';
+import {PushBackExpirationPage} from './components/PushBackExpirationPage';
 
 
 export const routes: Routes = [
@@ -67,5 +68,10 @@ export const routes: Routes = [
     path: 'RfiItemPage',
     title: "Remove Inventory",
     component: RfiItemPage
+  },
+  {
+    path: 'PushBackExpirationPage',
+    title: "Push Back Expiration",
+    component: PushBackExpirationPage
   }
 ];

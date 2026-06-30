@@ -9,11 +9,6 @@ interface MarkdownItemState {
   alertId: number;
   upcNumber: string;
   productName: string;
-
-  mdBeforeDate: string;
-  rfiBeforeDate: string;
-  expirationDate: string;
-
   returnState: {
     alertId: number;
     upcNumber: string;
@@ -22,6 +17,7 @@ interface MarkdownItemState {
     rfiBeforeDate: string;
     expirationDate: string;
   }
+
 }
 
 @Component({
@@ -48,15 +44,6 @@ export class MarkdownItemPage implements OnInit {
     this.upcNumber = state.upcNumber;
     this.productName = state.productName;
     this.returnState = state.returnState;
-    this.returnState = {
-      alertId: this.alertId,
-      upcNumber: this.upcNumber,
-      productName: this.productName,
-      mdBeforeDate: state.mdBeforeDate,
-      rfiBeforeDate: state.rfiBeforeDate,
-      expirationDate: state.expirationDate
-    }
-
   }
 
   // Data from router state
@@ -64,7 +51,7 @@ export class MarkdownItemPage implements OnInit {
   upcNumber: string = '';
   productName: string = '';
 
-  returnState: any = null;
+  returnState: any = {};
 
   // Page state
   missingState: boolean = false;

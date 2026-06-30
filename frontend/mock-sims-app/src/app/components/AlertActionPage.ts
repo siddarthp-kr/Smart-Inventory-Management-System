@@ -39,6 +39,8 @@ export class AlertActionPage implements OnInit {
     this.mdBeforeDate = state.mdBeforeDate
     this.rfiBeforeDate = state.rfiBeforeDate
     this.expirationDate = state.expirationDate
+
+    console.log(this.expirationDate);
   }
 
   // Alert info carried over from PDM Alerts page
@@ -76,7 +78,6 @@ export class AlertActionPage implements OnInit {
   }
 
 
-
   markdownItem() {
     const user = this.auth.user()
     if (!user) {
@@ -88,7 +89,15 @@ export class AlertActionPage implements OnInit {
       state: {
         alertId: this.alertId,
         upcNumber: this.upcNumber,
-        productName: this.productName
+        productName: this.productName,
+        returnState: {
+          alertId: this.alertId,
+          upcNumber: this.upcNumber,
+          productName: this.productName,
+          mdBeforeDate: this.mdBeforeDate,
+          rfiBeforeDate: this.rfiBeforeDate,
+          expirationDate: this.expirationDate
+        }
       }
     })
 
@@ -106,7 +115,15 @@ export class AlertActionPage implements OnInit {
       state: {
         alertId: this.alertId,
         upcNumber: this.upcNumber,
-        productName: this.productName
+        productName: this.productName,
+        returnState: {
+          alertId: this.alertId,
+          upcNumber: this.upcNumber,
+          productName: this.productName,
+          mdBeforeDate: this.mdBeforeDate,
+          rfiBeforeDate: this.rfiBeforeDate,
+          expirationDate: this.expirationDate
+        }
       }
     })
 
@@ -120,9 +137,18 @@ export class AlertActionPage implements OnInit {
       return
     }
 
-    this.router.navigate([''], {
+    this.router.navigate(['/PushBackExpirationPage'], {
       state: {
-        alertId: this.alertId
+        alertId: this.alertId,
+        expirationDate: this.expirationDate,
+        returnState: {
+          alertId: this.alertId,
+          upcNumber: this.upcNumber,
+          productName: this.productName,
+          mdBeforeDate: this.mdBeforeDate,
+          rfiBeforeDate: this.rfiBeforeDate,
+          expirationDate: this.expirationDate
+        }
       }
     })
 
