@@ -22,12 +22,8 @@ public class GetPdmAlertsRepositoryImpl implements GetPdmAlertsRepository {
 
     private final String SQL_GET_PDM_ALERTS = """
             SELECT alert_id, upc_number, department_number, expiration_date, markdown_after_date, rfi_after_date
-            FROM (
-                SELECT alert_id,upc_number,department_number,expiration_date,markdown_after_date,rfi_after_date,
-                    ROW_NUMBER() OVER (PARTITION BY upc_number ORDER BY expiration_date ASC, alert_id ASC) AS row_num
-                FROM PDM_ALERTS
-                WHERE division_number = :DIVISION_NUMBER AND store_number = :STORE_NUMBER AND is_active = TRUE AND markdown_after_date <= CURRENT_DATE) ranked_alerts
-            WHERE row_num = 1 ORDER BY expiration_date ASC
+            FROM PDM_ALERTS
+            WHERE division_number = :DIVISION_NUMBER AND store_number = :STORE_NUMBER AND is_active = TRUE AND markdown_after_date <= CURRENT_DATE;
             """;
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
