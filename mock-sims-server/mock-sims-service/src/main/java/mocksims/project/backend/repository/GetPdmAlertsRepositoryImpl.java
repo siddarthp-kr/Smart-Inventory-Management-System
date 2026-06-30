@@ -30,7 +30,6 @@ public class GetPdmAlertsRepositoryImpl implements GetPdmAlertsRepository {
             WHERE row_num = 1 ORDER BY expiration_date ASC
             """;
 
-
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     public GetPdmAlertsRepositoryImpl(JdbcTemplate jdbcTemplate){
