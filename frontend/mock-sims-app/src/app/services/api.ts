@@ -97,8 +97,8 @@ export interface GetPdmAlertRecord {
   departmentNumber: string;
   upcNumber: string;
   expirationDate: string;
-  mdAfterDate: string;
-  rfiAfterDate: string;
+  mdBeforeDate: string;
+  rfiBeforeDate: string;
 }
 
 export interface GetPdmAlertsResponse {

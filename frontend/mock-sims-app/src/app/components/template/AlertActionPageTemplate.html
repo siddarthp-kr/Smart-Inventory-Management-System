@@ -52,13 +52,13 @@
       <div class="action-list">
 
         <!-- Markdown -->
-        <div class="action-card" [ngClass]="canMarkdown ? 'action-card-active' : 'action-card-inactive'">
+        <div class="action-card">
           <div class="action-card-left">
             <div class="action-icon">🏷️</div>
             <div class="action-text">
               <div class="action-title">Markdown Item</div>
               <div class="action-condition">
-                  Markdown if expiration date is on or before <strong style="font-size: 20px">{{mdAfterDate}}</strong>
+                  Markdown if expiration date is on or before <strong style="font-size: 20px">{{mdBeforeDate}}</strong>
               </div>
             </div>
           </div>
@@ -72,13 +72,13 @@
         </div>
 
         <!-- Remove from Inventory -->
-        <div class="action-card" [ngClass]="canRemoveFromInventory ? 'action-card-active' : 'action-card-inactive'">
+        <div class="action-card">
           <div class="action-card-left">
             <div class="action-icon">🗑️</div>
             <div class="action-text">
               <div class="action-title">Remove from Inventory</div>
               <div class="action-condition" >
-                  Remove from inventory if expiration date is on or before <strong style="font-size: 20px">{{rfiAfterDate}}</strong>
+                  Remove from inventory if expiration date is on or before <strong style="font-size: 20px">{{rfiBeforeDate}}</strong>
               </div>
             </div>
           </div>
