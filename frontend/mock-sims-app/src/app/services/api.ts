@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { inject } from '@angular/core';
-import {firstValueFrom} from 'rxjs';
+import {first, firstValueFrom} from 'rxjs';
 
 export interface BohRecord {
   upcNumber: string,
@@ -120,9 +120,82 @@ export interface GetMarkdownRulesResponse {
   markdownRules: GetMarkdownRuleRecord[];
 }
 
+export interface MarkdownItemResponse {
+  responseMessage: string
+}
+
+export interface RfiItemResponse {
+  responseMessage: string
+}
+
+export interface PushBackExpirationResponse {
+  responseMessage: string
+}
+
+export interface MarkdownInformationResponse {
+  responseMessage: string,
+  originalPrice: number,
+  newPrice: number
+}
+
 @Injectable({ providedIn: 'root' })
 export class Api {
   private http = inject(HttpClient);
+
+  async getMarkdownInfo(upcNumber: string, alertId: number): Promise<MarkdownInformationResponse> {
+    let result: MarkdownInformationResponse = await firstValueFrom(
+      this.http.get<MarkdownInformationResponse>(`http://localhost:8080/api/pdm/markdown-info?upcNumber=${upcNumber}&alertId=${alertId}`)
+    )
+    return result
+  }
+
+  async markdownItem(alertId: number, upcNumber: string, quantity: number, userEuid: string, storeNumber: string, divisionNumber: string): Promise<MarkdownItemResponse> {
+    const requestBody = {
+      alertId: alertId,
+      upcNumber: upcNumber,
+      quantity: quantity,
+      userEuid: userEuid,
+      storeNumber: storeNumber,
+      divisionNumber: divisionNumber
+    }
+
+    const result: MarkdownItemResponse = await firstValueFrom(
+      this.http.post<MarkdownItemResponse>('http://localhost:8080/api/pdm/markdown-item', requestBody)
+    )
+
+    return result
+  }
+
+  async rfiItem(alertId: number, upcNumber: string, quantity: number, userEuid: string, storeNumber: string, divisionNumber: string): Promise<RfiItemResponse> {
+    const requestBody = {
+      alertId: alertId,
+      upcNumber: upcNumber,
+      quantity: quantity,
+      userEuid: userEuid,
+      storeNumber: storeNumber,
+      divisionNumber: divisionNumber
+    }
+
+    const result: RfiItemResponse = await firstValueFrom(
+      this.http.post<RfiItemResponse>('http://localhost:8080/api/pdm/rfi-item', requestBody)
+    )
+
+    return result
+  }
+
+  async pushBackItem(alertId: number, newExpirationDate: string, userEuid: string): Promise<PushBackExpirationResponse> {
+    const requestBody = {
+      alertId: alertId,
+      newExpirationDate: newExpirationDate,
+      userEuid: userEuid
+    }
+
+    const result: PushBackExpirationResponse = await firstValueFrom(
+      this.http.post<PushBackExpirationResponse>('http://localhost:8080/api/pdm/push-back-exp', requestBody)
+    )
+
+    return result
+  }
 
   async getPdmAlerts(storeNumber: string, divisionNumber: string): Promise<GetPdmAlertsResponse> {
     const result: GetPdmAlertsResponse = await firstValueFrom(
