@@ -140,6 +140,8 @@ export class AlertActionPage implements OnInit {
     this.router.navigate(['/PushBackExpirationPage'], {
       state: {
         alertId: this.alertId,
+        upcNumber: this.upcNumber,
+        productName: this.productName,
         expirationDate: this.expirationDate,
         returnState: {
           alertId: this.alertId,

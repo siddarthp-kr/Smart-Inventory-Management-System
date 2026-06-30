@@ -33,7 +33,8 @@ public class RfiItemServiceImpl implements RfiItemService {
         Integer qomNumber = rfiItemRepository.getQomNumber(rfiItemRequest.getStoreNumber(), rfiItemRequest.getDivisionNumber(), rfiItemRequest.getUpcNumber());
 
         if(rfiItemRequest.getQuantity() > qodNumber){
-            throw new MockSimsCustomException(400, String.format("Cannot remove items from inventory because user is requesting to remove more items than are in QOD. User: %s. UPC: %s.", rfiItemRequest.getUserEuid(), rfiItemRequest.getUpcNumber()));
+            //throw new MockSimsCustomException(400, String.format("Cannot remove items from inventory because user is requesting to remove more items than are in QOD. User: %s. UPC: %s.", rfiItemRequest.getUserEuid(), rfiItemRequest.getUpcNumber()));
+            throw new MockSimsCustomException(400, String.format("Failed to remove item %s: cannot markdown more items than are in QOD", rfiItemRequest.getUpcNumber()));
         }
 
         rfiItemRepository.decrementQod(rfiItemRequest.getStoreNumber(), rfiItemRequest.getDivisionNumber(), rfiItemRequest.getUpcNumber(), rfiItemRequest.getQuantity());

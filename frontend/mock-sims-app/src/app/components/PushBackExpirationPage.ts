@@ -7,6 +7,8 @@ import { Api } from '../services/api';
 
 interface PushBackExpirationState {
   alertId: number;
+  upcNumber: string;
+  productName: string;
   expirationDate: string;
   returnState: {
     alertId: number;
@@ -39,6 +41,8 @@ export class PushBackExpirationPage implements OnInit {
     }
 
     this.alertId = state.alertId;
+    this.upcNumber = state.upcNumber;
+    this.productName = state.productName;
     this.expirationDate = this.normalizeDateString(state.expirationDate);
     this.minimumNewExpirationDate = this.addDays(this.expirationDate, 1);
     this.returnState = state.returnState
