@@ -58,26 +58,13 @@
             <div class="action-text">
               <div class="action-title">Markdown Item</div>
               <div class="action-condition">
-                @if (canMarkdown) {
-                  <span class="condition-met">
-                    ✅ Markdown if expiration date is on or before markdown date
-                    — expiration (<strong>{{ formatDate(expirationDate) }}</strong>)
-                    is on or before markdown date (<strong>{{ formatDate(mdAfterDate) }}</strong>).
-                  </span>
-                } @else {
-                  <span class="condition-not-met">
-                    ⏳ Markdown if expiration date is on or before markdown date
-                    — expiration (<strong>{{ formatDate(expirationDate) }}</strong>)
-                    has not yet reached the markdown date (<strong>{{ formatDate(mdAfterDate) }}</strong>).
-                  </span>
-                }
+                  Markdown if expiration date is on or before <strong style="font-size: 20px">{{mdAfterDate}}</strong>
               </div>
             </div>
           </div>
 
           <button
             class="action-btn markdown-btn"
-            [disabled]="!canMarkdown"
             (click)="markdownItem()"
           >
             Markdown Item
@@ -90,27 +77,14 @@
             <div class="action-icon">🗑️</div>
             <div class="action-text">
               <div class="action-title">Remove from Inventory</div>
-              <div class="action-condition">
-                @if (canRemoveFromInventory) {
-                  <span class="condition-met">
-                    ✅ Remove from inventory if expiration date is on or before RFI date
-                    — expiration (<strong>{{ formatDate(expirationDate) }}</strong>)
-                    is on or before RFI date (<strong>{{ formatDate(rfiAfterDate) }}</strong>).
-                  </span>
-                } @else {
-                  <span class="condition-not-met">
-                    ⏳ Remove from inventory if expiration date is on or before RFI date
-                    — expiration (<strong>{{ formatDate(expirationDate) }}</strong>)
-                    has not yet reached the RFI date (<strong>{{ formatDate(rfiAfterDate) }}</strong>).
-                  </span>
-                }
+              <div class="action-condition" >
+                  Remove from inventory if expiration date is on or before <strong style="font-size: 20px">{{rfiAfterDate}}</strong>
               </div>
             </div>
           </div>
 
           <button
             class="action-btn rfi-btn"
-            [disabled]="!canRemoveFromInventory"
             (click)="removeFromInventory()"
           >
             Remove from Inventory
@@ -124,11 +98,11 @@
             <div class="action-text">
               <div class="action-title">Push Back Expiration Date</div>
               <div class="action-condition">
-                <span class="condition-met">
                   The current oldest expiration date on record is
-<!--                  <strong>{{ formatDate(expirationDate) }}</strong>.-->
+                  <strong style="font-size: 20px">{{ expirationDate }}</strong>.
+              </div>
+              <div style="font-size: 15px">
                   If this is inaccurate, push back the expiration date.
-                </span>
               </div>
             </div>
           </div>
@@ -142,13 +116,13 @@
         </div>
 
       </div>
-
+    </div>
   }
 </div>
 
 <style>
   .action-container {
-    max-width: 900px;
+    max-width: 1000px;
     margin: 30px auto;
     background: white;
     border-radius: 16px;
@@ -302,20 +276,141 @@
     color: #6b7280;
   }
 
+  .expiry {
+    color: #dc2626;
+    font-weight: 700;
+  }
+
   /* Action area */
   .action-area {
-    background: #f9fafb;
     border: 1px solid #e5e7eb;
     border-radius: 12px;
     padding: 24px;
-    min-height: 200px;
   }
 
-  .action-placeholder {
+  .action-area-title {
+    margin: 0 0 20px;
+    font-size: 17px;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  .action-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* Individual action card */
+  .action-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    padding: 18px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    transition: 0.2s ease;
+  }
+
+  .action-card-active {
+    background: #ffffff;
+  }
+
+  .action-card-active:hover {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+  }
+
+  .action-card-inactive {
+    background: #f9fafb;
+    opacity: 0.75;
+  }
+
+  .action-card-left {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .action-icon {
+    font-size: 26px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .action-text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .action-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 6px;
+  }
+
+  .action-condition {
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .condition-met {
+    color: #065f46;
+  }
+
+  .condition-not-met {
     color: #6b7280;
-    font-style: italic;
-    text-align: center;
-    padding: 40px 0;
+  }
+
+  /* Action buttons */
+  .action-btn {
+    flex-shrink: 0;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .action-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .markdown-btn {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+  }
+
+  .markdown-btn:hover:not(:disabled) {
+    background: #fde68a;
+  }
+
+  .rfi-btn {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+  }
+
+  .rfi-btn:hover:not(:disabled) {
+    background: #fecaca;
+  }
+
+  .pushback-btn {
+    background: #eff6ff;
+    color: #1e40af;
+    border: 1px solid #bfdbfe;
+  }
+
+  .pushback-btn:hover:not(:disabled) {
+    background: #dbeafe;
   }
 
   /* Missing state */
@@ -330,7 +425,7 @@
     gap: 20px;
   }
 
-  @media (max-width: 600px) {
+  @media (max-width: 700px) {
     .info-grid {
       grid-template-columns: 1fr;
     }
@@ -340,5 +435,15 @@
       align-items: flex-start;
       gap: 14px;
     }
+
+    .action-card {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .action-btn {
+      width: 100%;
+    }
   }
+
 </style>
