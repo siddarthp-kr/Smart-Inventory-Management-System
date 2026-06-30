@@ -6,6 +6,8 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 public class GetPdmAlertsMapper implements RowMapper<GetPdmAlertRecord> {
 
@@ -23,9 +25,14 @@ public class GetPdmAlertsMapper implements RowMapper<GetPdmAlertRecord> {
         getPdmAlertRecord.setAlertId(rs.getInt(ALERT_ID));
         getPdmAlertRecord.setUpcNumber(rs.getString(UPC_NUMBER));
         getPdmAlertRecord.setDepartmentNumber(rs.getString(DEPARTMENT_NUMBER));
-        getPdmAlertRecord.setExpirationDate(rs.getDate(EXPIRATION_DATE).toLocalDate());
-        getPdmAlertRecord.setMdAfterDate(rs.getDate(MARKDOWN_AFTER_DATE).toLocalDate());
-        getPdmAlertRecord.setRfiAfterDate(rs.getDate(RFI_AFTER_DATE).toLocalDate());
+
+        LocalDate expirationDate = rs.getDate(EXPIRATION_DATE).toLocalDate();
+        LocalDate mdBeforeDate = LocalDate.now().plusDays(ChronoUnit.DAYS.between(rs.getDate(MARKDOWN_AFTER_DATE).toLocalDate(), expirationDate));
+        LocalDate rfiBeforeDate = LocalDate.now().plusDays(ChronoUnit.DAYS.between(rs.getDate(RFI_AFTER_DATE).toLocalDate(), expirationDate));
+
+        getPdmAlertRecord.setExpirationDate(expirationDate);
+        getPdmAlertRecord.setMdBeforeDate(mdBeforeDate);
+        getPdmAlertRecord.setRfiBeforeDate(rfiBeforeDate);
 
         return getPdmAlertRecord;
     }

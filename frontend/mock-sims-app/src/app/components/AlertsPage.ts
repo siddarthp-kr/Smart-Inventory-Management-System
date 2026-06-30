@@ -158,8 +158,8 @@ export class AlertsPage implements OnInit {
         alertId: alert.alertId,
         upcNumber: alert.upcNumber,
         productName: alert.productName,
-        mdAfterDate: alert.mdAfterDate,
-        rfiAfterDate: alert.rfiAfterDate,
+        mdBeforeDate: alert.mdBeforeDate,
+        rfiBeforeDate: alert.rfiBeforeDate,
         expirationDate: alert.expirationDate
       }
     })

@@ -9,8 +9,8 @@ interface AlertActionState {
   alertId: number;
   upcNumber: string;
   productName: string;
-  mdAfterDate: string;
-  rfiAfterDate: string;
+  mdBeforeDate: string;
+  rfiBeforeDate: string;
   expirationDate: string;
 }
 
@@ -37,8 +37,8 @@ export class AlertActionPage implements OnInit {
     this.alertId = state.alertId
     this.upcNumber = state.upcNumber
     this.productName = state.productName
-    this.mdAfterDate = state.mdAfterDate
-    this.rfiAfterDate = state.rfiAfterDate
+    this.mdBeforeDate = state.mdBeforeDate
+    this.rfiBeforeDate = state.rfiBeforeDate
     this.expirationDate = state.expirationDate
   }
 
@@ -46,8 +46,8 @@ export class AlertActionPage implements OnInit {
   alertId: number = -1
   upcNumber: string = ''
   productName: string = ''
-  mdAfterDate: string = ''
-  rfiAfterDate: string = ''
+  mdBeforeDate: string = ''
+  rfiBeforeDate: string = ''
   expirationDate: string = ''
 
   // Status message
@@ -76,21 +76,8 @@ export class AlertActionPage implements OnInit {
     this.router.navigate(['/AlertsPage'])
   }
 
-  // Whether each action condition is met
-  get canMarkdown(): boolean {
-    // Condition: expiration date is on or before mdAfterDate
-    return this.expirationDate <= this.mdAfterDate
-  }
 
-  get canRemoveFromInventory(): boolean {
-    // Condition: expiration date is on or before rfiAfterDate
-    return this.expirationDate <= this.rfiAfterDate
-  }
-
-  get canPushBackExpiration(): boolean {
-    // Third action is always available — user decides if exp date is inaccurate
-    return true
-  }
+  
 
   formatDate(date: Date): string {
     return date.toLocaleDateString('en-US', {

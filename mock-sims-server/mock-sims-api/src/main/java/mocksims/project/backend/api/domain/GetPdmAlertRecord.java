@@ -14,6 +14,6 @@ public class GetPdmAlertRecord {
     String departmentNumber;
     String upcNumber;
     LocalDate expirationDate;
-    LocalDate mdAfterDate;
-    LocalDate rfiAfterDate;
+    LocalDate mdBeforeDate;
+    LocalDate rfiBeforeDate;
 }
