@@ -84,10 +84,11 @@ export class AlertActionPage implements OnInit {
       return
     }
 
-    this.router.navigate([''], {
+    this.router.navigate(['/MarkdownItemPage'], {
       state: {
         alertId: this.alertId,
-        upcNumber: this.upcNumber
+        upcNumber: this.upcNumber,
+        productName: this.productName
       }
     })
 
@@ -101,7 +102,7 @@ export class AlertActionPage implements OnInit {
       return
     }
 
-    this.router.navigate(['/MarkdownItemPage'], {
+    this.router.navigate([''], {
       state: {
         alertId: this.alertId,
         upcNumber: this.upcNumber

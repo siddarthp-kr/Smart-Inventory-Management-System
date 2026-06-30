@@ -122,6 +122,7 @@ export interface GetMarkdownRulesResponse {
 
 export interface MarkdownItemResponse {
   responseMessage: string
+  responseCode: number
 }
 
 export interface RfiItemResponse {

@@ -27,7 +27,7 @@ public class MarkdownItemController {
     }
 
     @PostMapping(value = MockSimsConstants.MARKDOWN_ITEM_ENDPOINT)
-    public ResponseEntity<MarkdownItemResponse> markdownItem(@RequestBody MarkdownItemRequest markdownItemRequest){
+    public MarkdownItemResponse markdownItem(@RequestBody MarkdownItemRequest markdownItemRequest){
         MarkdownItemResponse markdownItemResponse = new MarkdownItemResponse();
 
         if(markdownItemRequest.getQuantity() > 0
@@ -39,16 +39,19 @@ public class MarkdownItemController {
             try {
                 markdownItemService.markdownItem(markdownItemRequest);
                 markdownItemResponse.setResponseMessage("Successfully marked down item " + markdownItemRequest.getUpcNumber() + ".");
-                return ResponseEntity.ok(markdownItemResponse);
+                markdownItemResponse.setResponseCode(200);
+                return markdownItemResponse;
             } catch (MockSimsCustomException e){
                 LOG.error("Failed to markdown item.", e);
-                markdownItemResponse.setResponseMessage("Failed to markdown item due to internal server error.");
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(markdownItemResponse);
+                markdownItemResponse.setResponseMessage(e.getMessage());
+                markdownItemResponse.setResponseCode(e.getErrorCode());
+                return markdownItemResponse;
             }
         } else {
             LOG.error("Failed to markdown item. Invalid request parameters.");
             markdownItemResponse.setResponseMessage("Failed to markdown item: invalid request parameters");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(markdownItemResponse);
+            markdownItemResponse.setResponseCode(400);
+            return markdownItemResponse;
         }
 
     }
