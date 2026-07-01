@@ -17,6 +17,10 @@ interface PdmAlertDisplayRecord extends GetPdmAlertRecord {
   departmentName: string;
 }
 
+interface AlertsPageState {
+  departmentNumber: string
+}
+
 @Component({
   selector: 'app-pdm-alerts-page',
   standalone: true,
@@ -28,7 +32,20 @@ export class AlertsPage implements OnInit {
   private auth = inject(AuthService)
   private router = inject(Router);
 
-  constructor(private cd: ChangeDetectorRef) {}
+  constructor(private cd: ChangeDetectorRef) {
+    const nav = this.router.getCurrentNavigation()
+    const state = nav?.extras?.state as AlertsPageState | undefined
+
+
+    if(!state || !state.departmentNumber){
+      return
+    }
+
+    this.departmentNumber = state.departmentNumber;
+
+  }
+
+  departmentNumber: string = ''
 
   // Department dropdown data
   departmentInfo: DepartmentInfoRecord[] = []
@@ -44,6 +61,7 @@ export class AlertsPage implements OnInit {
 
   // Dropdown state
   readonly ALL_DEPARTMENTS = ''
+
   selectedDepartment: string = this.ALL_DEPARTMENTS
 
   // Search input
@@ -55,6 +73,7 @@ export class AlertsPage implements OnInit {
 
   ngOnInit() {
     this.loadPdmAlertsPage()
+    this.selectedDepartment = this.departmentNumber
   }
 
   showMessage(text: string, success: boolean) {
@@ -151,7 +170,6 @@ export class AlertsPage implements OnInit {
   }
 
   takeAction(alert: PdmAlertDisplayRecord) {
-    console.log('Taking action on alert:', alert)
 
     this.router.navigate(['/AlertActionPage'], {
       state: {
@@ -160,7 +178,8 @@ export class AlertsPage implements OnInit {
         productName: alert.productName,
         mdBeforeDate: alert.mdBeforeDate,
         rfiBeforeDate: alert.rfiBeforeDate,
-        expirationDate: alert.expirationDate
+        expirationDate: alert.expirationDate,
+        departmentNumber: this.selectedDepartment
       }
     })
   }

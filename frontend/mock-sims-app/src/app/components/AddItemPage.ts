@@ -62,7 +62,6 @@ export class AddItemPage{
     try {
       const response = await this.api.getDepartmentInfo();
       this.departmentInfo = response.departmentInfoRecords;
-      console.log(this.departmentInfo);
     } catch (error) {
       this.showMessage('Failed to load department info. Error 503: Failed to contact server', false);
     }
@@ -73,7 +72,6 @@ export class AddItemPage{
     try {
       const response = await this.api.getMarkdownRules();
       this.markdownRules = response.markdownRules || [];
-      console.log(this.markdownRules);
     } catch (error) {
       this.markdownRules = [];
       this.showMessage('Failed to load markdown rules. Error 503: Failed to contact server', false);

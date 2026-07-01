@@ -12,6 +12,7 @@ interface AlertActionState {
   mdBeforeDate: string;
   rfiBeforeDate: string;
   expirationDate: string;
+  departmentNumber: string;
 }
 
 @Component({
@@ -23,7 +24,6 @@ interface AlertActionState {
 export class AlertActionPage implements OnInit {
   private router = inject(Router)
   private auth = inject(AuthService)
-  private api = inject(Api)
   constructor(private cd: ChangeDetectorRef) {
     const nav = this.router.getCurrentNavigation()
     const state = nav?.extras?.state as AlertActionState | undefined
@@ -40,6 +40,8 @@ export class AlertActionPage implements OnInit {
     this.mdBeforeDate = state.mdBeforeDate
     this.rfiBeforeDate = state.rfiBeforeDate
     this.expirationDate = state.expirationDate
+    this.departmentNumber = state.departmentNumber
+
   }
 
   // Alert info carried over from PDM Alerts page
@@ -49,6 +51,7 @@ export class AlertActionPage implements OnInit {
   mdBeforeDate: string = ''
   rfiBeforeDate: string = ''
   expirationDate: string = ''
+  departmentNumber: string = ''
 
   // Status message
   statusMessage: string = ''
@@ -73,72 +76,103 @@ export class AlertActionPage implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/AlertsPage'])
-  }
-
-
-  
-
-  formatDate(date: Date): string {
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    this.router.navigate(['/AlertsPage'], {
+      state: {
+        departmentNumber: this.departmentNumber
+      }
     })
   }
 
-  async markdownItem() {
+
+  markdownItem() {
     const user = this.auth.user()
     if (!user) {
       this.showMessage('You must be logged in to take action.', false)
       return
     }
 
-    try {
-      // TODO: call markdown API method
-      // e.g. await this.api.markdownItem(user.storeNumber, user.divisionNumber, this.alertId, this.upcNumber)
-      this.showMessage('Item marked down successfully.', true)
-    } catch (error) {
-      this.showMessage('Failed to mark down item. Error 503: Failed to contact server.', false)
-    }
+    this.router.navigate(['/MarkdownItemPage'], {
+      state: {
+        alertId: this.alertId,
+        upcNumber: this.upcNumber,
+        productName: this.productName,
+        returnState: {
+          alertId: this.alertId,
+          upcNumber: this.upcNumber,
+          productName: this.productName,
+          mdBeforeDate: this.mdBeforeDate,
+          rfiBeforeDate: this.rfiBeforeDate,
+          expirationDate: this.expirationDate,
+          departmentNumber: this.departmentNumber
+        }
+      }
+    })
 
     this.cd.detectChanges()
   }
 
-  async removeFromInventory() {
+  removeFromInventory() {
     const user = this.auth.user()
     if (!user) {
       this.showMessage('You must be logged in to take action.', false)
       return
     }
 
-    try {
-      // TODO: call remove from inventory API method
-      // e.g. await this.api.removeFromInventory(user.storeNumber, user.divisionNumber, this.alertId, this.upcNumber)
-      this.showMessage('Item removed from inventory successfully.', true)
-    } catch (error) {
-      this.showMessage('Failed to remove item from inventory. Error 503: Failed to contact server.', false)
-    }
+    this.router.navigate(['/RfiItemPage'], {
+      state: {
+        alertId: this.alertId,
+        upcNumber: this.upcNumber,
+        productName: this.productName,
+        returnState: {
+          alertId: this.alertId,
+          upcNumber: this.upcNumber,
+          productName: this.productName,
+          mdBeforeDate: this.mdBeforeDate,
+          rfiBeforeDate: this.rfiBeforeDate,
+          expirationDate: this.expirationDate,
+          departmentNumber: this.departmentNumber
+        }
+      }
+    })
 
     this.cd.detectChanges()
   }
 
-  async pushBackExpirationDate() {
+  pushBackExpirationDate() {
     const user = this.auth.user()
     if (!user) {
       this.showMessage('You must be logged in to take action.', false)
       return
     }
 
-    try {
-      // TODO: call push back expiration date API method
-      // e.g. await this.api.pushBackExpiration(user.storeNumber, user.divisionNumber, this.alertId, this.upcNumber)
-      this.showMessage('Expiration date pushed back successfully.', true)
-    } catch (error) {
-      this.showMessage('Failed to push back expiration date. Error 503: Failed to contact server.', false)
-    }
+    this.router.navigate(['/PushBackExpirationPage'], {
+      state: {
+        alertId: this.alertId,
+        upcNumber: this.upcNumber,
+        productName: this.productName,
+        expirationDate: this.expirationDate,
+        returnState: {
+          alertId: this.alertId,
+          upcNumber: this.upcNumber,
+          productName: this.productName,
+          mdBeforeDate: this.mdBeforeDate,
+          rfiBeforeDate: this.rfiBeforeDate,
+          expirationDate: this.expirationDate,
+          departmentNumber: this.departmentNumber
+        }
+      }
+    })
 
     this.cd.detectChanges()
+  }
+
+  convertDateFormat(dateValue: string){
+    const date = new Date(dateValue);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${month}-${day}-${year}`;
   }
 
 

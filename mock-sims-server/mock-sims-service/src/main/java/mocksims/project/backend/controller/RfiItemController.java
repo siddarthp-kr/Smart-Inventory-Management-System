@@ -26,7 +26,7 @@ public class RfiItemController {
     }
 
     @PostMapping(value = MockSimsConstants.RFI_ITEM_ENDPOINT)
-    public ResponseEntity<RfiItemResponse> rfiItem(@RequestBody RfiItemRequest rfiItemRequest){
+    public RfiItemResponse rfiItem(@RequestBody RfiItemRequest rfiItemRequest){
         RfiItemResponse rfiItemResponse = new RfiItemResponse();
 
         if(rfiItemRequest.getQuantity() > 0
@@ -38,16 +38,19 @@ public class RfiItemController {
             try {
                 rfiItemService.rfiItem(rfiItemRequest);
                 rfiItemResponse.setResponseMessage("Successfully removed item " + rfiItemRequest.getUpcNumber() + " from inventory");
-                return ResponseEntity.ok(rfiItemResponse);
+                rfiItemResponse.setResponseCode(200);
+                return rfiItemResponse;
             } catch (MockSimsCustomException e){
                 LOG.error("Failed to remove item from inventory.", e);
-                rfiItemResponse.setResponseMessage("Failed to markdown item due to internal server error.");
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(rfiItemResponse);
+                rfiItemResponse.setResponseMessage(e.getMessage());
+                rfiItemResponse.setResponseCode(e.getErrorCode());
+                return rfiItemResponse;
             }
         } else {
             LOG.error("Failed to remove item from inventory. Invalid request parameters.");
             rfiItemResponse.setResponseMessage("Failed to remove item from inventory: invalid request parameters");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(rfiItemResponse);
+            rfiItemResponse.setResponseCode(400);
+            return rfiItemResponse;
         }
     }
 }

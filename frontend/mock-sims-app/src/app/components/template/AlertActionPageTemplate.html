@@ -58,7 +58,7 @@
             <div class="action-text">
               <div class="action-title">Markdown Item</div>
               <div class="action-condition">
-                  Markdown if expiration date is on or before <strong style="font-size: 20px">{{mdBeforeDate}}</strong>
+                  Markdown if expiration date is on or before <strong style="font-size: 20px">{{ convertDateFormat(mdBeforeDate) }}</strong>
               </div>
             </div>
           </div>
@@ -78,7 +78,7 @@
             <div class="action-text">
               <div class="action-title">Remove from Inventory</div>
               <div class="action-condition" >
-                  Remove from inventory if expiration date is on or before <strong style="font-size: 20px">{{rfiBeforeDate}}</strong>
+                  Remove from inventory if expiration date is on or before <strong style="font-size: 20px">{{ convertDateFormat(rfiBeforeDate) }}</strong>
               </div>
             </div>
           </div>
@@ -99,7 +99,7 @@
               <div class="action-title">Push Back Expiration Date</div>
               <div class="action-condition">
                   The current oldest expiration date on record is
-                  <strong style="font-size: 20px">{{ expirationDate }}</strong>.
+                  <strong style="font-size: 20px">{{ convertDateFormat(expirationDate) }}</strong>.
               </div>
               <div style="font-size: 15px">
                   If this is inaccurate, push back the expiration date.

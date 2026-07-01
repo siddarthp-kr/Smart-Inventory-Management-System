@@ -8,6 +8,9 @@ import { OrderHistoryPage } from './components/OrderHistoryPage';
 import {MovementPage} from './components/MovementPage';
 import {LandingPage} from './components/LandingPage';
 import {AlertActionPage} from './components/AlertActionPage';
+import {MarkdownItemPage} from './components/MarkdownItemPage';
+import {RfiItemPage} from './components/RfiItemPage';
+import {PushBackExpirationPage} from './components/PushBackExpirationPage';
 
 
 export const routes: Routes = [
@@ -55,5 +58,20 @@ export const routes: Routes = [
     path: 'AlertActionPage',
     title: "Alert Actions",
     component: AlertActionPage
+  },
+  {
+    path: 'MarkdownItemPage',
+    title: "Markdown Item",
+    component: MarkdownItemPage
+  },
+  {
+    path: 'RfiItemPage',
+    title: "Remove Inventory",
+    component: RfiItemPage
+  },
+  {
+    path: 'PushBackExpirationPage',
+    title: "Push Back Expiration",
+    component: PushBackExpirationPage
   }
 ];

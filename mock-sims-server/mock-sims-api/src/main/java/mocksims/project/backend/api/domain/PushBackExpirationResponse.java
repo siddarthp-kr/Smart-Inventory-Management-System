@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PushBackExpirationResponse {
     String responseMessage;
+    Integer responseCode;
 }

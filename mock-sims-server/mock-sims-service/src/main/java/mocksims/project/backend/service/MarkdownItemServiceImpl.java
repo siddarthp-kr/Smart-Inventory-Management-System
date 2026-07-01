@@ -28,7 +28,7 @@ public class MarkdownItemServiceImpl implements MarkdownItemService {
         Integer qomNumber = markdownItemRepository.getQomNumber(markdownItemRequest.getStoreNumber(), markdownItemRequest.getDivisionNumber(), markdownItemRequest.getUpcNumber());
 
         if(markdownItemRequest.getQuantity() > qodNumber){
-            throw new MockSimsCustomException(400, "Cannot markdown item because user is requesting to mark down more items than are in QOD");
+            throw new MockSimsCustomException(400, String.format("Failed to markdown item %s: cannot markdown more items than are in QOD", markdownItemRequest.getUpcNumber()));
         }
 
         Double originalPrice = markdownItemRepository.getStandardPrice(markdownItemRequest.getUpcNumber());

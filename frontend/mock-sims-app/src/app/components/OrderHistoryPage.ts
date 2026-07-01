@@ -73,7 +73,6 @@ export class OrderHistoryPage implements OnInit {
 
     try {
       orderHistoryResponse = await this.api.getOrderHistory(user.storeNumber, user.divisionNumber)
-      console.log(orderHistoryResponse)
     } catch (error) {
       orderHistoryResponse = {
         responseCode: 503,

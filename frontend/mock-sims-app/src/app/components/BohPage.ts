@@ -118,7 +118,6 @@ export class BohPage implements OnInit {
     try {
       const response = await this.api.getDepartmentInfo()
       this.departmentInfo = response.departmentInfoRecords
-      console.log(this.departmentInfo)
     } catch (error) {
       this.showMessage('Failed to load department info. Error 503: Failed to contact server', false)
     }
@@ -134,7 +133,6 @@ export class BohPage implements OnInit {
 
     try {
       const response = await this.api.getBohInfo(user.storeNumber, user.divisionNumber)
-      console.log(response)
       this.allBohRecords = response.products
     } catch (error) {
       this.allBohRecords = []
