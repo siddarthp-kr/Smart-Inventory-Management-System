@@ -17,4 +17,5 @@ public class MockSimsConstants {
     public static final String PUSH_BACK_EXPIRATION_ENDPOINT = "/push-back-exp";
     public static final String GET_MARKDOWN_RULES_ENDPOINT = "/markdown-rules";
     public static final int THREAD_POOL_SIZE_10 = 10;
+    public static final String GET_ALERT_COUNT_ENDPOINT = "/alert-count";
 }

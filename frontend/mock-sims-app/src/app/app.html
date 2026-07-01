@@ -21,7 +21,12 @@
           <a routerLink="/BohPage" routerLinkActive="active-link">BOH/Order</a>
           <a routerLink="/OrderHistoryPage" routerLinkActive="active-link">Placed Orders</a>
           <a routerLink="/MovementPage" routerLinkActive="active-link">Movement</a>
-          <a routerLink="/AlertsPage" routerLinkActive="active-link">Alerts</a>
+          <a routerLink="/AlertsPage" routerLinkActive="active-link" class="nav-alert-link">
+            Alerts
+            @if (alertCount > 0) {
+              <span class="nav-alert-badge">{{ alertCount }}</span>
+            }
+          </a>
         </nav>
       }
 
@@ -32,3 +37,25 @@
     </main>
 
 </div>
+
+<style>
+  .nav-alert-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .nav-alert-badge {
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: #ef4444;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+</style>

@@ -60,15 +60,11 @@
           }
         </div>
 
-        <h3>PDM Alerts</h3>
+        <h3>
+          PDM Alerts
+        </h3>
 
-        @if (alertCountLoadFailed) {
-          <p>Unable to load alert count</p>
-        } @else if (alertCount > 0) {
-          <p>{{ alertCount }} alert(s) need action today</p>
-        } @else {
-          <p>No alerts need action today</p>
-        }
+        <p>View expiration alerts and take action</p>
       </button>
 
       <button routerLink="/AddItemPage" class="dashboard-card">
