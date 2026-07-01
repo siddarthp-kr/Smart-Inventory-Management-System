@@ -129,14 +129,15 @@ public class PdmAlertGenerationRepositoryImpl implements PdmAlertGenerationRepos
             FROM (
                 SELECT
                     alert_id,
-                    ROW_NUMBER() OVER (PARTITION BY store_number, division_number, upc_number ORDER BY expiration_date ASC, alert_id ASC
-                    ) AS row_num
+                    ROW_NUMBER() OVER (PARTITION BY store_number, division_number, upc_number ORDER BY expiration_date ASC, alert_id ASC)
+                     AS row_num
                 FROM PDM_ALERTS
                 WHERE is_active = TRUE
+                  AND markdown_after_date <= CURRENT_DATE
             ) ranked_alerts
             WHERE row_num > 1
         )
-        """;
+        """; 
 
     @Override
     public List<PdmAlertInfoRecord> getPdmAlertsInfo(){
