@@ -180,6 +180,7 @@ export class OrderHistoryPage implements OnInit {
       } else {
         this.showMessage(response.responseMessage, false);
       }
+      this.cd.detectChanges();
 
     } catch (error: any) {
       console.error('Failed to receive order:', error);
@@ -198,7 +199,7 @@ export class OrderHistoryPage implements OnInit {
   }
 
   getStatusText(order: GroupedOrder): string{
-    return order.orderReceived ? 'Received' : 'Pending';
+    return order.orderReceived ? 'Received' : 'Placed';
   }
 
   // For testing purposes

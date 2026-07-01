@@ -49,7 +49,6 @@
           <th>Status</th>
           <th>Items</th>
           <th>View Order</th>
-          <th>Action</th>
         </tr>
         </thead>
 
@@ -66,33 +65,27 @@
                 <button class = "view-btn" (click) = "toggleOrder(record.orderId)">{{ record.expanded ? 'Hide Order' : 'View Order' }}</button>
               </td>
 
-              <td>
-              @if (!record.orderReceived) {
-                <button class="receive-btn" (click)="receiveOrder(record)">
-                  Receive
-                </button>
-              } @else {
-                <span class="received-text"></span>
-              }
-              </td>
+
             </tr>
-  
+
             @if (record.expanded) {
               <tr class="details-row">
                 <td colspan="6">
                   <div class="order-details">
                     <div class="order-summary">
-                      <div>
-                        <span class="summary-label">Placed By:</span>
-                        <span>{{ record.placedByUserEuid }}</span>
-                      </div>
 
-                      <div>
-                        <span class="summary-label">Placed Time:</span>
-                        <span>{{ formatDateTime(record.orderPlacedTime) }}</span>
-                      </div>
 
                       @if (record.orderReceived) {
+                        <div>
+                          <span class="summary-label">Placed By:</span>
+                          <span>{{ record.placedByUserEuid }}</span>
+                        </div>
+
+                        <div>
+                          <span class="summary-label">Placed Time:</span>
+                          <span>{{ formatDateTime(record.orderPlacedTime) }}</span>
+                        </div>
+
                         <div>
                           <span class="summary-label">Received By:</span>
                           <span>{{ record.receivedByUserEuid || 'N/A' }}</span>
@@ -104,9 +97,15 @@
                         </div>
                       } @else {
                         <div>
-                          <span class="summary-label">Receive Status:</span>
-                          <span>Sent</span>
+                          <span class="summary-label">Placed By:</span>
+                          <span>{{ record.placedByUserEuid }}</span>
                         </div>
+
+                        <div>
+                          <span class="summary-label">Placed Time:</span>
+                          <span>{{ formatDateTime(record.orderPlacedTime) }}</span>
+                        </div>
+
                       }
                     </div>
 
@@ -123,11 +122,19 @@
                           <tr>
                             <td class="product-name">{{ item.productName }}</td>
                             <td class="upc">{{ item.upcNumber }}</td>
-                            <td>{{ item.quantity }}</td>
+                            <td class="upc">{{ item.quantity }}</td>
                           </tr>
                         }
                       </tbody>
                     </table>
+
+                    @if (!record.orderReceived) {
+                      <div class="receive-btn-row">
+                        <button class="receive-btn" (click)="receiveOrder(record)">
+                          Mark Order as Received
+                        </button>
+                      </div>
+                    }
                     </div>
                 </td>
               </tr>
@@ -364,7 +371,8 @@
   /* UPC style */
   .upc {
     font-family: monospace;
-    color: #6b7280;
+    /*color: #6b7280;*/
+    color: #111827;
   }
 
   /* Expanded details */
@@ -384,7 +392,8 @@
     margin-bottom: 16px;
     padding: 12px;
     background: #f9fafb;
-    border: 1px solid #e5e7eb;
+    /*border: 1px solid #e5e7eb;*/
+    border: 1px solid dimgray;
     border-radius: 10px;
     font-size: 13px;
     color: #374151;
@@ -407,12 +416,20 @@
     font-weight: 600;
     color: #6b7280;
     padding: 10px;
-    border-bottom: 1px solid #e5e7eb;
+    /*border-bottom: 1px solid #e5e7eb;*/
+    border-bottom: 1px solid dimgrey;
   }
 
   .details-table td {
     padding: 10px;
-    border-bottom: 1px solid #f1f5f9;
+    /*border-bottom: 1px solid #f1f5f9;*/
+    border-bottom: 1px solid dimgrey;
+  }
+
+  .receive-btn-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 24px;
   }
 
   .receive-btn {
@@ -424,6 +441,7 @@
     font-weight: 600;
     cursor: pointer;
     transition: 0.2s ease;
+    margin-right: 91px;
   }
 
   .receive-btn:hover {
