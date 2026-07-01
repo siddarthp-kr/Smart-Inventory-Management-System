@@ -42,7 +42,7 @@ public class MarkdownItemController {
                 markdownItemResponse.setResponseCode(200);
                 return markdownItemResponse;
             } catch (MockSimsCustomException e){
-                LOG.error("Failed to markdown item.", e);
+                LOG.error("Failed to markdown item {}.", markdownItemRequest.getUpcNumber());
                 markdownItemResponse.setResponseMessage(e.getMessage());
                 markdownItemResponse.setResponseCode(e.getErrorCode());
                 return markdownItemResponse;
