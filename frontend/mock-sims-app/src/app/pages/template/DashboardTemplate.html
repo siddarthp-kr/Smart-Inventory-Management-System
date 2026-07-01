@@ -50,9 +50,20 @@
         <p>Track QOD/QOM and inventory movement</p>
       </button>
 
-      <button routerLink="/AlertsPage" class="dashboard-card">
-        <div class="icon icon-yellow">⚠️</div>
-        <h3>PDM Alerts</h3>
+      <button routerLink="/AlertsPage" class="dashboard-card alert-card">
+
+        <div class="card-header-row">
+          <div class="icon icon-yellow">⚠️</div>
+
+          @if (alertCount > 0) {
+            <span class="alert-count-badge">{{ alertCount }}</span>
+          }
+        </div>
+
+        <h3>
+          PDM Alerts
+        </h3>
+
         <p>View expiration alerts and take action</p>
       </button>
 
@@ -233,6 +244,48 @@
     font-size: 14px;
     line-height: 1.45;
     color: #6b7280;
+  }
+
+  .card-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .alert-card {
+    position: relative;
+  }
+
+  .alert-count-badge {
+    min-width: 26px;
+    height: 26px;
+    padding: 0 8px;
+
+    border-radius: 999px;
+    background: #ef4444;
+    color: white;
+
+    font-size: 13px;
+    font-weight: 800;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow: 0 6px 14px rgba(239, 68, 68, 0.25);
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+    }
+    70% {
+      box-shadow: 0 0 0 12px rgba(239, 68, 68, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    }
   }
 
   /* RESPONSIVE */
