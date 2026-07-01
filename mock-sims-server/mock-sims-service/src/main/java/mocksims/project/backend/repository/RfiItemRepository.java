@@ -11,6 +11,6 @@ public interface RfiItemRepository {
     public void decrementQod(String storeNumber, String divisionNumber, String upcNumber, Integer quantity);
     public void updatePdmAlert(Integer alertId, LocalDateTime actionedTime, String userEuid);
     public void insertRfiTransactionInfo(RfiItemRequest rfiItemRequest, Integer qodBeforeTransaction, Integer qomBeforeTransaction, LocalDateTime actionedTime);
-
+    public void deactivateActiveDueDuplicateAlertsForUpc(String storeNumber, String divisionNumber, String upcNumber, LocalDateTime actionedTime, String userEuid);
 
 }

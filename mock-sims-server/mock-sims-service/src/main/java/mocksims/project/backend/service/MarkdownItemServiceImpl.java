@@ -39,6 +39,8 @@ public class MarkdownItemServiceImpl implements MarkdownItemService {
 
         markdownItemRepository.updatePdmAlert(markdownItemRequest.getAlertId(),currentTime, markdownItemRequest.getUserEuid());
 
+        markdownItemRepository.deactivateActiveDueDuplicateAlertsForUpc(markdownItemRequest.getStoreNumber(), markdownItemRequest.getDivisionNumber(), markdownItemRequest.getUpcNumber(), currentTime, markdownItemRequest.getUserEuid());
+
         markdownItemRepository.insertMarkdownTransactionInfo(markdownItemRequest, originalPrice, newPrice, currentTime, qodNumber, qomNumber);
 
         /*

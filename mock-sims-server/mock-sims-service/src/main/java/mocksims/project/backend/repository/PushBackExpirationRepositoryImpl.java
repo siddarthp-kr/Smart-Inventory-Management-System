@@ -38,6 +38,9 @@ public class PushBackExpirationRepositoryImpl implements PushBackExpirationRepos
     private final String ACTION_CODE = "ACTION_CODE";
     private final String IS_ACTIVE = "IS_ACTIVE";
     private final String USER_EUID = "USER_EUID";
+    private static final String STORE_NUMBER = "STORE_NUMBER";
+    private static final String DIVISION_NUMBER = "DIVISION_NUMBER";
+    private static final String UPC_NUMBER = "UPC_NUMBER";
 
     private static final String SQL_CREATE_NEW_ALERT = """
             INSERT INTO PDM_ALERTS (store_number, division_number, department_number, upc_number, quantity, expiration_date, markdown_after_date, rfi_after_date, first_markdown_percent, is_active)
@@ -83,6 +86,19 @@ public class PushBackExpirationRepositoryImpl implements PushBackExpirationRepos
         FROM PDM_ALERTS
         WHERE alert_id = :ALERT_ID;
     """;
+
+    private static final String SQL_DEACTIVATE_ACTIVE_DUE_DUPLICATE_ALERTS_FOR_UPC = """
+        UPDATE PDM_ALERTS
+        SET is_active = FALSE,
+            alert_actioned_time = :ACTIONED_TIME,
+            alert_actioned_user_euid = :USER_EUID,
+            alert_actioned_code = :ACTION_CODE
+        WHERE store_number = :STORE_NUMBER
+          AND division_number = :DIVISION_NUMBER
+          AND upc_number = :UPC_NUMBER
+          AND is_active = TRUE
+          AND markdown_after_date <= CURRENT_DATE
+        """;
 
 
     @Override
@@ -200,6 +216,25 @@ public class PushBackExpirationRepositoryImpl implements PushBackExpirationRepos
         if(numRowsUpdated != 1){
             LOG.error("Failed to update PDM Alert ID = {}. Did not update exactly row.", alertId);
             throw new MockSimsCustomException(500, "Failed to update PDM alert.");
+        }
+    }
+
+    @Override
+    public void deactivateActiveDuplicateAlerts(String storeNumber, String divisionNumber, String upcNumber, LocalDateTime actionedTime, String userEuid) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(STORE_NUMBER, storeNumber)
+                .addValue(DIVISION_NUMBER, divisionNumber)
+                .addValue(UPC_NUMBER, upcNumber)
+                .addValue(ACTIONED_TIME, actionedTime)
+                .addValue(USER_EUID, userEuid)
+                .addValue(ACTION_CODE, "DP");
+
+        try {
+            namedParameterJdbcTemplate.update(SQL_DEACTIVATE_ACTIVE_DUE_DUPLICATE_ALERTS_FOR_UPC, params);
+        } catch (DataAccessException error) {
+            LOG.error("Failed to deactivate active duplicate PDM alerts for upc {} store {} division {}.", upcNumber, storeNumber, divisionNumber, error);
+
+            throw new MockSimsCustomException(500, "Failed to deactivate duplicate active PDM alerts.");
         }
     }
 }

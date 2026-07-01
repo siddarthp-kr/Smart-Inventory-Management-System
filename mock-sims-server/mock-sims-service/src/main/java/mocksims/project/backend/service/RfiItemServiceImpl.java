@@ -41,6 +41,8 @@ public class RfiItemServiceImpl implements RfiItemService {
 
         rfiItemRepository.updatePdmAlert(rfiItemRequest.getAlertId(), currentTime, rfiItemRequest.getUserEuid());
 
+        rfiItemRepository.deactivateActiveDueDuplicateAlertsForUpc(rfiItemRequest.getStoreNumber(), rfiItemRequest.getDivisionNumber(), rfiItemRequest.getUpcNumber(), currentTime, rfiItemRequest.getUserEuid());
+
         rfiItemRepository.insertRfiTransactionInfo(rfiItemRequest, qodNumber, qomNumber, currentTime);
 
     }
