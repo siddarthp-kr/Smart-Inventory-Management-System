@@ -235,7 +235,11 @@ export class PushBackExpirationPage implements OnInit {
   }
 
   goBackToAlerts() {
-    this.router.navigate(['/AlertsPage']);
+    this.router.navigate(['/AlertsPage'], {
+      state: {
+        departmentNumber: this.returnState.departmentNumber
+      }
+    });
   }
   addDays(dateValue: string, days: number): string {
     if (!dateValue) {

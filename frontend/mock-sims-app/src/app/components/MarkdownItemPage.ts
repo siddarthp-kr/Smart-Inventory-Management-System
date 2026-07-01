@@ -218,6 +218,10 @@ export class MarkdownItemPage implements OnInit {
   }
 
   goBackToAlerts() {
-    this.router.navigate(['/AlertsPage']);
+    this.router.navigate(['/AlertsPage'], {
+      state: {
+        departmentNumber: this.returnState.departmentNumber
+      }
+    });
   }
 }
