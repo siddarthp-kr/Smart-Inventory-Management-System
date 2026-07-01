@@ -20,4 +20,6 @@ public interface PdmAlertGenerationRepository {
     public boolean getWhetherItemCanBeMarkedDown(String upcNumber);
 
     String getSubcommodityNumber(String upcNumber);
+
+    public void deactivateDuplicateActiveAlerts();
 }

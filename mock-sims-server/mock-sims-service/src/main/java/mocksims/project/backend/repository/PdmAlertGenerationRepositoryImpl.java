@@ -121,6 +121,24 @@ public class PdmAlertGenerationRepositoryImpl implements PdmAlertGenerationRepos
             "   AND earliest.earliest_order_placed_time = oti.order_placed_time\n" +
             "WHERE pii.is_active = TRUE;";
 
+    private static final String SQL_DEACTIVATE_DUPLICATE_ACTIVE_ALERTS = """
+        UPDATE PDM_ALERTS
+        SET is_active = FALSE
+        WHERE alert_id IN (
+            SELECT alert_id
+            FROM (
+                SELECT
+                    alert_id,
+                    ROW_NUMBER() OVER (PARTITION BY store_number, division_number, upc_number ORDER BY expiration_date ASC, alert_id ASC)
+                     AS row_num
+                FROM PDM_ALERTS
+                WHERE is_active = TRUE
+                  AND markdown_after_date <= CURRENT_DATE
+            ) ranked_alerts
+            WHERE row_num > 1
+        )
+        """; 
+
     @Override
     public List<PdmAlertInfoRecord> getPdmAlertsInfo(){
         //get all the information for each alert (before checking whether it is eligible)
@@ -248,4 +266,13 @@ public class PdmAlertGenerationRepositoryImpl implements PdmAlertGenerationRepos
         return subcommodityNumber;
     }
 
+    @Override
+    public void deactivateDuplicateActiveAlerts() {
+        try {
+            jdbcTemplate.update(SQL_DEACTIVATE_DUPLICATE_ACTIVE_ALERTS);
+        } catch (DataAccessException error) {
+            LOG.error("Failed to deactivate duplicate active PDM alerts.", error);
+            throw new MockSimsCustomException(500, "Failed to deactivate duplicate active PDM alerts.");
+        }
+    }
 }
