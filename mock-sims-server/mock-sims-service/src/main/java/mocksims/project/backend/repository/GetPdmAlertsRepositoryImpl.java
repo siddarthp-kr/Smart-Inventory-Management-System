@@ -27,9 +27,17 @@ public class GetPdmAlertsRepositoryImpl implements GetPdmAlertsRepository {
                     ROW_NUMBER() OVER (PARTITION BY upc_number ORDER BY expiration_date ASC, alert_id ASC) AS row_num
                 FROM PDM_ALERTS
                 WHERE division_number = :DIVISION_NUMBER AND store_number = :STORE_NUMBER AND is_active = TRUE AND markdown_after_date <= CURRENT_DATE) ranked_alerts
-            WHERE row_num = 1 ORDER BY expiration_date ASC
+            WHERE row_num = 1 ORDER BY expiration_date ASC;
             """;
 
+    private final String SQL_GET_ALERT_COUNT = """
+            SELECT COUNT(DISTINCT upc_number)
+            FROM PDM_ALERTS
+            WHERE division_number = :DIVISION_NUMBER
+              AND store_number = :STORE_NUMBER
+              AND is_active = TRUE
+              AND markdown_after_date <= CURRENT_DATE;
+            """;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     public GetPdmAlertsRepositoryImpl(JdbcTemplate jdbcTemplate){
@@ -50,6 +58,21 @@ public class GetPdmAlertsRepositoryImpl implements GetPdmAlertsRepository {
         }
 
         return alerts;
+    }
+
+    @Override
+    public Integer getPdmAlertCount(String storeNumber, String divisionNumber) {
+
+        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource().addValue(STORE_NUMBER, storeNumber).addValue(DIVISION_NUMBER, divisionNumber);
+
+        try {
+            return namedParameterJdbcTemplate.queryForObject(SQL_GET_ALERT_COUNT, mapSqlParameterSource, Integer.class);
+        } catch (DataAccessException e){
+            LOG.error("Failed to get PDM alert count from PDM_ALERTS", e);
+            throw new MockSimsCustomException(500, String.format("Failed to get PDM alert count for store %s in division %s.", storeNumber, divisionNumber));
+        }
+
+
     }
 
 }

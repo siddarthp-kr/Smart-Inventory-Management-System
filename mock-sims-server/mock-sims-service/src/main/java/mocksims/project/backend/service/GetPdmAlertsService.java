@@ -8,4 +8,5 @@ public interface GetPdmAlertsService {
 
     public List<GetPdmAlertRecord> getPdmAlerts(String storeNumber, String divisionNumber);
 
+    public Integer getPdmAlertCount(String storeNumber, String divisionNumber);
 }
