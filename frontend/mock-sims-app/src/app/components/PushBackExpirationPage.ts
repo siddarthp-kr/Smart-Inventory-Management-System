@@ -181,14 +181,20 @@ export class PushBackExpirationPage implements OnInit {
     await this.pushBackExpiration(
       this.alertId,
       this.newExpirationDate,
-      user.userEuid
+      user.userEuid,
+      user.storeNumber,
+      user.divisionNumber,
+      this.upcNumber
     );
   }
 
   async pushBackExpiration(
     alertId: number,
     newExpirationDate: string,
-    userEuid: string
+    userEuid: string,
+    storeNumber: string,
+    divisionNumber: string,
+    upcNumber: string
   ) {
     this.isSubmitting = true;
 
@@ -201,7 +207,10 @@ export class PushBackExpirationPage implements OnInit {
       pushBackResponse = await this.api.pushBackItem(
         alertId,
         newExpirationDate,
-        userEuid
+        userEuid,
+        storeNumber,
+        divisionNumber,
+        upcNumber
       );
 
       if (pushBackResponse?.responseCode === 200) {

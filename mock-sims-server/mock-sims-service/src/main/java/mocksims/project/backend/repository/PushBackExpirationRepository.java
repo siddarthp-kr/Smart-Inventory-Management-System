@@ -14,5 +14,5 @@ public interface PushBackExpirationRepository {
     public void insertNewAlert(LocalDate newExpirationDate, LocalDate newRfiDate, LocalDate newMarkdownDate, Integer alertId);
     public void deactivateOldAlert(Integer alertId);
     public void updatePdmAlert(Integer alertId, LocalDateTime actionedTime, String userEuid);
-    void deactivateActiveDueDuplicateAlertsForAlertId(Integer alertId, LocalDateTime actionedTime, String userEuid);
+    void deactivateActiveDuplicateAlerts(String storeNumber, String divisionNumber, String upcNumber, LocalDateTime actionedTime, String userEuid);
 }

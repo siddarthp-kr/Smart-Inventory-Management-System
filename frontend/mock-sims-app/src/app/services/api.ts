@@ -190,11 +190,14 @@ export class Api {
     return result
   }
 
-  async pushBackItem(alertId: number, newExpirationDate: string, userEuid: string): Promise<PushBackExpirationResponse> {
+  async pushBackItem(alertId: number, newExpirationDate: string, userEuid: string, storeNumber: string, divisionNumber: string, upcNumber: string): Promise<PushBackExpirationResponse> {
     const requestBody = {
       alertId: alertId,
       newExpirationDate: newExpirationDate,
-      userEuid: userEuid
+      userEuid: userEuid,
+      storeNumber: storeNumber,
+      divisionNumber: divisionNumber,
+      upcNumber: upcNumber
     }
 
     const result: PushBackExpirationResponse = await firstValueFrom(

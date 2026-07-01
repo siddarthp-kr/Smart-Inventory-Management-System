@@ -13,4 +13,7 @@ public class PushBackExpirationRequest {
     Integer alertId;
     LocalDate newExpirationDate;
     String userEuid;
+    String storeNumber;
+    String divisionNumber;
+    String upcNumber;
 }
