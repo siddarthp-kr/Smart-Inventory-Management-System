@@ -19,7 +19,7 @@ import { AuthService } from '../services/auth';
               {{ auth.user()?.userEuid }}
             </div>
             <div class="user-meta">
-              Store {{ auth.user()?.storeNumber }} • Division {{ auth.user()?.divisionNumber }}
+              Division {{ auth.user()?.divisionNumber }} • Store {{ auth.user()?.storeNumber }}
             </div>
           </div>
         </div>

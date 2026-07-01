@@ -131,6 +131,15 @@
   </div>
 
   <div class="form-field">
+    <label for="division">Division Number</label>
+    <input
+      type="text"
+      id="division"
+      [(ngModel)]="divisionNumber"
+      placeholder="Enter your Division Number"/>
+  </div>
+
+  <div class="form-field">
     <label for="storeNumber">Store Number</label>
     <input
       type="text"
@@ -140,14 +149,6 @@
 
   </div>
 
-  <div class="form-field">
-    <label for="division">Division Number</label>
-    <input
-      type="text"
-      id="division"
-      [(ngModel)]="divisionNumber"
-      placeholder="Enter your Division Number"/>
-  </div>
 
   @if (loginError !== ''){
     <div class = "error-message"> {{loginError}} </div>
