@@ -59,7 +59,7 @@ export class RfiItemPage implements OnInit {
   rfiSuccessful: boolean = false;
 
   // User-selected quantity
-  quantity: number = 0;
+  quantity: number | null = null;
 
   // Status message
   statusMessage: string = '';
@@ -89,9 +89,11 @@ export class RfiItemPage implements OnInit {
       return;
     }
 
-    if (this.quantity > 0) {
-      this.quantity--;
+    if (!this.quantity || this.quantity <= 0) {
+      return;
     }
+
+    this.quantity--;
   }
 
   incrementQuantity() {
@@ -99,12 +101,16 @@ export class RfiItemPage implements OnInit {
       return;
     }
 
-    this.quantity++;
+    if (this.quantity !== null && this.quantity >= 999) {
+      return;
+    }
+
+    this.quantity = (this.quantity ?? 0) + 1;
   }
 
   sanitizeQuantity() {
     if (this.quantity == null || Number.isNaN(Number(this.quantity))) {
-      this.quantity = 0;
+      this.quantity = null;
       return;
     }
 
@@ -115,10 +121,28 @@ export class RfiItemPage implements OnInit {
     }
   }
 
+  clampQuantity(event: Event) {
+    const input = event.target as HTMLInputElement;
+
+    // Strip any non-digit characters (e.g. minus sign, decimal point)
+    let raw = input.value.replace(/\D/g, '')
+
+    // Truncate to 3 characters max
+    if (raw.length > 3) {
+      raw = raw.substring(0, 3)
+    }
+
+    const clamped = raw === '' ? 0 : parseInt(raw, 10)
+
+    // Update both the DOM input and the model to the clamped value
+    input.value = raw === '' ? '' : String(clamped)
+    this.quantity = clamped
+  }
+
   async onRfiButtonClick() {
     this.sanitizeQuantity();
 
-    if (this.quantity <= 0) {
+    if (!this.quantity || this.quantity <= 0) {
       this.showMessage('Select a quantity greater than 0 before removing the item from inventory.', false);
       return;
     }

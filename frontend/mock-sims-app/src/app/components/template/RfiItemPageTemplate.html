@@ -61,7 +61,7 @@
       <button
         class="stepper-btn"
         (click)="decrementQuantity()"
-        [disabled]="quantity === 0 || rfiSuccessful || isSubmitting"
+        [disabled]="!quantity || rfiSuccessful || isSubmitting"
       >
         ‹
       </button>
@@ -71,14 +71,14 @@
         type="number"
         min="0"
         [(ngModel)]="quantity"
-        (ngModelChange)="sanitizeQuantity()"
+        (input)="clampQuantity($event)"
         [disabled]="rfiSuccessful || isSubmitting"
       />
 
       <button
         class="stepper-btn"
         (click)="incrementQuantity()"
-        [disabled]="rfiSuccessful || isSubmitting"
+        [disabled]="rfiSuccessful || isSubmitting || (quantity !== null && quantity >= 999)"
       >
         ›
       </button>
@@ -99,7 +99,7 @@
       <button
         class="primary-btn rfi-btn"
         (click)="onRfiButtonClick()"
-        [disabled]="quantity <= 0 || isSubmitting"
+        [disabled]="!quantity || quantity > 999 || isSubmitting"
       >
         @if (isSubmitting) {
           Removing...
@@ -337,6 +337,7 @@
     font-size: 18px;
     font-weight: 700;
     color: #111827;
+    padding-left: 13px;
   }
 
   .quantity-input:focus {
