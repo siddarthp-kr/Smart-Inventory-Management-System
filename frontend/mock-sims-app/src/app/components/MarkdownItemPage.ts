@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth';
 import { Api } from '../services/api';
+import { AlertCountService } from '../services/alert-count';
 
 interface MarkdownItemState {
   alertId: number;
@@ -31,6 +32,7 @@ export class MarkdownItemPage implements OnInit {
   private router = inject(Router);
   private auth = inject(AuthService);
   private api = inject(Api);
+  private alertCountService = inject(AlertCountService);
 
   constructor(private cd: ChangeDetectorRef) {
     const nav = this.router.getCurrentNavigation();
@@ -214,6 +216,7 @@ export class MarkdownItemPage implements OnInit {
 
       if (markdownResponse?.responseCode === 200) {
         this.markdownSuccessful = true;
+        this.alertCountService.decrement();
         this.showMessage(
           `Successfully marked down ${quantity} item(s) for UPC ${upcNumber}.`,
           true

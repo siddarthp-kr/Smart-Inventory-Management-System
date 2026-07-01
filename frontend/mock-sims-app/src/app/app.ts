@@ -1,9 +1,10 @@
-import { ChangeDetectorRef, Component, inject, signal, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { LoginButton } from './components/LoginButton';
 import { AuthService } from './services/auth';
 import { LoginPage } from './components/LoginPage';
 import { Api } from './services/api';
+import { AlertCountService } from './services/alert-count';
 
 @Component({
   selector: 'app-root',
@@ -13,41 +14,19 @@ import { Api } from './services/api';
   styleUrl: './app.css'
 })
 export class App implements OnInit {
-  protected readonly title = signal('mock-sims-app');
   protected auth = inject(AuthService);
   protected user = this.auth.user;
   protected isLoggedIn = this.auth.isLoggedIn;
 
   private api = inject(Api);
+  protected alertCountService = inject(AlertCountService);
 
-  alertCount: number = 0;
+  // Signal from the service — call as alertCount() in the template
+  alertCount = this.alertCountService.count;
 
   constructor(private cd: ChangeDetectorRef) {}
 
   ngOnInit() {
-    this.loadAlertCount();
-  }
-
-  async loadAlertCount() {
-    const user = this.auth.user();
-
-    if (!user) {
-      this.alertCount = 0;
-      return;
-    }
-
-    try {
-      const response = await this.api.getAlertCount(
-        user.storeNumber,
-        user.divisionNumber
-      );
-
-      this.alertCount = response.alertCount ?? 0;
-    } catch (error) {
-      console.error('Failed to load alert count:', error);
-      this.alertCount = 0; // silent fallback (your decision ✅)
-    }
-
-    this.cd.detectChanges();
+    this.alertCountService.refresh();
   }
 }
