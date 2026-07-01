@@ -141,6 +141,10 @@ export interface MarkdownInformationResponse {
   newPrice: number
 }
 
+export interface AlertCountResponse {
+  alertCount: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class Api {
   private http = inject(HttpClient);
@@ -313,6 +317,13 @@ export class Api {
   async getMarkdownRules(): Promise<GetMarkdownRulesResponse> {
     const result: GetMarkdownRulesResponse = await firstValueFrom(
       this.http.get<GetMarkdownRulesResponse>('http://localhost:8080/api/order/markdown-rules')
+    );
+    return result;
+  }
+
+  async getAlertCount(storeNumber: string, divisionNumber: string): Promise<AlertCountResponse> {
+    const result: AlertCountResponse = await firstValueFrom(
+      this.http.get<AlertCountResponse>(`http://localhost:8080/api/pdm/alert-count?storeNumber=${storeNumber}&divisionNumber=${divisionNumber}`)
     );
     return result;
   }
