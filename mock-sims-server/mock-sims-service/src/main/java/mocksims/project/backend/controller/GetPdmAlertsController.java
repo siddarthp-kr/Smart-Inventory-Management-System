@@ -1,5 +1,6 @@
 package mocksims.project.backend.controller;
 
+import mocksims.project.backend.api.domain.GetAlertCountResponse;
 import mocksims.project.backend.api.domain.GetPdmAlertsResponse;
 import mocksims.project.backend.exception.MockSimsCustomException;
 import mocksims.project.backend.service.GetPdmAlertsService;
@@ -47,9 +48,26 @@ public class GetPdmAlertsController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(getPdmAlertsResponse);
         }
 
-
-
         return ResponseEntity.ok(getPdmAlertsResponse);
+    }
+
+    @GetMapping(value = MockSimsConstants.GET_ALERT_COUNT_ENDPOINT)
+    public ResponseEntity<GetAlertCountResponse> getAlertCount (@RequestParam String storeNumber, @RequestParam String divisionNumber){
+        GetAlertCountResponse getAlertCountResponse = new GetAlertCountResponse();
+
+        if(ValidationHelper.validateStoreNumber(storeNumber) && ValidationHelper.validateDivisionNumber(divisionNumber)){
+            try {
+                getAlertCountResponse.setAlertCount(getPdmAlertsService.getPdmAlertCount(storeNumber, divisionNumber));
+                return ResponseEntity.ok(getAlertCountResponse);
+            } catch (MockSimsCustomException e){
+                LOG.error("Failed to get alert count for store {} in division {}.", storeNumber, divisionNumber);
+                return ResponseEntity.status(e.getErrorCode()).body(getAlertCountResponse);
+            }
+        } else {
+            LOG.error("Failed to get alert count for store {} in division {}. Invalid request parameters", storeNumber, divisionNumber);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(getAlertCountResponse);
+        }
+        
     }
 
 }
