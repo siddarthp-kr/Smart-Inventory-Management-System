@@ -20,4 +20,6 @@ public interface MarkdownItemRepository {
 
     public void insertMarkdownTransactionInfo(MarkdownItemRequest markdownItemRequest, Double originalPrice, Double newPrice, LocalDateTime actionedTime, Integer qodBeforeTransaction, Integer qomBeforeTransaction);
 
+    public void deactivateActiveDueDuplicateAlertsForUpc(String storeNumber, String divisionNumber, String upcNumber, LocalDateTime actionedTime, String userEuid);
+
 }

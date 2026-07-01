@@ -84,6 +84,31 @@ public class PushBackExpirationRepositoryImpl implements PushBackExpirationRepos
         WHERE alert_id = :ALERT_ID;
     """;
 
+    private static final String SQL_DEACTIVATE_ACTIVE_DUE_DUPLICATE_ALERTS_FOR_ALERT_ID = """
+        UPDATE PDM_ALERTS
+        SET is_active = FALSE,
+            alert_actioned_time = :ACTIONED_TIME,
+            alert_actioned_user_euid = :USER_EUID,
+            alert_actioned_code = :ACTION_CODE
+        WHERE store_number = (
+                SELECT store_number
+                FROM PDM_ALERTS
+                WHERE alert_id = :ALERT_ID
+            )
+          AND division_number = (
+                SELECT division_number
+                FROM PDM_ALERTS
+                WHERE alert_id = :ALERT_ID
+            )
+          AND upc_number = (
+                SELECT upc_number
+                FROM PDM_ALERTS
+                WHERE alert_id = :ALERT_ID
+            )
+          AND is_active = TRUE
+          AND markdown_after_date <= CURRENT_DATE
+        """;
+
 
     @Override
     public Boolean getAlertActiveStatus(Integer alertId) {
@@ -200,6 +225,23 @@ public class PushBackExpirationRepositoryImpl implements PushBackExpirationRepos
         if(numRowsUpdated != 1){
             LOG.error("Failed to update PDM Alert ID = {}. Did not update exactly row.", alertId);
             throw new MockSimsCustomException(500, "Failed to update PDM alert.");
+        }
+    }
+
+    @Override
+    public void deactivateActiveDueDuplicateAlertsForAlertId(Integer alertId, LocalDateTime actionedTime, String userEuid) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(ALERT_ID, alertId)
+                .addValue(ACTIONED_TIME, actionedTime)
+                .addValue(USER_EUID, userEuid)
+                .addValue(ACTION_CODE, "DP");
+
+        try {
+            namedParameterJdbcTemplate.update(SQL_DEACTIVATE_ACTIVE_DUE_DUPLICATE_ALERTS_FOR_ALERT_ID, params);
+        } catch (DataAccessException error) {
+            LOG.error("Failed to deactivate active due duplicate PDM alerts for alert ID {}.", alertId, error);
+
+            throw new MockSimsCustomException(500, "Failed to deactivate duplicate active due PDM alerts.");
         }
     }
 }

@@ -53,6 +53,18 @@ public class MarkdownItemRepositoryImpl implements MarkdownItemRepository {
             INSERT INTO MD_TRANSACTIONS (user_euid, store_number, division_number, upc_number, qod_before_transaction, qom_before_transaction, action_time, quantity_marked_down, original_price, new_price)
             VALUES(:USER_EUID, :STORE_NUMBER, :DIVISION_NUMBER, :UPC_NUMBER, :QOD_BEFORE_TRANSACTION, :QOM_BEFORE_TRANSACTION, :ACTION_TIME, :QUANTITY_MARKED_DOWN, :ORIGINAL_PRICE, :NEW_PRICE);
             """;
+    private final String SQL_DEACTIVATE_ACTIVE_DUE_DUPLICATE_ALERTS_FOR_UPC = """
+        UPDATE PDM_ALERTS
+        SET is_active = FALSE,
+            alert_actioned_time = :ACTIONED_TIME,
+            alert_actioned_user_euid = :USER_EUID,
+            alert_actioned_code = :ACTION_CODE
+        WHERE store_number = :STORE_NUMBER
+          AND division_number = :DIVISION_NUMBER
+          AND upc_number = :UPC_NUMBER
+          AND is_active = TRUE
+          AND markdown_after_date <= CURRENT_DATE
+        """;
 
     private final String QOD_BEFORE_TRANSACTION = "QOD_BEFORE_TRANSACTION";
     private final String QOM_BEFORE_TRANSACTION = "QOM_BEFORE_TRANSACTION";
@@ -205,6 +217,25 @@ public class MarkdownItemRepositoryImpl implements MarkdownItemRepository {
         } catch (DataAccessException e){
             LOG.error("Failed to insert markdown transaction info.", e);
             throw new MockSimsCustomException(500, "Failed to insert markdown transaction info.");
+        }
+    }
+
+    @Override
+    public void deactivateActiveDueDuplicateAlertsForUpc(String storeNumber, String divisionNumber, String upcNumber, LocalDateTime actionedTime, String userEuid) {
+        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+                .addValue(STORE_NUMBER, storeNumber)
+                .addValue(DIVISION_NUMBER, divisionNumber)
+                .addValue(UPC_NUMBER, upcNumber)
+                .addValue(ACTIONED_TIME, actionedTime)
+                .addValue(USER_EUID, userEuid)
+                .addValue(ACTION_CODE, "DP");
+
+        try {
+            namedParameterJdbcTemplate.update(SQL_DEACTIVATE_ACTIVE_DUE_DUPLICATE_ALERTS_FOR_UPC, mapSqlParameterSource);
+        } catch (DataAccessException error) {
+            LOG.error("Failed to deactivate active due duplicate PDM alerts for UPC {} at Store {} in Division {}.", upcNumber, storeNumber, divisionNumber, error);
+
+            throw new MockSimsCustomException(500, "Failed to deactivate duplicate active due PDM alerts.");
         }
     }
 

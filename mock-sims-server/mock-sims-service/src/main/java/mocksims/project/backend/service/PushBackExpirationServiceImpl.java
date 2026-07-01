@@ -58,5 +58,7 @@ public class PushBackExpirationServiceImpl implements PushBackExpirationService 
 
         pushBackExpirationRepository.updatePdmAlert(pushBackExpirationRequest.getAlertId(), currentTime, pushBackExpirationRequest.getUserEuid());
 
+        pushBackExpirationRepository.deactivateActiveDueDuplicateAlertsForAlertId(pushBackExpirationRequest.getAlertId(), currentTime, pushBackExpirationRequest.getUserEuid());
+
     }
 }
