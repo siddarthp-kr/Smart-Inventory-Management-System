@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth';
 import { Api } from '../services/api';
+import { AlertCountService } from '../services/alert-count';
 
 interface PushBackExpirationState {
   alertId: number;
@@ -31,6 +32,7 @@ export class PushBackExpirationPage implements OnInit {
   private router = inject(Router);
   private auth = inject(AuthService);
   private api = inject(Api);
+  private alertCountService = inject(AlertCountService);
 
   constructor(private cd: ChangeDetectorRef) {
     const nav = this.router.getCurrentNavigation();
@@ -215,6 +217,7 @@ export class PushBackExpirationPage implements OnInit {
 
       if (pushBackResponse?.responseCode === 200) {
         this.pushBackSuccessful = true;
+        this.alertCountService.decrement();
 
         this.showMessage(
           `Successfully pushed back expiration date to ${this.formatDateForDisplay(newExpirationDate)}.`,

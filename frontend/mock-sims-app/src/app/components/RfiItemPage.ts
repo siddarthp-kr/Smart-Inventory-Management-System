@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth';
-import {Api} from '../services/api';
+import { Api } from '../services/api';
+import { AlertCountService } from '../services/alert-count';
 
 interface RfiItemState {
   alertId: number;
@@ -30,6 +31,7 @@ export class RfiItemPage implements OnInit {
   private router = inject(Router);
   private auth = inject(AuthService);
   private api = inject(Api);
+  private alertCountService = inject(AlertCountService);
 
   constructor(private cd: ChangeDetectorRef) {
     const nav = this.router.getCurrentNavigation();
@@ -191,6 +193,7 @@ export class RfiItemPage implements OnInit {
 
       if (rfiResponse?.responseCode === 200) {
         this.rfiSuccessful = true;
+        this.alertCountService.decrement();
         this.showMessage(
           `Successfully removed ${quantity} item(s) for UPC ${upcNumber} from inventory.`,
           true
