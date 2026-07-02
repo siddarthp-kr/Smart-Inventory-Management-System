@@ -58,7 +58,13 @@ public class PdmAlertGenerationServiceImpl implements PdmAlertGenerationService{
     }
 
     private boolean validateItemsStillOnShelf(PdmAlertInfoRecord potentialAlert) {
-        Integer bohAmount = potentialAlert.getQodNumber() + potentialAlert.getQomNumber(); //pdmAlertGenerationRepository.getItemTotalBoh(potentialAlert);
+
+        //Integer bohAmount = potentialAlert.getQodNumber() + potentialAlert.getQomNumber(); //pdmAlertGenerationRepository.getItemTotalBoh(potentialAlert);
+
+        //Since, when an item gets an alert generated for it, the product_inventory_row for it becomes inactive, we should not consider the qom number in this calculation,
+        //This is because we are just comparing the items on the shelf that have not had an action taken on them (qod) with the total quantity of inventory records that are active
+        //(and therefore haven't had an action taken on them).
+        Integer bohAmount = potentialAlert.getQodNumber();
         Integer totalQuantity = pdmAlertGenerationRepository.getItemTotalQuantity(potentialAlert);
 
         return totalQuantity < bohAmount + potentialAlert.getQuantity();
