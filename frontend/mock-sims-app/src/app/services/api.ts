@@ -45,9 +45,9 @@ export interface OrderHistoryRecord {
   orderId: number;
   placedByUserEuid: string;
   orderPlacedTime: string;
-  orderReceived: boolean;
-  receivedByUserEuid: string | null;
-  orderReceivedTime: string | null;
+  orderStatus: 'PLACED' | 'RECEIVED' | 'CANCELLED';
+  actionByUserEuid: string | null;
+  orderActionTime: string | null;
   upcNumber: string;
   productName: string;
   quantity: number;
@@ -247,6 +247,20 @@ export class Api {
         'http://localhost:8080/api/order/receive-order', requestBody)
     )
 
+    return result;
+  }
+
+  async cancelOrder(storeNumber: string, divisionNumber: string, userEuid: string, orderId: number): Promise<ReceiveOrderResponse> {
+    const requestBody = {
+      storeNumber,
+      divisionNumber,
+      userEuid,
+      orderId
+    };
+
+    const result: ReceiveOrderResponse = await firstValueFrom(
+      this.http.post<ReceiveOrderResponse>('http://localhost:8080/api/order/cancel-order', requestBody)
+    );
     return result;
   }
 

@@ -52,4 +52,39 @@ public class ReceiveOrderController {
 
         return receiveOrderResponse;
     }
+
+
+    @PostMapping(value = MockSimsConstants.CANCEL_ORDER_ENDPOINT)
+    public ReceiveOrderResponse cancelOrder(@RequestBody ReceiveOrderRequest cancelOrderRequest) {
+        ReceiveOrderResponse cancelOrderResponse = new ReceiveOrderResponse();
+
+        if (isValidReceiveOrderRequest(cancelOrderRequest)) {
+            try {
+                cancelOrderResponse = receiveOrderService.cancelOrder(cancelOrderRequest);
+                LOG.info("Order {} cancelled successfully", cancelOrderRequest.getOrderId());
+
+            } catch (MockSimsCustomException customException) {
+                LOG.info("Failed to cancel order. See details below: ", customException);
+                cancelOrderResponse.setResponseCode(customException.getErrorCode());
+                cancelOrderResponse.setResponseMessage(customException.getMessage());
+            }
+
+        } else {
+            cancelOrderResponse.setResponseCode(400);
+            cancelOrderResponse.setResponseMessage("Cancel order request has invalid parameters");
+            LOG.error("Error: Invalid cancel order request parameters");
+        }
+
+        return cancelOrderResponse;
+    }
+
+    private boolean isValidReceiveOrderRequest(ReceiveOrderRequest receiveOrderRequest) {
+        return receiveOrderRequest != null
+                && receiveOrderRequest.getOrderId() != null
+                && receiveOrderRequest.getOrderId() > 0
+                && ValidationHelper.validateDivisionNumber(receiveOrderRequest.getDivisionNumber())
+                && ValidationHelper.validateStoreNumber(receiveOrderRequest.getStoreNumber())
+                && ValidationHelper.validateUserEuid(receiveOrderRequest.getUserEuid());
+    }
+
 }

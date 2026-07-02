@@ -9,9 +9,9 @@ interface GroupedOrder {
   orderId: number;
   placedByUserEuid: string;
   orderPlacedTime: string;
-  orderReceived: boolean;
-  receivedByUserEuid: string | null;
-  orderReceivedTime: string | null;
+  orderStatus: 'PLACED' | 'RECEIVED' | 'CANCELLED';
+  actionByUserEuid: string | null;
+  orderActionTime: string | null;
   items: OrderHistoryRecord[];
   expanded: boolean;
 }
@@ -105,12 +105,12 @@ export class OrderHistoryPage implements OnInit {
         existing.items.push(record);
       } else{
         groupedMap.set(record.orderId, {
-          orderId:record.orderId,
+          orderId: record.orderId,
           placedByUserEuid: record.placedByUserEuid,
           orderPlacedTime: record.orderPlacedTime,
-          orderReceived: record.orderReceived,
-          receivedByUserEuid: record.receivedByUserEuid,
-          orderReceivedTime: record.orderReceivedTime,
+          orderStatus: record.orderStatus,
+          actionByUserEuid: record.actionByUserEuid,
+          orderActionTime: record.orderActionTime,
           items: [record],
           expanded: false
         });
@@ -133,7 +133,7 @@ export class OrderHistoryPage implements OnInit {
     } else {
       this.filteredGroupedOrders = this.groupedOrders.filter(order =>
         order.placedByUserEuid?.toLowerCase().includes(term) ||
-        order.receivedByUserEuid?.toLowerCase().includes(term) ||
+        order.actionByUserEuid?.toLowerCase().includes(term) ||
         this.getStatusText(order).toLowerCase().includes(term) ||
         order.items.some(item =>
           item.productName?.toLowerCase().includes(term) ||
@@ -160,8 +160,8 @@ export class OrderHistoryPage implements OnInit {
       return;
     }
 
-    if (order.orderReceived) {
-      this.showMessage('This order has already been received.', false);
+    if (order.orderStatus !== 'PLACED') {
+      this.showMessage(`This order cannot be received because it is ${order.orderStatus.toLowerCase()}.`, false);
       return;
     }
 
@@ -198,8 +198,71 @@ export class OrderHistoryPage implements OnInit {
     this.cd.detectChanges();
   }
 
-  getStatusText(order: GroupedOrder): string{
-    return order.orderReceived ? 'Received' : 'Placed';
+  async cancelOrder(order: GroupedOrder) {
+    const user = this.auth.user();
+
+    if (!user) {
+      this.showMessage('Failed to cancel order. You must be logged in.', false);
+      return;
+    }
+
+    if (order.orderStatus !== 'PLACED') {
+      this.showMessage(
+        `This order cannot be cancelled because it is ${order.orderStatus.toLowerCase()}.`,
+        false
+      );
+      return;
+    }
+
+    try {
+      const response = await this.api.cancelOrder(
+        user.storeNumber,
+        user.divisionNumber,
+        user.userEuid,
+        order.orderId
+      );
+
+      if (response.responseCode === 200) {
+        this.showMessage(response.responseMessage, true);
+
+        await this.orderHistoryAction();
+      } else {
+        this.showMessage(response.responseMessage, false);
+      }
+
+      this.cd.detectChanges();
+
+    } catch (error: any) {
+      console.error('Failed to cancel order:', error);
+
+      if (error?.error?.responseCode && error?.error?.responseMessage) {
+        this.showMessage(
+          `Error: ${error.error.responseCode} ${error.error.responseMessage}`,
+          false
+        );
+      } else {
+        this.showMessage('Failed to cancel order.', false);
+      }
+    }
+
+    this.cd.detectChanges();
+  }
+
+  canActionOrder(order: GroupedOrder): boolean {
+    return order.orderStatus === 'PLACED';
+  }
+
+  getStatusText(order: GroupedOrder): string {
+    switch (order.orderStatus) {
+      case 'RECEIVED':
+        return 'Received';
+
+      case 'CANCELLED':
+        return 'Cancelled';
+
+      default:
+        return 'Placed';
+    }
   }
 
   // For testing purposes

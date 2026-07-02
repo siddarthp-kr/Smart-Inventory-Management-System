@@ -7,9 +7,12 @@ CREATE TABLE ORDER_TRANSACTION_INFO
     division_number varchar(3) NOT NULL,
     placed_by_user_euid varchar(10),
     order_placed_time timestamp NOT NULL,
-    received_by_user_euid varchar(10),
-    order_received boolean NOT NULL DEFAULT FALSE,
-    order_received_time timestamp
+    order_status varchar(20) NOT NULL DEFAULT 'PLACED',
+    action_by_user_euid varchar(10),
+    order_action_time timestamp,
+
+    CONSTRAINT CHECK_ORDER_STATUS
+        CHECK (order_status IN ('PLACED', 'RECEIVED', 'CANCELLED'))
 );
 
 
