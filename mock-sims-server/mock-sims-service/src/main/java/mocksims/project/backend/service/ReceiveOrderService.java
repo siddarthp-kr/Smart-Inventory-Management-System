@@ -15,4 +15,5 @@ public interface ReceiveOrderService {
      *      Response object containing response code and response message
      */
     ReceiveOrderResponse receiveOrder(ReceiveOrderRequest receiveOrderRequest);
+    ReceiveOrderResponse cancelOrder(ReceiveOrderRequest receiveOrderRequest);
 }

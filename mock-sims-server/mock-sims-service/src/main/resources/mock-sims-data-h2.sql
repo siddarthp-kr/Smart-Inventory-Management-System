@@ -103,8 +103,8 @@ VALUES ('AB12345','00045','014','4011',17,3,TIMESTAMP '2026-06-23 08:10:00',2,'O
 INSERT INTO RFI_TRANSACTIONS (user_euid,store_number,division_number,upc_number,qod_before_transaction,qom_before_transaction,action_time,quantity_removed,reason_code)
 VALUES ('AB12345','00045','014','1011',8,0,TIMESTAMP '2026-06-23 09:45:00',1,'OD');
 
-INSERT INTO ORDER_TRANSACTION_INFO (general_order_id, store_number, division_number, placed_by_user_euid, order_placed_time, received_by_user_euid, order_received, order_received_time)
-VALUES (1234, '00045', '014', 'JS58323', '2026-06-25 09:00:00', 'JS58323', TRUE, '2026-06-25 09:00:00');
+INSERT INTO ORDER_TRANSACTION_INFO (general_order_id,store_number,division_number,placed_by_user_euid,order_placed_time,order_status,action_by_user_euid,order_action_time)
+VALUES (1234,'00045','014','JS58323','2026-06-25 09:00:00','RECEIVED','JS58323','2026-06-25 09:00:00');
 
 INSERT INTO PRODUCT_INVENTORY_INFO (general_order_id, upc_number, quantity, expiration_date, order_date, is_active)
 VALUES (1234, '3011', 10, '2026-06-28', '2026-06-25', TRUE);

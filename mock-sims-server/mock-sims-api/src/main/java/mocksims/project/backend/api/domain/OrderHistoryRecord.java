@@ -13,9 +13,9 @@ public class OrderHistoryRecord {
     Integer orderId;
     String placedByUserEuid;
     LocalDateTime orderPlacedTime;
-    Boolean orderReceived;
-    String receivedByUserEuid;
-    LocalDateTime orderReceivedTime;
+    String orderStatus;
+    String actionByUserEuid;
+    LocalDateTime orderActionTime;
     String upcNumber;
     String productName;
     Integer quantity;

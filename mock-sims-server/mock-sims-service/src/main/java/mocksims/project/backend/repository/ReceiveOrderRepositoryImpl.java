@@ -37,9 +37,11 @@ public class ReceiveOrderRepositoryImpl implements ReceiveOrderRepository {
     private static final String IS_ACTIVE = "IS_ACTIVE";
     private static final String RECEIVED_BY_USER_EUID = "RECEIVED_BY_USER_EUID";
     private static final String ORDER_RECEIVED_TIME = "ORDER_RECEIVED_TIME";
+    private static final String CANCELLED_BY_USER_EUID = "CANCELLED_BY_USER_EUID";
+    private static final String ORDER_CANCELLED_TIME = "ORDER_CANCELLED_TIME";
 
-    private static final String SQL_GET_ORDER_RECEIVED_STATUS = """
-            SELECT order_received
+    private static final String SQL_GET_ORDER_STATUS = """
+            SELECT order_status
             FROM ORDER_TRANSACTION_INFO
             WHERE general_order_id = :GENERAL_ORDER_ID
               AND store_number = :STORE_NUMBER
@@ -111,13 +113,24 @@ public class ReceiveOrderRepositoryImpl implements ReceiveOrderRepository {
 
     private static final String SQL_UPDATE_ORDER_RECEIVED = """
             UPDATE ORDER_TRANSACTION_INFO
-            SET order_received = TRUE,
-                received_by_user_euid = :RECEIVED_BY_USER_EUID,
-                order_received_time = :ORDER_RECEIVED_TIME
+            SET order_status = 'RECEIVED',
+                action_by_user_euid = :RECEIVED_BY_USER_EUID,
+                order_action_time = :ORDER_RECEIVED_TIME
             WHERE general_order_id = :GENERAL_ORDER_ID
               AND store_number = :STORE_NUMBER
               AND division_number = :DIVISION_NUMBER
-              AND order_received = FALSE
+              AND order_status = 'PLACED'
+            """;
+
+    private static final String SQL_UPDATE_ORDER_CANCELLED = """
+            UPDATE ORDER_TRANSACTION_INFO
+            SET order_status = 'CANCELLED',
+                action_by_user_euid = :CANCELLED_BY_USER_EUID,
+                order_action_time = :ORDER_CANCELLED_TIME
+            WHERE general_order_id = :GENERAL_ORDER_ID
+              AND store_number = :STORE_NUMBER
+              AND division_number = :DIVISION_NUMBER
+              AND order_status = 'PLACED'
             """;
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -127,19 +140,20 @@ public class ReceiveOrderRepositoryImpl implements ReceiveOrderRepository {
     }
 
     @Override
-    public Boolean getOrderReceivedStatus(String storeNumber, String divisionNumber, Long orderId) {
+    public String getOrderStatus(String storeNumber, String divisionNumber, Long orderId
+    ) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue(STORE_NUMBER, storeNumber)
                 .addValue(DIVISION_NUMBER, divisionNumber)
                 .addValue(GENERAL_ORDER_ID, orderId);
 
         try {
-            return namedParameterJdbcTemplate.queryForObject(SQL_GET_ORDER_RECEIVED_STATUS, params, Boolean.class);
+            return namedParameterJdbcTemplate.queryForObject(SQL_GET_ORDER_STATUS, params, String.class);
         } catch (EmptyResultDataAccessException error) {
             throw new MockSimsCustomException(404, "Order not found.");
         } catch (DataAccessException error) {
-            LOG.error("Failed to get received status for order {}", orderId, error);
-            throw new MockSimsCustomException(500, "Failed to retrieve order received status.");
+            LOG.error("Failed to get order status for order {}", orderId, error);
+            throw new MockSimsCustomException(500, "Failed to retrieve order status.");
         }
     }
 
@@ -289,24 +303,47 @@ public class ReceiveOrderRepositoryImpl implements ReceiveOrderRepository {
     }
 
     @Override
-    public void updateOrderReceived(String storeNumber, String divisionNumber, Long orderId, String receivedByUserEuid, LocalDateTime orderReceivedTime) {
+    public void updateOrderStatusToReceived(String storeNumber, String divisionNumber, Long orderId, String actionByUserEuid, LocalDateTime orderActionTime) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue(STORE_NUMBER, storeNumber)
                 .addValue(DIVISION_NUMBER, divisionNumber)
                 .addValue(GENERAL_ORDER_ID, orderId)
-                .addValue(RECEIVED_BY_USER_EUID, receivedByUserEuid)
-                .addValue(ORDER_RECEIVED_TIME, orderReceivedTime);
+                .addValue(RECEIVED_BY_USER_EUID, actionByUserEuid)
+                .addValue(ORDER_RECEIVED_TIME, orderActionTime);
 
         try {
             int rowsUpdated = namedParameterJdbcTemplate.update(SQL_UPDATE_ORDER_RECEIVED, params);
 
             if (rowsUpdated != 1) {
-                throw new MockSimsCustomException(409, "Order has already been received or could not be updated.");
+                throw new MockSimsCustomException(409, "Order cannot be received because it has already been actioned or could not be updated.");
             }
 
         } catch (DataAccessException error) {
             LOG.error("Failed to update received status for order {}", orderId, error);
             throw new MockSimsCustomException(500, "Failed to update order received status.");
+        }
+    }
+
+    @Override
+    public void updateOrderStatusToCancelled(String storeNumber, String divisionNumber, Long orderId, String actionByUserEuid, LocalDateTime orderActionTime
+    ) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(STORE_NUMBER, storeNumber)
+                .addValue(DIVISION_NUMBER, divisionNumber)
+                .addValue(GENERAL_ORDER_ID, orderId)
+                .addValue(CANCELLED_BY_USER_EUID, actionByUserEuid)
+                .addValue(ORDER_CANCELLED_TIME, orderActionTime);
+
+        try {
+            int rowsUpdated = namedParameterJdbcTemplate.update(SQL_UPDATE_ORDER_CANCELLED, params);
+
+            if (rowsUpdated != 1) {
+                throw new MockSimsCustomException(409, "Order cannot be cancelled because it has already been actioned or could not be updated.");
+            }
+
+        } catch (DataAccessException error) {
+            LOG.error("Failed to cancel order {}", orderId, error);
+            throw new MockSimsCustomException(500, "Failed to cancel order.");
         }
     }
 }

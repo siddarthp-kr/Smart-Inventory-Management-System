@@ -58,7 +58,8 @@
               <td>{{ record.orderId }}</td>
               <td>{{ formatDateTime(record.orderPlacedTime) }}</td>
               <td>{{ record.placedByUserEuid }}</td>
-              <td><span class="status-badge" [ngClass]="record.orderReceived ? 'received' : 'pending'">{{ getStatusText(record) }}</span>
+              <td>
+                <span class="status-badge" [ngClass]="{'pending': record.orderStatus === 'PLACED','received': record.orderStatus === 'RECEIVED','cancelled': record.orderStatus === 'CANCELLED'}">{{ getStatusText(record) }}</span>
               </td>
               <td>{{ record.items.length }}</td>
               <td>
@@ -75,37 +76,35 @@
                     <div class="order-summary">
 
 
-                      @if (record.orderReceived) {
+                      <div>
+                        <span class="summary-label">Placed By:</span>
+                        <span>{{ record.placedByUserEuid }}</span>
+                      </div>
+
+                      <div>
+                        <span class="summary-label">Placed Time:</span>
+                        <span>{{ formatDateTime(record.orderPlacedTime) }}</span>
+                      </div>
+
+                      <div>
+                        <span class="summary-label">Status:</span>
+                        <span>{{ getStatusText(record) }}</span>
+                      </div>
+
+                      @if (record.orderStatus !== 'PLACED') {
                         <div>
-                          <span class="summary-label">Placed By:</span>
-                          <span>{{ record.placedByUserEuid }}</span>
+                          <span class="summary-label">
+                            {{ record.orderStatus === 'RECEIVED' ? 'Received By:' : 'Cancelled By:' }}
+                          </span>
+                          <span>{{ record.actionByUserEuid || 'N/A' }}</span>
                         </div>
 
                         <div>
-                          <span class="summary-label">Placed Time:</span>
-                          <span>{{ formatDateTime(record.orderPlacedTime) }}</span>
+                          <span class="summary-label">
+                            {{ record.orderStatus === 'RECEIVED' ? 'Received Time:' : 'Cancelled Time:' }}
+                          </span>
+                          <span>{{ formatDateTime(record.orderActionTime) }}</span>
                         </div>
-
-                        <div>
-                          <span class="summary-label">Received By:</span>
-                          <span>{{ record.receivedByUserEuid || 'N/A' }}</span>
-                        </div>
-
-                        <div>
-                          <span class="summary-label">Received Time:</span>
-                          <span>{{ formatDateTime(record.orderReceivedTime) }}</span>
-                        </div>
-                      } @else {
-                        <div>
-                          <span class="summary-label">Placed By:</span>
-                          <span>{{ record.placedByUserEuid }}</span>
-                        </div>
-
-                        <div>
-                          <span class="summary-label">Placed Time:</span>
-                          <span>{{ formatDateTime(record.orderPlacedTime) }}</span>
-                        </div>
-
                       }
                     </div>
 
@@ -128,10 +127,14 @@
                       </tbody>
                     </table>
 
-                    @if (!record.orderReceived) {
-                      <div class="receive-btn-row">
+                    @if (canActionOrder(record)) {
+                      <div class="order-action-btn-row">
                         <button class="receive-btn" (click)="receiveOrder(record)">
                           Mark Order as Received
+                        </button>
+
+                        <button class="cancel-btn" (click)="cancelOrder(record)">
+                          Cancel Order
                         </button>
                       </div>
                     }
@@ -362,6 +365,11 @@
     color: #166534;
   }
 
+  .status-badge.cancelled {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
   /* Strong product name */
   .product-name {
     font-weight: 600;
@@ -426,9 +434,10 @@
     border-bottom: 1px solid dimgrey;
   }
 
-  .receive-btn-row {
+  .order-action-btn-row {
     display: flex;
     justify-content: flex-end;
+    gap: 12px;
     margin-top: 24px;
   }
 
@@ -441,17 +450,25 @@
     font-weight: 600;
     cursor: pointer;
     transition: 0.2s ease;
-    margin-right: 91px;
   }
 
   .receive-btn:hover {
     background: #15803d;
   }
 
-  .received-text {
-    color: #166534;
+  .cancel-btn {
+    background: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
     font-weight: 600;
-    font-size: 13px;
+    cursor: pointer;
+    transition: 0.2s ease;
+  }
+
+  .cancel-btn:hover {
+    background: #b91c1c;
   }
 
   /* Pagination */

@@ -70,10 +70,10 @@ public class MovementInfoRepositoryImpl implements MovementInfoRepository{
             omt.upc_number AS upc_number,
             prod.product_name AS product_name,
             'RECEIVED' AS movement_type,
-            oti.received_by_user_euid AS user_euid,
+            oti.action_by_user_euid AS user_euid,
             omt.qod_before_transaction AS qod_before_transaction,
             CAST(NULL AS INTEGER) AS qom_before_transaction,
-            oti.order_received_time AS action_time,
+            oti.order_action_time AS action_time,
             omt.quantity AS quantity_changed,
             'QOD' AS source_bucket,
             CAST(NULL AS CHAR) AS reason_code,
@@ -87,7 +87,7 @@ public class MovementInfoRepositoryImpl implements MovementInfoRepository{
         WHERE oti.store_number = :storeNumber
           AND oti.division_number = :divisionNumber
           AND omt.upc_number = :upcNumber
-          AND oti.order_received = TRUE
+          AND oti.order_status = 'RECEIVED'
 
         ORDER BY action_time DESC
         """;

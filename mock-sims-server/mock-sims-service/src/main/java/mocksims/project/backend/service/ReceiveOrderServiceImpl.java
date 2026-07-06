@@ -34,14 +34,15 @@ public class ReceiveOrderServiceImpl implements ReceiveOrderService {
 
         LocalDateTime orderReceivedTime = LocalDateTime.now();
 
-        Boolean orderReceived = receiveOrderRepository.getOrderReceivedStatus(
+        String orderStatus = receiveOrderRepository.getOrderStatus(
                 receiveOrderRequest.getStoreNumber(),
                 receiveOrderRequest.getDivisionNumber(),
                 receiveOrderRequest.getOrderId()
         );
 
-        if (Boolean.TRUE.equals(orderReceived)) {
-            throw new MockSimsCustomException(409, "Order has already been received.");
+        if (!"PLACED".equals(orderStatus)) {
+            throw new MockSimsCustomException(
+                    409, "Order cannot be received because it has already been actioned.");
         }
 
         List<ReceiveOrderItemRecord> orderItems = receiveOrderRepository.getOrderItems(receiveOrderRequest.getOrderId());
@@ -50,14 +51,41 @@ public class ReceiveOrderServiceImpl implements ReceiveOrderService {
             throw new MockSimsCustomException(404, "No ordered items found for order " + receiveOrderRequest.getOrderId());
         }
 
-        List<String> upcNumbers = orderItems.stream().map(ReceiveOrderItemRecord::getUpcNumber).distinct().toList();
+        List<String> upcNumbers = orderItems.stream()
+                .map(ReceiveOrderItemRecord::getUpcNumber)
+                .distinct()
+                .toList();
 
-        Map<String, Integer> qodBeforeTransactionByUpc = receiveOrderRepository.getQodNumbersByUpc(receiveOrderRequest.getStoreNumber(), receiveOrderRequest.getDivisionNumber(), upcNumbers);
+        Map<String, Integer> qodBeforeTransactionByUpc =
+                receiveOrderRepository.getQodNumbersByUpc(
+                        receiveOrderRequest.getStoreNumber(),
+                        receiveOrderRequest.getDivisionNumber(),
+                        upcNumbers
+                );
+
         validateAllItemsHaveBohRecords(orderItems, qodBeforeTransactionByUpc);
-        Map<String, Integer> daysAfterOrderToSetExpByUpc = receiveOrderRepository.getDaysAfterOrderToSetExpByUpc(upcNumbers);
-        Map<String, LocalDate> expirationDateByUpc = buildExpirationDateByUpc(orderItems, daysAfterOrderToSetExpByUpc, orderReceivedTime.toLocalDate());
-        receiveOrderRepository.batchUpdateQodBeforeTransaction(receiveOrderRequest.getOrderId(), qodBeforeTransactionByUpc);
-        receiveOrderRepository.batchIncrementQod(receiveOrderRequest.getStoreNumber(), receiveOrderRequest.getDivisionNumber(), orderItems);
+
+        Map<String, Integer> daysAfterOrderToSetExpByUpc =
+                receiveOrderRepository.getDaysAfterOrderToSetExpByUpc(upcNumbers);
+
+        Map<String, LocalDate> expirationDateByUpc =
+                buildExpirationDateByUpc(
+                        orderItems,
+                        daysAfterOrderToSetExpByUpc,
+                        orderReceivedTime.toLocalDate()
+                );
+
+        receiveOrderRepository.batchUpdateQodBeforeTransaction(
+                receiveOrderRequest.getOrderId(),
+                qodBeforeTransactionByUpc
+        );
+
+        receiveOrderRepository.batchIncrementQod(
+                receiveOrderRequest.getStoreNumber(),
+                receiveOrderRequest.getDivisionNumber(),
+                orderItems
+        );
+
         receiveOrderRepository.batchInsertProductInventoryInfo(
                 receiveOrderRequest.getOrderId(),
                 orderItems,
@@ -65,7 +93,7 @@ public class ReceiveOrderServiceImpl implements ReceiveOrderService {
                 orderReceivedTime.toLocalDate()
         );
 
-        receiveOrderRepository.updateOrderReceived(
+        receiveOrderRepository.updateOrderStatusToReceived(
                 receiveOrderRequest.getStoreNumber(),
                 receiveOrderRequest.getDivisionNumber(),
                 receiveOrderRequest.getOrderId(),
@@ -77,6 +105,39 @@ public class ReceiveOrderServiceImpl implements ReceiveOrderService {
         receiveOrderResponse.setResponseMessage("Order received successfully");
 
         LOG.info("Order {} received successfully by user {}", receiveOrderRequest.getOrderId(), receiveOrderRequest.getUserEuid());
+
+        return receiveOrderResponse;
+    }
+
+    @Override
+    @Transactional
+    public ReceiveOrderResponse cancelOrder(ReceiveOrderRequest receiveOrderRequest) {
+        ReceiveOrderResponse receiveOrderResponse = new ReceiveOrderResponse();
+
+        LocalDateTime orderCancelledTime = LocalDateTime.now();
+
+        String orderStatus = receiveOrderRepository.getOrderStatus(
+                receiveOrderRequest.getStoreNumber(),
+                receiveOrderRequest.getDivisionNumber(),
+                receiveOrderRequest.getOrderId()
+        );
+
+        if (!"PLACED".equals(orderStatus)) {
+            throw new MockSimsCustomException(409, "Order cannot be cancelled because it has already been actioned.");
+        }
+
+        receiveOrderRepository.updateOrderStatusToCancelled(
+                receiveOrderRequest.getStoreNumber(),
+                receiveOrderRequest.getDivisionNumber(),
+                receiveOrderRequest.getOrderId(),
+                receiveOrderRequest.getUserEuid(),
+                orderCancelledTime
+        );
+
+        receiveOrderResponse.setResponseCode(200);
+        receiveOrderResponse.setResponseMessage("Order cancelled successfully");
+
+        LOG.info("Order {} cancelled successfully by user {}", receiveOrderRequest.getOrderId(), receiveOrderRequest.getUserEuid());
 
         return receiveOrderResponse;
     }
