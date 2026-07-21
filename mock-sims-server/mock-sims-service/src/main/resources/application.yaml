@@ -5,6 +5,7 @@ spring:
     restart:
       enabled: false
 
+
   datasource:
     url: jdbc:h2:mem:testdb;
     driver-class-name: org.h2.Driver
@@ -22,3 +23,11 @@ spring:
       mode: always
       schema-locations: classpath:mock-sims-schema-h2.sql
       data-locations: classpath:mock-sims-data-h2.sql
+
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      base-url: ${https://api-internal.8451.com/ai/proxy/}
+      chat:
+        options:
+          model: gpt-4o
