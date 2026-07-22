@@ -1,4 +1,8 @@
 spring:
+  config:
+    # Load local .env files (KEY=VALUE format) when present.
+    # Covers running from workspace root, mock-sims-server root, or mock-sims-service root.
+    import: optional:file:mock-sims-server/.env[.properties],optional:file:.env[.properties],optional:file:../.env[.properties]
   application:
     name: mock-sims-backend
   devtools:
@@ -26,7 +30,7 @@ spring:
 
   ai:
     openai:
-      api-key: sk-fj38rOTdb6_-y-Bd4BG7MA
+      api-key: ${OPENAI_API_KEY:}
       base-url: https://api-internal.8451.com/ai/proxy/
       chat:
         options:
