@@ -9,5 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AgentResponse {
     private String summary;
+    private String conversationId;
 }
 

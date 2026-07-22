@@ -13,5 +13,6 @@ public class AgentRequest {
     private String storeNumber;
     private String divisionNumber;
     private String requestDetails;
+    private String conversationId;
 }
 

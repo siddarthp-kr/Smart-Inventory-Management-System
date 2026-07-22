@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/api/agent")
 @CrossOrigin(origins = "http://localhost:4200")
@@ -31,7 +33,13 @@ public class AgentController {
     public ResponseEntity<AgentResponse> query(@RequestBody AgentRequest request) {
         LOG.info("Agent query received for store {} division {}: {}",
                 request.getStoreNumber(), request.getDivisionNumber(), request.getRequestDetails());
-        AgentResponse response = agentService.handleQuery(request);
+        AgentResponse response = new AgentResponse();
+        try {
+            response = agentService.handleQuery(request);
+        } catch (IOException e){
+            LOG.error("Failed to reach agent due to I/O error.", e);
+        }
+
         return ResponseEntity.ok(response);
     }
 }

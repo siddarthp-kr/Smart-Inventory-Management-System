@@ -23,23 +23,26 @@ public class AgentTools {
     private final OrderHistoryRepository orderHistoryRepository;
     private final GetPdmAlertsRepository getPdmAlertsRepository;
     private final ProductsRepository productsRepository;
+    private final MarkdownItemRepository markdownItemRepository;
 
     public AgentTools(
             BohRepository bohRepository,
             MovementInfoRepository movementInfoRepository,
             OrderHistoryRepository orderHistoryRepository,
             GetPdmAlertsRepository getPdmAlertsRepository,
-            ProductsRepository productsRepository
+            ProductsRepository productsRepository,
+            MarkdownItemRepository markdownItemRepository
     ) {
         this.bohRepository = bohRepository;
         this.movementInfoRepository = movementInfoRepository;
         this.orderHistoryRepository = orderHistoryRepository;
         this.getPdmAlertsRepository = getPdmAlertsRepository;
         this.productsRepository = productsRepository;
+        this.markdownItemRepository = markdownItemRepository;
     }
 
     @Tool(description = """
-            Get back-of-house (BOH) inventory quantities for all products in a store and division.
+            Get balance on hand (BOH) inventory quantities for all products in a store and division.
             Returns upc number, product name, department, quantity on display (qod), and quantity on merchandise (qom).
             """)
     public List<BohItem> getBohInfo(String storeNumber, String divisionNumber) {
@@ -92,5 +95,12 @@ public class AgentTools {
         LOG.info("Agent tool: getPdmAlertCount for store {} division {}", storeNumber, divisionNumber);
         return getPdmAlertsRepository.getPdmAlertCount(storeNumber, divisionNumber);
     }
-}
 
+    @Tool(description = """
+            Get the standard retail price for a product in USD. Use this when calculating shrink (dollars lost).
+            """)
+    public Double getStandardPrice(String upcNumber) {
+        LOG.info("Agent tool: getStandardPrice for upc {}", upcNumber);
+        return markdownItemRepository.getStandardPrice(upcNumber);
+    }
+}

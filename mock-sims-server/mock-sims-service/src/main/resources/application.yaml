@@ -26,8 +26,8 @@ spring:
 
   ai:
     openai:
-      api-key: ${OPENAI_API_KEY}
-      base-url: ${https://api-internal.8451.com/ai/proxy/}
+      api-key: sk-fj38rOTdb6_-y-Bd4BG7MA
+      base-url: https://api-internal.8451.com/ai/proxy/
       chat:
         options:
           model: gpt-4o
