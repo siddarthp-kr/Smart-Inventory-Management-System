@@ -1,0 +1,436 @@
+<!-- Auth guard -->
+@if (isNotLoggedIn) {
+  <div class="chat-not-logged-in">
+    <div class="not-logged-in-card">
+      <span class="not-logged-in-icon">🤖</span>
+      <h2>AI Assistant</h2>
+      <p>You must be logged in to use the AI assistant.</p>
+    </div>
+  </div>
+} @else {
+  <div class="chat-layout">
+
+    <!-- Header -->
+    <div class="chat-header">
+      <div class="chat-header-left">
+        <span class="chat-header-icon">🤖</span>
+        <div>
+          <h2>AI Assistant</h2>
+          <p class="chat-header-sub">Ask anything about your store's inventory</p>
+        </div>
+      </div>
+      <button class="clear-btn" (click)="clearChat()" [disabled]="isLoading">
+        Clear Chat
+      </button>
+    </div>
+
+    <!-- Message thread -->
+    <div class="message-thread" #messageThread>
+
+      @if (chatService.messages().length === 0 && !isLoading) {
+        <div class="empty-state">
+          <span class="empty-icon">💬</span>
+          <p>Start a conversation! Ask about inventory levels, alerts, orders, and more.</p>
+        </div>
+      }
+
+      @for (msg of chatService.messages(); track $index) {
+        <div class="message-row" [class.user-row]="msg.role === 'user'" [class.agent-row]="msg.role === 'agent'">
+          @if (msg.role === 'agent') {
+            <div class="avatar agent-avatar">🤖</div>
+          }
+          <div class="bubble" [class.user-bubble]="msg.role === 'user'" [class.agent-bubble]="msg.role === 'agent'">
+            @if (msg.role === 'agent') {
+              <div class="markdown-body" [innerHTML]="msg.text | markdown"></div>
+            } @else {
+              <span>{{ msg.text }}</span>
+            }
+          </div>
+          @if (msg.role === 'user') {
+            <div class="avatar user-avatar">👤</div>
+          }
+        </div>
+      }
+
+      @if (isLoading) {
+        <div class="message-row agent-row">
+          <div class="avatar agent-avatar">🤖</div>
+          <div class="bubble agent-bubble typing-bubble">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+        </div>
+      }
+
+    </div>
+
+    <!-- Error message -->
+    @if (errorMessage) {
+      <div class="error-bar">⚠️ {{ errorMessage }}</div>
+    }
+
+    <!-- Input bar -->
+    <div class="input-bar">
+      <textarea
+        class="chat-input"
+        [(ngModel)]="inputText"
+        (keydown)="onKeyDown($event)"
+        placeholder="Ask the AI assistant… (Enter to send, Shift+Enter for new line)"
+        rows="1"
+        [disabled]="isLoading"
+      ></textarea>
+      <button class="send-btn" (click)="sendMessage()" [disabled]="isLoading || !inputText.trim()">
+        Send
+      </button>
+    </div>
+
+  </div>
+}
+
+<style>
+  /* ── Layout ──────────────────────────────────────────────── */
+  .chat-layout {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 70px);
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 16px 16px;
+    box-sizing: border-box;
+  }
+
+  /* ── Not logged in ───────────────────────────────────────── */
+  .chat-not-logged-in {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: calc(100vh - 70px);
+  }
+
+  .not-logged-in-card {
+    text-align: center;
+    background: white;
+    border-radius: 20px;
+    padding: 48px 56px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
+  }
+
+  .not-logged-in-icon {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 16px;
+  }
+
+  .not-logged-in-card h2 {
+    margin: 0 0 10px;
+    font-size: 22px;
+    color: #111827;
+  }
+
+  .not-logged-in-card p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 15px;
+  }
+
+  /* ── Header ──────────────────────────────────────────────── */
+  .chat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0 14px;
+    border-bottom: 1px solid #e5e7eb;
+    flex-shrink: 0;
+  }
+
+  .chat-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .chat-header-icon {
+    font-size: 30px;
+  }
+
+  .chat-header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  .chat-header-sub {
+    margin: 2px 0 0;
+    font-size: 13px;
+    color: #6b7280;
+  }
+
+  .clear-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    background: white;
+    color: #374151;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .clear-btn:hover:not(:disabled) {
+    background: #fef2f2;
+    border-color: #fca5a5;
+    color: #dc2626;
+  }
+
+  .clear-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* ── Message thread ──────────────────────────────────────── */
+  .message-thread {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* ── Empty state ─────────────────────────────────────────── */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    text-align: center;
+    color: #9ca3af;
+    gap: 10px;
+    padding: 60px 0;
+  }
+
+  .empty-icon {
+    font-size: 40px;
+  }
+
+  .empty-state p {
+    margin: 0;
+    font-size: 15px;
+    max-width: 360px;
+  }
+
+  /* ── Message rows ────────────────────────────────────────── */
+  .message-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+  }
+
+  .user-row {
+    flex-direction: row-reverse;
+  }
+
+  .agent-row {
+    flex-direction: row;
+  }
+
+  /* ── Avatars ─────────────────────────────────────────────── */
+  .avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .agent-avatar {
+    background: #ede9fe;
+  }
+
+  .user-avatar {
+    background: #dbeafe;
+  }
+
+  /* ── Bubbles ─────────────────────────────────────────────── */
+  .bubble {
+    max-width: 72%;
+    padding: 12px 16px;
+    border-radius: 18px;
+    font-size: 14.5px;
+    line-height: 1.55;
+    word-break: break-word;
+  }
+
+  .user-bubble {
+    background: linear-gradient(135deg, #4338ca, #2563eb);
+    color: white;
+    border-bottom-right-radius: 4px;
+  }
+
+  .agent-bubble {
+    background: white;
+    border: 1px solid #e5e7eb;
+    color: #111827;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+  }
+
+  /* ── Markdown body ───────────────────────────────────────── */
+  .markdown-body {
+    line-height: 1.6;
+  }
+
+  .markdown-body :first-child { margin-top: 0; }
+  .markdown-body :last-child  { margin-bottom: 0; }
+
+  .markdown-body p  { margin: 0 0 8px; }
+  .markdown-body ul,
+  .markdown-body ol { margin: 6px 0 8px; padding-left: 20px; }
+  .markdown-body li { margin-bottom: 3px; }
+
+  .markdown-body h1,
+  .markdown-body h2,
+  .markdown-body h3 {
+    margin: 10px 0 6px;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  .markdown-body h1 { font-size: 18px; }
+  .markdown-body h2 { font-size: 16px; }
+  .markdown-body h3 { font-size: 15px; }
+
+  .markdown-body code {
+    background: #f3f4f6;
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: monospace;
+  }
+
+  .markdown-body pre {
+    background: #f3f4f6;
+    padding: 10px 14px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 8px 0;
+  }
+
+  .markdown-body pre code {
+    background: none;
+    padding: 0;
+  }
+
+  .markdown-body strong { font-weight: 700; }
+  .markdown-body em     { font-style: italic; }
+
+  .markdown-body hr {
+    border: none;
+    border-top: 1px solid #e5e7eb;
+    margin: 10px 0;
+  }
+
+  /* ── Typing indicator ────────────────────────────────────── */
+  .typing-bubble {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 14px 18px;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #9ca3af;
+    animation: bounce 1.2s infinite ease-in-out;
+  }
+
+  .dot:nth-child(1) { animation-delay: 0s; }
+  .dot:nth-child(2) { animation-delay: 0.2s; }
+  .dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); }
+    30%            { transform: translateY(-6px); }
+  }
+
+  /* ── Error bar ───────────────────────────────────────────── */
+  .error-bar {
+    background: #fef2f2;
+    border: 1px solid #fca5a5;
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: #dc2626;
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-bottom: 8px;
+  }
+
+  /* ── Input bar ───────────────────────────────────────────── */
+  .input-bar {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    padding-top: 12px;
+    border-top: 1px solid #e5e7eb;
+    flex-shrink: 0;
+  }
+
+  .chat-input {
+    flex: 1;
+    resize: none;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 14.5px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s ease;
+    max-height: 140px;
+    overflow-y: auto;
+    line-height: 1.5;
+  }
+
+  .chat-input:focus {
+    border-color: #4338ca;
+    box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.1);
+  }
+
+  .chat-input:disabled {
+    background: #f9fafb;
+    color: #9ca3af;
+  }
+
+  .send-btn {
+    padding: 12px 22px;
+    background: linear-gradient(135deg, #4338ca, #2563eb);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+  }
+
+  .send-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.3);
+  }
+
+  .send-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+</style>
+

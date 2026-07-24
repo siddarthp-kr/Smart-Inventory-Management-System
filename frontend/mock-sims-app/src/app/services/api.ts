@@ -145,6 +145,18 @@ export interface AlertCountResponse {
   alertCount: number;
 }
 
+export interface AgentRequest {
+  storeNumber: string;
+  divisionNumber: string;
+  requestDetails: string;
+  conversationId: string | null;
+}
+
+export interface AgentResponse {
+  summary: string;
+  conversationId: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class Api {
   private http = inject(HttpClient);
@@ -341,6 +353,14 @@ export class Api {
   async getAlertCount(storeNumber: string, divisionNumber: string): Promise<AlertCountResponse> {
     const result: AlertCountResponse = await firstValueFrom(
       this.http.get<AlertCountResponse>(`http://localhost:8080/api/pdm/alert-count?storeNumber=${storeNumber}&divisionNumber=${divisionNumber}`)
+    );
+    return result;
+  }
+
+  async agentQuery(storeNumber: string, divisionNumber: string, requestDetails: string, conversationId: string | null): Promise<AgentResponse> {
+    const requestBody: AgentRequest = { storeNumber, divisionNumber, requestDetails, conversationId };
+    const result: AgentResponse = await firstValueFrom(
+      this.http.post<AgentResponse>('http://localhost:8080/api/agent/query', requestBody)
     );
     return result;
   }
