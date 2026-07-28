@@ -103,4 +103,6 @@ public class AgentTools {
         LOG.info("Agent tool: getStandardPrice for upc {}", upcNumber);
         return markdownItemRepository.getStandardPrice(upcNumber);
     }
+
+
 }
