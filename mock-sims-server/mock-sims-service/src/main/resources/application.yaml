@@ -34,4 +34,4 @@ spring:
       base-url: https://api-internal.8451.com/ai/proxy/
       chat:
         options:
-          model: gpt-4o
+          model: claude-haiku-4-5
