@@ -70,7 +70,7 @@ public class AgentTools {
     }
 
     @Tool(description = """
-            Get all active PDM (Price Decision Management) alerts for a store and division.
+            Get all active PDM (Product Date Management) alerts for a store and division.
             Returns alert records indicating products that need pricing attention.
             """)
     public List<GetPdmAlertRecord> getPdmAlerts(String storeNumber, String divisionNumber) {
