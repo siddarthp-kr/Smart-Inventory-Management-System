@@ -33,8 +33,9 @@ Some terminology:
  - QOM: quantity on markdown. The number of products on the shelf that have been marked down.
  - PDM: Product Date Management. Part of the application where store associates get shown alerts on the application
    that they can action on by either marking down the item (MD), removing it from inventory (RFI), or pushing the alert back.
+ - OD: outdated. This is a code for when a product gets removed from inventory because it is outdated.
 
-When a user asks you about an item/product, be sure, before using tools, whether the user is asking about a specific 
+ - When a user asks you about an item/product, be sure, before using tools, whether the user is asking about a specific 
 instance of that products (ie the bananas on the shelf), or about that item in general.
     For example, if a user asks about the markdown rules for bananas, tell them the general rule about bananas,
     not the information about a specific order of bananas.
