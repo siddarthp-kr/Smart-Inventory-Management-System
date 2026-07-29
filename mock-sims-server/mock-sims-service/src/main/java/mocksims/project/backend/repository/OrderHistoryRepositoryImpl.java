@@ -19,9 +19,9 @@ public class OrderHistoryRepositoryImpl implements OrderHistoryRepository {
             "    ord.general_order_id, " +
             "    ord.placed_by_user_euid, " +
             "    ord.order_placed_time," +
-            "    ord.order_received," +
-            "    ord.received_by_user_euid," +
-            "    ord.order_received_time," +
+            "    ord.order_status," +
+            "    ord.action_by_user_euid," +
+            "    ord.order_action_time," +
             "    inv.upc_number, " +
             "    inv.quantity, " +
             "    prod.product_name " +

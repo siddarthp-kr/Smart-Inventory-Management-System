@@ -9,8 +9,7 @@ import java.util.Map;
 
 public interface ReceiveOrderRepository {
 
-    public Boolean getOrderReceivedStatus(String storeNumber, String divisionNumber, Long orderId
-    );
+    String getOrderStatus(String storeNumber, String divisionNumber, Long orderId);
 
     public List<ReceiveOrderItemRecord> getOrderItems(Long orderId);
 
@@ -29,6 +28,9 @@ public interface ReceiveOrderRepository {
     public void batchInsertProductInventoryInfo(Long orderId, List<ReceiveOrderItemRecord> orderItems, Map<String, LocalDate> expirationDateByUpc, LocalDate orderDate
     );
 
-    public void updateOrderReceived(String storeNumber, String divisionNumber, Long orderId, String receivedByUserEuid, LocalDateTime orderReceivedTime
+    public void updateOrderStatusToReceived(String storeNumber, String divisionNumber, Long orderId, String actionByUserEuid, LocalDateTime orderActionTime);
+
+    public void updateOrderStatusToCancelled(String storeNumber, String divisionNumber, Long orderId, String actionByUserEuid, LocalDateTime orderActionTime
     );
+
 }

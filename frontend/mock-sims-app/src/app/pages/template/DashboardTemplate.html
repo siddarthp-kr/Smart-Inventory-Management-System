@@ -73,6 +73,12 @@
         <p>Create new products and rules</p>
       </button>
 
+      <button routerLink="/ChatPage" class="dashboard-card">
+        <div class="icon icon-indigo">🤖</div>
+        <h3>AI Assistant</h3>
+        <p>Ask questions about your inventory</p>
+      </button>
+
     </div>
 
   </div>
@@ -178,7 +184,7 @@
   /* CARD GRID */
   .card-grid {
     display: grid;
-    grid-template-columns: repeat(5, minmax(190px, 1fr));
+    grid-template-columns: repeat(6, minmax(160px, 1fr));
     gap: 18px;
   }
 
@@ -230,6 +236,10 @@
 
   .icon-gray {
     background: #f3f4f6;
+  }
+
+  .icon-indigo {
+    background: #e0e7ff;
   }
 
   .dashboard-card h3 {
@@ -291,7 +301,7 @@
   /* RESPONSIVE */
   @media (max-width: 1200px) {
     .card-grid {
-      grid-template-columns: repeat(3, minmax(220px, 1fr));
+      grid-template-columns: repeat(3, minmax(200px, 1fr));
     }
   }
 

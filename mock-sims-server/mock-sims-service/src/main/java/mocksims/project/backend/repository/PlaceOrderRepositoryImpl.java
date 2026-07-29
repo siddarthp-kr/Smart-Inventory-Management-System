@@ -35,7 +35,7 @@ public class PlaceOrderRepositoryImpl implements PlaceOrderRepository {
     private static final String QOD_BEFORE_TRANSACTION = "QOD_BEFORE_TRANSACTION";
 
 
-    private static final String SQL_INSERT_ORDER_TRANSACTION_INFO = "INSERT INTO ORDER_TRANSACTION_INFO (store_number, division_number, placed_by_user_euid, order_placed_time, order_received) VALUES (:STORE_NUMBER, :DIVISION_NUMBER, :USER_EUID, :ORDER_PLACED_TIME, FALSE)";
+    private static final String SQL_INSERT_ORDER_TRANSACTION_INFO = "INSERT INTO ORDER_TRANSACTION_INFO (store_number,division_number,placed_by_user_euid,order_placed_time)VALUES (:STORE_NUMBER,:DIVISION_NUMBER,:USER_EUID,:ORDER_PLACED_TIME)";
     private static final String SQL_INSERT_ORDER_MOVEMENT_TRANSACTIONS = "INSERT INTO ORDER_MOVEMENT_TRANSACTIONS (general_order_id,upc_number,quantity,qod_before_transaction) VALUES (:GENERAL_ORDER_ID,:UPC_NUMBER,:QUANTITY,:QOD_BEFORE_TRANSACTION)";
 
 

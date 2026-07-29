@@ -45,9 +45,9 @@ export interface OrderHistoryRecord {
   orderId: number;
   placedByUserEuid: string;
   orderPlacedTime: string;
-  orderReceived: boolean;
-  receivedByUserEuid: string | null;
-  orderReceivedTime: string | null;
+  orderStatus: 'PLACED' | 'RECEIVED' | 'CANCELLED';
+  actionByUserEuid: string | null;
+  orderActionTime: string | null;
   upcNumber: string;
   productName: string;
   quantity: number;
@@ -143,6 +143,18 @@ export interface MarkdownInformationResponse {
 
 export interface AlertCountResponse {
   alertCount: number;
+}
+
+export interface AgentRequest {
+  storeNumber: string;
+  divisionNumber: string;
+  requestDetails: string;
+  conversationId: string | null;
+}
+
+export interface AgentResponse {
+  summary: string;
+  conversationId: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -250,6 +262,20 @@ export class Api {
     return result;
   }
 
+  async cancelOrder(storeNumber: string, divisionNumber: string, userEuid: string, orderId: number): Promise<ReceiveOrderResponse> {
+    const requestBody = {
+      storeNumber,
+      divisionNumber,
+      userEuid,
+      orderId
+    };
+
+    const result: ReceiveOrderResponse = await firstValueFrom(
+      this.http.post<ReceiveOrderResponse>('http://localhost:8080/api/order/cancel-order', requestBody)
+    );
+    return result;
+  }
+
   async getOrderHistory(storeNumber: string, divisionNumber: string): Promise<OrderHistoryResponse>{
     const requestBody = {
       storeNumber: storeNumber,
@@ -327,6 +353,14 @@ export class Api {
   async getAlertCount(storeNumber: string, divisionNumber: string): Promise<AlertCountResponse> {
     const result: AlertCountResponse = await firstValueFrom(
       this.http.get<AlertCountResponse>(`http://localhost:8080/api/pdm/alert-count?storeNumber=${storeNumber}&divisionNumber=${divisionNumber}`)
+    );
+    return result;
+  }
+
+  async agentQuery(storeNumber: string, divisionNumber: string, requestDetails: string, conversationId: string | null): Promise<AgentResponse> {
+    const requestBody: AgentRequest = { storeNumber, divisionNumber, requestDetails, conversationId };
+    const result: AgentResponse = await firstValueFrom(
+      this.http.post<AgentResponse>('http://localhost:8080/api/agent/query', requestBody)
     );
     return result;
   }

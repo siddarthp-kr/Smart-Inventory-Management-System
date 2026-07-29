@@ -11,6 +11,7 @@ import {AlertActionPage} from './components/AlertActionPage';
 import {MarkdownItemPage} from './components/MarkdownItemPage';
 import {RfiItemPage} from './components/RfiItemPage';
 import {PushBackExpirationPage} from './components/PushBackExpirationPage';
+import {ChatPage} from './components/ChatPage';
 
 
 export const routes: Routes = [
@@ -73,5 +74,10 @@ export const routes: Routes = [
     path: 'PushBackExpirationPage',
     title: "Push Back Expiration",
     component: PushBackExpirationPage
+  },
+  {
+    path: 'ChatPage',
+    title: 'AI Assistant',
+    component: ChatPage
   }
 ];
